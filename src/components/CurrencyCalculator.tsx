@@ -3,6 +3,8 @@ import { convert, getRates, isStale, type RateCache } from '../lib/currency'
 import { formatTimeInZone, guessLocalTimeZone } from '../lib/time'
 import { useSetting } from '../lib/useSetting'
 import { useMarkupProfiles } from '../lib/markupProfiles'
+import { getCountry } from '../lib/countries'
+import { useCurrentCountry } from '../lib/currentCountry'
 import { CurrencyPicker } from './CurrencyPicker'
 import { MarkupProfileBar } from './MarkupProfiles'
 import { ShoppingNotes } from './ShoppingNotes'
@@ -13,10 +15,25 @@ export function CurrencyCalculator() {
   const [homeCurrency] = useSetting('travel_home_currency', 'HKD')
   const [homeTimezone] = useSetting('travel_home_timezone', 'Asia/Hong_Kong')
   const { active: markupProfile } = useMarkupProfiles()
+  const [countryIso2] = useCurrentCountry()
+  const country = countryIso2 ? getCountry(countryIso2) : undefined
 
-  const [from, setFrom] = useState(homeCurrency) // "local" side while abroad, defaults to home until GPS wired up
-  const [to, setTo] = useState(homeCurrency)
+  const [from, setFrom] = useState(homeCurrency) // home side
+  const [to, setTo] = useState(homeCurrency) // local/destination side — same convention GratuityCalculator and SalesTaxCalculator already use
   const [amount, setAmount] = useState('100')
+
+  // Sync "to" to the selected country's currency whenever the country
+  // selection itself changes (not on every render, so a manual override
+  // afterwards — e.g. checking EUR while actually in Japan — isn't clobbered
+  // until the country picker changes again).
+  useEffect(() => {
+    if (country) {
+      setTo(country.currency)
+    }
+    // country is a stable reference for a given countryIso2 (looked up from
+    // a module-level constant), so this only actually re-runs when the
+    // country selection itself changes.
+  }, [countryIso2, country])
 
   const [cache, setCache] = useState<RateCache | null>(null)
   const [offline, setOffline] = useState(false)

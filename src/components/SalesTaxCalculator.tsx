@@ -31,7 +31,7 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
       setMode(country.sales_tax.price_display === 'tax_included' ? 'extract' : 'add')
       setRate(String(country.sales_tax.default_rate_percent))
     }
-  }, [countryIso2]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [countryIso2, country])
 
   const parsedAmount = parseFloat(amount) || 0
   const parsedRate = parseFloat(rate) || 0
