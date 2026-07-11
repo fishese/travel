@@ -1,0 +1,910 @@
+{
+  "countries": [
+    {
+      "iso2": "JP",
+      "name_en": "Japan",
+      "name_zh": "日本",
+      "currency": "JPY",
+      "emergency": {
+        "police": "110",
+        "ambulance": "119",
+        "fire": "119"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Tokyo",
+        "phone": "+81-3-3556-8980",
+        "address_en": "Hong Kong Economic and Trade Office Bldg, 30-1 Sanban-Cho, Chiyoda-ku, Tokyo 102-0075, Japan",
+        "official_url": "https://www.hketotyo.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Tabelog",
+          "url": "https://tabelog.com/"
+        },
+        {
+          "label": "Hot Pepper Gourmet",
+          "url": "https://www.hotpepper.jp/"
+        }
+      ],
+      "power": {
+        "voltage": "100V",
+        "plugs": "A/B (US-style)",
+        "note": "Eastern Japan (including Tokyo) operates on 50Hz, while Western Japan (including Osaka/Kyoto) operates on 60Hz"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not customary. Can cause confusion or be perceived as impolite. Service is included in standard pricing.",
+        "note_zh": "不設小費文化。支付小費可能會引起混亂或被視為不禮貌，服務費已包含在基本價格中。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 10,
+        "regions": [],
+        "note_en": "Standard rate 10%; reduced rate of 8% applied to food/beverages (excluding alcohol and dining out)."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Consumption Tax Exemption",
+        "typical_rate_percent": 10,
+        "min_purchase_note_en": "¥5,000 (excluding tax) per store, per day",
+        "how_it_works_en": "Instant point-of-sale deduction or same-day in-store tax refund counter. Physical passport with valid entry stamp required.",
+        "where_to_claim_en": "Point of sale (in-store)",
+        "tips_en": [
+          "Original physical passport required (no photocopies)",
+          "Consumables are sealed in special bags and must remain unopened until departure"
+        ],
+        "official_url": "https://www.japan.travel/en/plan/tax-free-shops/"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR and BNO passport holders enjoy visa-free entry for tourism up to 90 days. Other passports must check requirements.",
+        "official_url": "https://www.mofa.go.jp/j_info/visit/visa/index.html"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "visit-japan-web",
+          "name_en": "Visit Japan Web",
+          "name_zh": "Visit Japan Web",
+          "official_url": "https://vjw-landing.digital.go.jp/en/",
+          "applies_to": "all_international_arrivals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 3,
+          "notes_en": "Generates unified QR codes for immigration and customs declarations. Expedites processing via electronic terminals.",
+          "notes_zh": "生成統一的入境及海關二維碼，可使用電子閘機大幅加快過關速度。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "KR",
+      "name_en": "South Korea",
+      "name_zh": "韓國",
+      "currency": "KRW",
+      "emergency": {
+        "police": "112",
+        "ambulance": "119",
+        "fire": "119"
+      },
+      "embassy_hk": {
+        "name_en": "Consular Section of the Embassy of the People's Republic of China in Seoul",
+        "phone": "+82-2-755-0535",
+        "address_en": "50-7, No.2 Street, Namsan-dong, Chung-gu, Seoul, Republic of Korea",
+        "official_url": "http://kr.china-embassy.gov.cn/eng/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Naver Map",
+          "url": "https://map.naver.com/"
+        },
+        {
+          "label": "Catch Table",
+          "url": "https://app.catchtable.co.kr/"
+        }
+      ],
+      "power": {
+        "voltage": "220V",
+        "plugs": "C/F (European round-pin)",
+        "note": "Operates on 60Hz frequency"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not customary; generally not expected in restaurants, hotels, or taxis.",
+        "note_zh": "不設小費文化；在餐廳、酒店或的士一般不需要付小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 10,
+        "regions": [],
+        "note_en": "10% Value Added Tax (VAT) included in displayed retail prices."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax Refund for Foreign Tourists",
+        "typical_rate_percent": 6,
+        "min_purchase_note_en": "KRW 15,000 per transaction at participating stores",
+        "how_it_works_en": "Immediate point-of-sale deduction (passport required) or post-purchase claim via airport kiosks. Net return is typically 4-7% after admin fees.",
+        "where_to_claim_en": "Store and/or landside airport kiosks before check-in",
+        "tips_en": [
+          "Scan receipts at airport kiosks before checking baggage",
+          "Immediate point-of-sale limit is KRW 1,000,000 per receipt (capped at KRW 5,000,000 per trip)",
+          "Kiosk will indicate with an 'X' if manual customs inspection of goods is required"
+        ],
+        "official_url": "https://english.visitkorea.or.kr/"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "K-ETA temporarily exempted for HKSAR/Macau through Dec 31, 2026, but requires e-Arrival Card submission instead.",
+        "official_url": "https://www.k-eta.go.kr/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "kr-earrival",
+          "name_en": "e-Arrival Card",
+          "name_zh": "電子入國申告書",
+          "official_url": "https://www.hikorea.go.kr/",
+          "applies_to": "k_eta_exempt_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Replaces paper arrival forms. Must be submitted within 72 hours prior to arrival if traveling under K-ETA exemption.",
+          "notes_zh": "取代紙本入境卡。若獲豁免K-ETA，必須在抵達前72小時內提交。",
+          "confidence": "high"
+        },
+        {
+          "id": "kr-qcode",
+          "name_en": "Q-Code",
+          "name_zh": "檢疫資訊預先輸入系統 (Q-Code)",
+          "official_url": "https://qcode.kdca.go.kr/",
+          "applies_to": "symptomatic_or_designated_areas",
+          "required_level": "conditional",
+          "lead_days_before": 3,
+          "notes_en": "Required only if arriving from strict quarantine areas or exhibiting symptoms.",
+          "notes_zh": "僅限從指定檢疫地區出發或出現病徵的旅客需要填寫。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "TW",
+      "name_en": "Taiwan",
+      "name_zh": "台灣",
+      "currency": "TWD",
+      "emergency": {
+        "police": "110",
+        "ambulance": "119",
+        "fire": "119"
+      },
+      "embassy_hk": {
+        "name_en": "Assistance to Hong Kong Residents Unit (HK Immigration Department)",
+        "phone": "+852-1868",
+        "address_en": "N/A (HKETCO in Taiwan suspended since 2021; use 24-hour hotline)",
+        "official_url": "https://www.immd.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "OpenRice Taiwan",
+          "url": "https://tw.openrice.com/"
+        },
+        {
+          "label": "Pixnet Food Blogs",
+          "url": "https://www.pixnet.net/"
+        }
+      ],
+      "power": {
+        "voltage": "110V",
+        "plugs": "A/B (US-style)",
+        "note": "Operates on 60Hz frequency, similar to North America"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not customary. High-end restaurants auto-levy a 10% service charge; independent eateries and taxis do not expect tips.",
+        "note_zh": "不設小費文化。高級餐廳會自動收取10%服務費，一般小店及的士司機不期望收到小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 5,
+        "regions": [],
+        "note_en": "5% VAT is embedded within the displayed price."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tourist Refund System (TRS)",
+        "typical_rate_percent": 4,
+        "min_purchase_note_en": "NT$2,000 (VAT included) same day at single TRS-labeled store",
+        "how_it_works_en": "Refunds subject to a 20% administration charge. On-site refunds available for purchases under NT$48,000.",
+        "where_to_claim_en": "Authorized retail stores or E-VAT kiosks at airport",
+        "tips_en": [
+          "Use E-VAT kiosks prior to luggage check-in",
+          "Goods must be exported within 90 days of purchase",
+          "Kiosk determines if manual customs inspection is required"
+        ],
+        "official_url": "https://www.taxrefund.net.tw/"
+      },
+      "visa_caution": {
+        "level": "strict",
+        "summary": "HK/Macau passport holders DO NOT have visa-free entry. Must secure Online Entry Permit (Web Notice) prior to travel.",
+        "official_url": "https://ncp.immigration.gov.tw/nia_cnt/apply/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "tw-entry-permit",
+          "name_en": "Online Entry Permit for Hong Kong and Macao Residents",
+          "name_zh": "港澳居民網路申請入臺證",
+          "official_url": "https://ncp.immigration.gov.tw/nia_cnt/apply/",
+          "applies_to": "hk_macau_residents",
+          "required_level": "mandatory",
+          "lead_days_before": 14,
+          "notes_en": "Must print a physical, color copy of the approval notice. Digital presentations on phones are rejected.",
+          "notes_zh": "必須列印彩色的實體入臺證，邊境不接受手機展示電子版本。",
+          "confidence": "high"
+        },
+        {
+          "id": "twac",
+          "name_en": "Taiwan Arrival Card (TWAC)",
+          "name_zh": "台灣入國登記表 (TWAC)",
+          "official_url": "https://niaspeedy.immigration.gov.tw/webacard/",
+          "applies_to": "non_resident_foreign_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 7,
+          "notes_en": "Fully replaces paper cards as of Oct 1, 2025. Must be submitted within 7 days prior to arrival.",
+          "notes_zh": "自2025年10月起全面取代紙本入境表。必須在抵達前7天內提交。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "TH",
+      "name_en": "Thailand",
+      "name_zh": "泰國",
+      "currency": "THB",
+      "emergency": {
+        "police": "191",
+        "ambulance": "1669",
+        "fire": "1669"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Bangkok",
+        "phone": "+66-2-059-4660",
+        "address_en": "21st Floor, Sathorn Square, 98 North Sathorn Road, Silom, Bangrak, Bangkok 10500, Thailand",
+        "official_url": "https://www.hketobangkok.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "1-800-01-8092 (Toll-free inside Thailand) / +1-919-684-9111 (Global)",
+        "nearest_hyperbaric_note_en": "Multi-place hyperbaric chambers located in Phuket (Bangkok Hospital Siriroj), Koh Samui (Bophut), and Koh Tao (Mae Haad, 24/7).",
+        "official_url": "https://danap.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Wongnai",
+          "url": "https://www.wongnai.com/"
+        },
+        {
+          "label": "OpenRice Thailand",
+          "url": "https://th.openrice.com/"
+        }
+      ],
+      "power": {
+        "voltage": "220V",
+        "plugs": "A/B/C/F/O",
+        "note": "Operates on 50Hz. Multi-socket receptacles are common and accommodate many plug types, including local Type O."
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not strictly customary but appreciated in tourist zones (e.g., rounding up taxi fares, 20-50 THB for massage/porters).",
+        "note_zh": "非強制性，但在旅遊區普遍受歡迎（如的士車資整數找續，給按摩師或行李員20-50泰銖）。"
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 7,
+        "regions": [],
+        "note_en": "Hotels and upmarket restaurants frequently display prices exclusive of VAT; a 10% service charge and 7% VAT are added to the final bill."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "VAT Refund for Tourists",
+        "typical_rate_percent": 7,
+        "min_purchase_note_en": "THB 2,000 per store, per day",
+        "how_it_works_en": "Requires meticulous procedural compliance. Cumulative total of refund forms must equal/exceed THB 5,000.",
+        "where_to_claim_en": "Airport Customs (pre check-in) then Revenue office (post-immigration)",
+        "tips_en": [
+          "Must request P.P.10 form and original tax invoice at time of purchase with physical passport",
+          "Goods and P.P.10 forms MUST be stamped by Customs BEFORE luggage check-in",
+          "Luxury goods over THB 10,000 must be hand-carried and presented to Revenue officers after immigration clearance"
+        ],
+        "official_url": "https://vrtweb.rd.go.th/"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders generally benefit from visa-free entry for tourism (30-60 days depending on current decrees). Strict 6-month passport validity required.",
+        "official_url": "https://image.mfa.go.th/mfa/0/zE6021nSnu/%E0%B9%80%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B2%E0%B8%A3/VOA.pdf"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "tdac",
+          "name_en": "Thailand Digital Arrival Card (TDAC)",
+          "name_zh": "泰國數位入境卡 (TDAC)",
+          "official_url": "https://www.immigration.go.th/",
+          "applies_to": "all_foreign_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Replaced TM6 paper forms on May 1, 2025. Captures itinerary, accommodation, and health data. Must submit within 72 hours prior to arrival.",
+          "notes_zh": "2025年5月1日起取代紙本TM6表格。必須在抵達前72小時內提交。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "SG",
+      "name_en": "Singapore",
+      "name_zh": "新加坡",
+      "currency": "SGD",
+      "emergency": {
+        "police": "999",
+        "ambulance": "995",
+        "fire": "995"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Singapore",
+        "phone": "+65-6338-1771",
+        "address_en": "34-01 Suntec Tower 2, 9 Temasek Boulevard, Singapore 038989",
+        "official_url": "https://www.hketosin.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Chope",
+          "url": "https://www.chope.co/singapore-restaurants"
+        },
+        {
+          "label": "Burpple",
+          "url": "https://www.burpple.com/sg"
+        },
+        {
+          "label": "SethLui",
+          "url": "https://sethlui.com/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "G (British-style)",
+        "note": "Operates on 50Hz frequency"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Wholly redundant, not expected, and occasionally discouraged due to the automatic 10% service charge.",
+        "note_zh": "完全不需要且不被期望，部分場所甚至不鼓勵給予小費，因已自動收取10%服務費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 9,
+        "regions": [],
+        "note_en": "Prices inclusive of 9% GST. F&B outlets with a service charge may display base prices, appending 10% service and 9% GST at billing."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Electronic Tourist Refund Scheme (eTRS)",
+        "typical_rate_percent": 9,
+        "min_purchase_note_en": "SGD 100 (including GST). Up to 3 same-day receipts from a single GST-registered retailer can be aggregated.",
+        "how_it_works_en": "Frictionless paperless system. Present physical passport at point of sale to digitally link eTRS transaction to your passport profile.",
+        "where_to_claim_en": "Airport self-help kiosks",
+        "tips_en": [
+          "Use Departure Hall (landside) kiosks for items in checked baggage",
+          "Use Transit Lounge (airside) kiosks for hand-carried items",
+          "Goods must be exported by air within two months of purchase; traveler must depart within 12 hours of kiosk approval"
+        ],
+        "official_url": "https://www.iras.gov.sg/taxes/goods-services-tax-(gst)/consumers/tourist-refund-scheme"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR and BNO passport holders granted visa-free entry for up to 30 days. Passport must have 6 months validity.",
+        "official_url": "https://www.ica.gov.hk/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "sgac",
+          "name_en": "SG Arrival Card (SGAC)",
+          "name_zh": "新加坡電子入境卡 (SGAC)",
+          "official_url": "https://eservices.ica.gov.sg/sgarrivalcard/",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Absolute mandate for all arrivals. Enables seamless use of automated biometric clearance gates at Changi Airport.",
+          "notes_zh": "所有旅客必須填寫，填妥後可於樟宜機場無縫使用自動生物識別過關閘機。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "MY",
+      "name_en": "Malaysia",
+      "name_zh": "馬來西亞",
+      "currency": "MYR",
+      "emergency": {
+        "police": "999",
+        "ambulance": "999",
+        "fire": "999"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Kuala Lumpur",
+        "phone": "+60-3-2724-7836",
+        "address_en": "Room 771, Level 7, Tribeca Bukit Bintang, No. 215, Jalan Imbi, 55100 Kuala Lumpur",
+        "official_url": "https://www.hketokl.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+61-8-8212-9242",
+        "nearest_hyperbaric_note_en": "Military-operated chambers in Sabah (KD Sri Semporna and Naval Base Sepangar in Kota Kinabalu).",
+        "official_url": "https://danap.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Burpple Kuala Lumpur",
+          "url": "https://www.burpple.com/kl"
+        }
+      ],
+      "power": {
+        "voltage": "240V",
+        "plugs": "G (UK-style)",
+        "note": "Standard 50Hz frequency."
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not customary. A standard 10% service charge is automatically levied in most venues. Small change for exceptional service is appreciated."
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 8,
+        "regions": [],
+        "note_en": "8% Sales and Service Tax (SST). Frequently applied alongside a 10% service charge ('++' pricing)."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "Tourist Refund Scheme (Abolished)",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "n/a",
+        "how_it_works_en": "No VAT/GST refund mechanism currently exists following the 2018 tax reforms.",
+        "where_to_claim_en": "n/a",
+        "tips_en": [],
+        "official_url": ""
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders generally enjoy visa-free access for short leisure stays, but rules frequently adapt. Verify prior to travel.",
+        "official_url": "https://www.imi.gov.my"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "mdac",
+          "name_en": "Malaysia Digital Arrival Card (MDAC)",
+          "name_zh": "馬來西亞電子入境卡",
+          "official_url": "https://imigresen-online.imi.gov.my/mdac/main",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Must be submitted within 3 days (72 hours) prior to arrival. HKSAR passports are not exempt.",
+          "notes_zh": "抵達前3天（72小時）內必須提交。特區護照持有人不能豁免。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "VN",
+      "name_en": "Vietnam",
+      "name_zh": "越南",
+      "currency": "VND",
+      "emergency": {
+        "police": "113",
+        "ambulance": "115",
+        "fire": "114"
+      },
+      "embassy_hk": {
+        "name_en": "Chinese Embassy in Hanoi",
+        "phone": "+84-24-38453736",
+        "address_en": "46 Hoang Dieu Road, Ba Dinh District, Hanoi",
+        "official_url": "http://vn.china-embassy.gov.cn/eng/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+61-8-8212-9242",
+        "nearest_hyperbaric_note_en": "Dedicated facilities exceedingly rare. Limited capability at Vinmec Nha Trang; severe cases require evacuation to Singapore or Thailand.",
+        "official_url": "https://dan.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Capichi Vietnam",
+          "url": "https://capichi.vn/"
+        }
+      ],
+      "power": {
+        "voltage": "220V",
+        "plugs": "A/C/F",
+        "note": "A mix of flat and round two-pin plugs are used. 50Hz."
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          5,
+          10
+        ],
+        "tip_on": "total",
+        "note_en": "Not culturally expected, but a 5-10% tip or rounding up the fare is highly appreciated due to low baseline wages."
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 8,
+        "regions": [],
+        "note_en": "Temporarily reduced from 10% to 8% for most eligible goods through Dec 31, 2026."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "VAT Refund for Tourists",
+        "typical_rate_percent": 8.5,
+        "min_purchase_note_en": "Minimum 2,000,000 VND per store per day.",
+        "how_it_works_en": "Reclaim 85% of VAT paid (net effective ~6.8%). Must present physical passport at purchase. Unused goods must be inspected at airport customs prior to checking luggage.",
+        "where_to_claim_en": "Customs Inspection Counter (before check-in) -> Refund Counter (post-immigration).",
+        "tips_en": [
+          "Shop at 'VAT Refund for Tourists' authorized retailers",
+          "Do not check baggage containing refund items before customs inspection"
+        ],
+        "official_url": "https://www.customs.gov.vn/"
+      },
+      "visa_caution": {
+        "level": "visa_required",
+        "summary": "HKSAR passport holders must secure a visa prior to travel, typically via the official e-Visa portal.",
+        "official_url": "https://evisa.xuatnhapcanh.gov.vn/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "vn-digital-arrival",
+          "name_en": "Vietnam Digital Arrival Card",
+          "name_zh": "越南電子入境卡",
+          "official_url": "https://prearrival.immigration.gov.vn",
+          "applies_to": "international_arrivals_sgn",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Effective April 2026 for SGN (Ho Chi Minh City). Generates QR code. Strictly 72-hour window.",
+          "notes_zh": "自2026年4月起適用於胡志明市（SGN）。抵達前72小時內填寫。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "ID",
+      "name_en": "Indonesia",
+      "name_zh": "印尼",
+      "currency": "IDR",
+      "emergency": {
+        "police": "110",
+        "ambulance": "118",
+        "fire": "113"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Jakarta",
+        "phone": "+62-21-8086-9730",
+        "address_en": "19th Floor, World Trade Centre 2, Jalan Jenderal Sudirman Kav. 29-31, Jakarta Selatan",
+        "official_url": "https://www.hketojakarta.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+61-8-8212-9242",
+        "nearest_hyperbaric_note_en": "Bali: Sanglah General (Denpasar) & Kasih Ibu (Gianyar). Raja Ampat/Sorong: Severely limited; complex aero-evac to Bali/Singapore likely required.",
+        "official_url": "https://danap.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Chope Bali",
+          "url": "https://www.chope.co/bali-restaurants"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "C/F (Europlug)",
+        "note": "Round two-pin plugs are standard. 50Hz."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          5,
+          10
+        ],
+        "tip_on": "total",
+        "note_en": "Culturally welcomed in tourist epicenters like Bali, even when a service charge is included. Round up taxi fares."
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 12,
+        "regions": [],
+        "note_en": "12% VAT (PPN) effective Jan 2025. Hospitality often uses '++' pricing (~21-22% markup for tax + service charge)."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax Refund for Tourists",
+        "typical_rate_percent": 12,
+        "min_purchase_note_en": "Min VAT IDR 50,000 per receipt, accumulated to at least IDR 500,000 in VAT (approx IDR 4,166,000 pre-tax spend).",
+        "how_it_works_en": "Digital process via VAT Refund app. Refunds < IDR 5,000,000 in cash at airport; larger amounts via bank transfer. Must export goods within 30 days.",
+        "where_to_claim_en": "Airport Tax Refund Counter via DJP App",
+        "tips_en": [
+          "Download official VAT Refund App",
+          "Look for 'Tax Refund for Tourists' logo"
+        ],
+        "official_url": "https://vatrefundapp.pajak.go.id"
+      },
+      "visa_caution": {
+        "level": "visa_required",
+        "summary": "HKSAR passport holders require a Visa on Arrival (VoA) or pre-arrival e-VoA for tourism.",
+        "official_url": "https://molina.imigrasi.go.id"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "all-indonesia",
+          "name_en": "All Indonesia Arrival Card",
+          "name_zh": "全印尼電子入境卡",
+          "official_url": "https://allindonesia.imigrasi.go.id",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Unified digital gateway replacing e-CD and SATUSEHAT. Complete 72 hours prior.",
+          "notes_zh": "統一的電子入境、海關及健康申報。抵達前72小時內填寫。",
+          "confidence": "high"
+        },
+        {
+          "id": "bali-tourist-levy",
+          "name_en": "Bali International Tourist Levy",
+          "name_zh": "峇里島國際遊客稅",
+          "official_url": "https://lovebali.baliprov.go.id",
+          "applies_to": "bali_arrivals_only",
+          "required_level": "mandatory",
+          "lead_days_before": 7,
+          "notes_en": "IDR 150,000 mandatory levy per person entering Bali. Pay pre-arrival to avoid queues. Beware of scam domains.",
+          "notes_zh": "進入峇里島每人需繳交150,000印尼盾。強烈建議抵達前網上支付。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "MV",
+      "name_en": "Maldives",
+      "name_zh": "馬爾代夫",
+      "currency": "MVR",
+      "emergency": {
+        "police": "119",
+        "ambulance": "102",
+        "fire": "118"
+      },
+      "embassy_hk": {
+        "name_en": "Chinese Embassy in Maldives",
+        "phone": "+960-301-0640",
+        "address_en": "H. Nookurikeela, Dhunbugas Magu, Henveiru, Malé",
+        "official_url": "http://mv.china-embassy.gov.cn/eng/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+1-919-684-9111",
+        "nearest_hyperbaric_note_en": "Primary facility at ADK Hospital (Malé). Regional resort chambers at Bandos (North Malé), Kuramathi (Rasdhoo), and Kandima (Dhaalu).",
+        "official_url": "https://dan.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "TasteAtlas Maldives",
+          "url": "https://www.tasteatlas.com/maldives"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "G (UK-style) / D",
+        "note": "Type G is most common in resorts, but some older setups use Type D. 50Hz."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "cash_for_staff",
+        "note_en": "10% service charge is universally applied to bills. However, leaving extra cash gratuities for dedicated staff (room attendants, butlers, dive guides) is highly expected."
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 16,
+        "regions": [],
+        "note_en": "16% Tourism Goods and Services Tax (TGST) applied to all resort and tourism purchases."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "n/a",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "n/a",
+        "how_it_works_en": "The Maldives does not operate a tourist tax refund scheme. Taxes paid are final.",
+        "where_to_claim_en": "n/a",
+        "tips_en": [],
+        "official_url": ""
+      },
+      "visa_caution": {
+        "level": "visa_free",
+        "summary": "Universal 30-day visa-free entry for all nationalities, provided you have a valid passport, resort booking, and return ticket.",
+        "official_url": "https://immigration.gov.mv"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "imuga",
+          "name_en": "IMUGA Traveller Declaration",
+          "name_zh": "IMUGA旅客申報表",
+          "official_url": "https://imuga.immigration.gov.mv",
+          "applies_to": "all_international_arrivals_departures",
+          "required_level": "mandatory",
+          "lead_days_before": 4,
+          "notes_en": "Must be submitted within 96 hours prior to flight time. Entirely free of charge; avoid third-party scam sites charging fees.",
+          "notes_zh": "航班起飛前96小時內提交。完全免費，請提防收取手續費的詐騙網站。",
+          "confidence": "high"
+        }
+      ]
+    }
+  ],
+  "airports": [
+    {
+      "iata": "HND",
+      "name": "Tokyo Haneda",
+      "city": "Tokyo",
+      "country_iso2": "JP",
+      "reference_point_en": "Tokyo Station",
+      "typical_transport_en": "Tokyo Monorail + JR or Keikyu Line",
+      "typical_minutes": 35,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Tokyo Station area via public transport; not live traffic; excludes peak hour congestion and baggage retrieval times"
+    },
+    {
+      "iata": "NRT",
+      "name": "Tokyo Narita",
+      "city": "Tokyo",
+      "country_iso2": "JP",
+      "reference_point_en": "Tokyo Station",
+      "typical_transport_en": "JR Narita Express (N'EX) or Keisei Skyliner",
+      "typical_minutes": 60,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Tokyo Station area via express rail; excludes live traffic and internal station navigation times"
+    },
+    {
+      "iata": "ICN",
+      "name": "Seoul Incheon",
+      "city": "Seoul",
+      "country_iso2": "KR",
+      "reference_point_en": "Seoul Station",
+      "typical_transport_en": "Airport Railroad Express (AREX) Non-Stop",
+      "typical_minutes": 43,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Seoul Station via direct express rail; not live traffic; avoids road congestion"
+    },
+    {
+      "iata": "TPE",
+      "name": "Taipei Taoyuan",
+      "city": "Taipei",
+      "country_iso2": "TW",
+      "reference_point_en": "Taipei Main Station",
+      "typical_transport_en": "Taoyuan Airport MRT (Express)",
+      "typical_minutes": 36,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Taipei Main Station via Express train service; not live traffic; avoids heavy expressway traffic"
+    },
+    {
+      "iata": "BKK",
+      "name": "Bangkok Suvarnabhumi",
+      "city": "Bangkok",
+      "country_iso2": "TH",
+      "reference_point_en": "Siam Station",
+      "typical_transport_en": "Airport Rail Link (ARL) + BTS Skytrain",
+      "typical_minutes": 45,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From central nodes like Siam Station via rail network; not live traffic; highly recommended to avoid notorious surface traffic"
+    },
+    {
+      "iata": "SIN",
+      "name": "Singapore Changi",
+      "city": "Singapore",
+      "country_iso2": "SG",
+      "reference_point_en": "City Hall Station",
+      "typical_transport_en": "MRT East-West Line (with transfer at Tanah Merah)",
+      "typical_minutes": 35,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From urban core via public transport; actual train ride is short but buffer additional time for vast walking distances within Changi terminals"
+    },
+    {
+      "iata": "KUL",
+      "name": "Kuala Lumpur International Airport",
+      "city": "Kuala Lumpur",
+      "country_iso2": "MY",
+      "reference_point_en": "KL Sentral",
+      "typical_transport_en": "KLIA Ekspres",
+      "typical_minutes": 28,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "28 minutes reflects pure train transit time from T1 to KL Sentral. Add time for terminal navigation, check-in, and transfer from final hotel to the KL Sentral hub."
+    },
+    {
+      "iata": "SGN",
+      "name": "Tan Son Nhat International Airport",
+      "city": "Ho Chi Minh City",
+      "country_iso2": "VN",
+      "reference_point_en": "District 1 City Center",
+      "typical_transport_en": "Ride-hailing (Grab/Be/Gojek) or Taxi",
+      "typical_minutes": 35,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Varies drastically with traffic. Off-peak can be 20 mins; rush hour (07:00-09:00, 16:30-19:30) can exceed 60 minutes. 3-hour airport buffer advised due to immigration queues."
+    },
+    {
+      "iata": "DPS",
+      "name": "I Gusti Ngurah Rai International Airport",
+      "city": "Bali",
+      "country_iso2": "ID",
+      "reference_point_en": "Seminyak",
+      "typical_transport_en": "Pre-booked Private Transfer or Official Taxi",
+      "typical_minutes": 40,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Assumes journey to Seminyak. Highly volatile traffic corridor; peak afternoon/evening travel (16:00-19:00) routinely extends trips to 75+ minutes."
+    },
+    {
+      "iata": "MLE",
+      "name": "Velana International Airport",
+      "city": "Malé",
+      "country_iso2": "MV",
+      "reference_point_en": "Malé City Center",
+      "typical_transport_en": "Taxi (via Sinamalé Bridge) or Airport Express Ferry",
+      "typical_minutes": 10,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Transit time strictly reflects travel from the airport island (Hulhulé) to Malé City. Does NOT account for lengthy, complex seaplane or speedboat transfers to private resort atolls."
+    }
+  ]
+}

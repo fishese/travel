@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/*
+  Token system — utility app, not a marketing page. Priorities: glanceable in
+  sunlight, one-handed, zero webfont network requests (offline-first means no
+  font CDN dependency). Contrast comes from a slab/serif numeral display for
+  the one number that matters (the converted amount) against a clean system
+  sans everywhere else — a boarding-pass-stub feel, used once, not throughout.
+*/
+@theme {
+  --color-paper: #f7f5ef;
+  --color-surface: #fffdf9;
+  --color-ink: #1e2b27;
+  --color-muted: #8a8578;
+  --color-border: #e4e0d3;
+  --color-pine: #1f6f5c;
+  --color-pine-dim: #16544450;
+  --color-amber: #b8622e;
+  --color-amber-dim: #b8622e1a;
+
+  --font-display: ui-serif, Georgia, "Times New Roman", serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Visible keyboard focus everywhere — this is used outdoors, one-handed,
+   sometimes with a screen reader; never suppress the ring. */
+:focus-visible {
+  outline: 2px solid var(--color-pine);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
