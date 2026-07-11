@@ -5,8 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages serves project sites from /<repo-name>/ — update to match your repo.
-  base: '/travel-toolkit/',
+  // GitHub Pages serves project sites from /<repo-name>/ — this repo is named "travel".
+  base: '/travel/',
   plugins: [
     react(),
     tailwindcss(),
@@ -20,8 +20,8 @@ export default defineConfig({
         theme_color: '#1e3a34',
         background_color: '#f6f4ee',
         display: 'standalone',
-        start_url: '/travel-toolkit/',
-        scope: '/travel-toolkit/',
+        start_url: '/travel/',
+        scope: '/travel/',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },

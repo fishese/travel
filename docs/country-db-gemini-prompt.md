@@ -28,7 +28,7 @@ doesn't cover them.
 2. `MY (Malaysia), VN (Vietnam), ID (Indonesia, focus Bali + Raja Ampat/Sorong region), MV (Maldives)`
 3. `AU (Australia), NZ (New Zealand), US (United States), CA (Canada)`
 4. `GB (United Kingdom), IE (Ireland), FR (France), IT (Italy), CH (Switzerland)`
-5. `AE (United Arab Emirates), TR (Turkey)`
+5. `AE (United Arab Emirates), TR (Turkey), PH (Philippines), DE (Germany), EG (Egypt, focus Red Sea dive destinations)`
 
 ## The template (copy this whole block, replace the destinations line, paste into Gemini)
 
@@ -133,7 +133,7 @@ For each country include:
 - Conservative visa_caution — do not claim visa-free without caveat
 - Real emergency numbers as exactly three fields: police, ambulance, fire. Many countries share one number across ambulance and fire (in which case just repeat the same value in both fields) — but several don't (e.g. Vietnam, Indonesia, Maldives each use three distinct numbers), so report the real number for each field rather than combining them.
 - embassy_hk object — nearest HK Economic and Trade Office or equivalent HK/China consular contact
-- dive_emergency object for dive-relevant destinations (Thailand, Maldives, Indonesia, Australia, Malaysia) — DAN regional hotline + nearest hyperbaric chamber note; set applicable:false elsewhere
+- dive_emergency object for dive-relevant destinations (Thailand, Maldives, Indonesia, Australia, Malaysia, Philippines, Egypt) — DAN regional hotline + nearest hyperbaric chamber note; set applicable:false elsewhere
 - Sensible region-specific food recommendation sites (not generic TripAdvisor unless nothing better exists)
 - last_verified: today's date
 

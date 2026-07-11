@@ -793,6 +793,856 @@
           "confidence": "high"
         }
       ]
+    },
+    {
+      "iso2": "AU",
+      "name_en": "Australia",
+      "name_zh": "澳洲",
+      "currency": "AUD",
+      "emergency": {
+        "police": "000",
+        "ambulance": "000",
+        "fire": "000"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Sydney",
+        "phone": "+61-2-9283-3222",
+        "address_en": "Level 1, Hong Kong House, 80 Druitt Street, Sydney, NSW 2000, Australia",
+        "official_url": "https://www.hketosydney.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+61-8-8212-9242",
+        "nearest_hyperbaric_note_en": "Townsville University Hospital (for Great Barrier Reef) and major capital hospitals including Prince of Wales Hospital (Sydney) and The Alfred (Melbourne).",
+        "official_url": "https://danap.org/"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Broadsheet",
+          "url": "https://www.broadsheet.com.au/"
+        },
+        {
+          "label": "Good Food",
+          "url": "https://www.goodfood.com.au/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "I (AS/NZS 3112)",
+        "note": "50Hz frequency; same plug standard as New Zealand"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Not customary in Australia. Leaving a 10% tip for exceptional table service at high-end restaurants is appreciated but entirely optional.",
+        "note_zh": "澳洲不設小費文化。在高級餐廳若服務極佳可給予約10%作鼓勵，但非強制；的士及酒吧亦不需要小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 10,
+        "regions": [],
+        "note_en": "10% Goods and Services Tax (GST) is included in all displayed retail prices by law."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tourist Refund Scheme (TRS)",
+        "typical_rate_percent": 10,
+        "min_purchase_note_en": "Spend AUD 300+ (GST inclusive) at a single business with the same ABN within 60 days of departure",
+        "how_it_works_en": "Purchase eligible goods, obtain a valid paper tax invoice, and carry them in hand luggage (or have them sighted by ABF before checking in) to claim at the airport TRS facility on departure.",
+        "where_to_claim_en": "TRS Facility at international airport departure area (after customs/passport control).",
+        "tips_en": [
+          "Passport name must match invoice for purchases of AUD 1,000 or more",
+          "Must purchase within 60 days of departure",
+          "Get a valid paper tax invoice in English",
+          "Use the TRS mobile app to pre-fill info and generate a QR code to speed up lines",
+          "Declare any goods brought back to Australia for which you claimed a refund"
+        ],
+        "official_url": "https://www.abf.gov.au/entering-and-leaving-australia/tourist-refund-scheme"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong (HKSAR/BNO) passport holders need an Electronic Travel Authority (ETA) applied through the official 'AustralianETA' mobile app prior to travel. Others must verify visa requirements.",
+        "official_url": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/electronic-travel-authority-601"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "australia-eta",
+          "name_en": "Electronic Travel Authority (ETA)",
+          "name_zh": "電子旅行授權 (ETA)",
+          "official_url": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/electronic-travel-authority-601",
+          "applies_to": "eligible_passport_holders",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Must be applied via the official 'AustralianETA' mobile app. AUD 20 processing fee applies.",
+          "notes_zh": "必須透過官方手機應用程式「AustralianETA」申請。需支付20澳元服務費。",
+          "confidence": "high"
+        },
+        {
+          "id": "australia-travel-declaration",
+          "name_en": "Australia Travel Declaration (ATD)",
+          "name_zh": "澳洲旅客申報 (ATD)",
+          "official_url": "https://www.abf.gov.au/entering-and-leaving-australia/crossing-the-border/at-the-border/incoming-passenger-card-(ipc",
+          "applies_to": "select_qantas_flights",
+          "required_level": "optional_pilot",
+          "lead_days_before": 3,
+          "notes_en": "Digital alternative to paper Incoming Passenger Card, currently in pilot phase for select Qantas flights to SYD, BNE, and MEL.",
+          "notes_zh": "紙本入境卡的電子替代方案，目前僅限乘搭指定澳航航班前往悉尼、布里斯班和墨爾本的旅客在Qantas App內填寫。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "NZ",
+      "name_en": "New Zealand",
+      "name_zh": "新西蘭",
+      "currency": "NZD",
+      "emergency": {
+        "police": "111",
+        "ambulance": "111",
+        "fire": "111"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Sydney (covers New Zealand)",
+        "phone": "+61-2-9283-3222",
+        "address_en": "Level 1, Hong Kong House, 80 Druitt Street, Sydney, NSW 2000, Australia",
+        "official_url": "https://www.hketosydney.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Dish Cult",
+          "url": "https://dishcult.com/locations/new-zealand"
+        },
+        {
+          "label": "Cuisine Good Food Guide",
+          "url": "https://cuisinegoodfoodguide.co.nz/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "I (AS/NZS 3112)",
+        "note": "50Hz frequency; same plug standard as Australia"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Tipping is not customary in New Zealand. Wages are covered by local laws, and service is included in the price.",
+        "note_zh": "新西蘭不設小費文化。服務人員薪金受當地法律保障，任何場所均無須支付小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 15,
+        "regions": [],
+        "note_en": "15% Goods and Services Tax (GST) is legally included in all advertised retail prices."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "n/a",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "No tourist refund scheme available",
+        "how_it_works_en": "New Zealand does not have a post-purchase GST refund scheme. To shop GST-free, you must buy from downtown duty-free stores and collect at airport departure gates, or have the store ship items directly overseas.",
+        "where_to_claim_en": "n/a",
+        "tips_en": [
+          "No GST refund desks exist at airports for general retail purchases",
+          "Downtown duty-free shops allow zero-GST purchase if collected at the airport gates"
+        ],
+        "official_url": "https://www.customs.govt.nz/travel-to-and-from-new-zealand/leaving-new-zealand"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong (HKSAR/BNO) passport holders can travel visa-waiver for up to 3 months but MUST obtain an NZeTA (New Zealand Electronic Travel Authority) online before departure.",
+        "official_url": "https://www.immigration.govt.nz/visas/new-zealand-electronic-travel-authority-nzeta/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "nzeta",
+          "name_en": "New Zealand Electronic Travel Authority (NZeTA)",
+          "name_zh": "新西蘭電子旅行授權 (NZeTA)",
+          "official_url": "https://nzeta.immigration.govt.nz/",
+          "applies_to": "visa_waiver_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Must be acquired before departure. Mobile app costs NZD 17, web NZD 23. A NZD 35 International Visitor Conservation and Tourism Levy (IVL) is also charged.",
+          "notes_zh": "出發前必須取得。透過手機App申請（17紐元）較網頁版（23紐元）便宜。另需支付35紐元的國際旅客保育及旅遊稅 (IVL)。",
+          "confidence": "high"
+        },
+        {
+          "id": "nztd",
+          "name_en": "New Zealand Traveller Declaration (NZTD)",
+          "name_zh": "新西蘭旅客申報 (NZTD)",
+          "official_url": "https://www.travellerdeclaration.govt.nz/",
+          "applies_to": "all_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 1,
+          "notes_en": "Submit online or via the NZTD app within 24 hours of starting your journey to New Zealand. Replaces physical paper arrival card.",
+          "notes_zh": "可在開始前往新西蘭旅程前24小時內，透過網頁或NZTD手機應用程式提交。已取代紙本入境申報卡。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "US",
+      "name_en": "United States",
+      "name_zh": "美國",
+      "currency": "USD",
+      "emergency": {
+        "police": "911",
+        "ambulance": "911",
+        "fire": "911"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Washington, D.C.",
+        "phone": "+1-202-331-8947",
+        "address_en": "1520 18th Street, N.W., Washington, D.C. 20036, USA",
+        "official_url": "https://www.hketowashington.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Yelp",
+          "url": "https://www.yelp.com/"
+        },
+        {
+          "label": "OpenTable",
+          "url": "https://www.opentable.com/"
+        },
+        {
+          "label": "Eater",
+          "url": "https://www.eater.com/"
+        }
+      ],
+      "power": {
+        "voltage": "120V",
+        "plugs": "A/B (US-style)",
+        "note": "60Hz frequency."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          15,
+          18,
+          20
+        ],
+        "tip_on": "pre-tax bill",
+        "note_en": "Highly customary and expected. 15-20% is standard for table service, taxis, and bartenders. USD 1-2 per bag for porters and USD 2-5 per night for housekeeping.",
+        "note_zh": "非常重要且屬常規。堂食服務、的士及酒吧標準小費為稅前總額的15%至20%。行李搬運員每件行李1-2美元，酒店客房清潔每天2-5美元。"
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 0,
+        "regions": [
+          {
+            "name": "California",
+            "rate_percent": 7.25,
+            "caveats": "Minimum statewide rate. Local city and county taxes push the total combined rate up to 10.75% (e.g., Los Angeles can be 9.5%)."
+          },
+          {
+            "name": "New York",
+            "rate_percent": 4,
+            "caveats": "State rate. Combined with local county/city sales taxes, the rate is typically 8% to 8.875% (New York City is 8.875%)."
+          },
+          {
+            "name": "Florida",
+            "rate_percent": 6,
+            "caveats": "State rate. Combined state and local discretionary sales surtaxes can reach up to 8%."
+          },
+          {
+            "name": "Nevada",
+            "rate_percent": 6.85,
+            "caveats": "Minimum statewide combined rate. Combined state and local county sales taxes can reach up to 8.375% (e.g., Las Vegas is 8.375%)."
+          },
+          {
+            "name": "Hawaii",
+            "rate_percent": 4,
+            "caveats": "General Excise Tax (GET) rate. Combined with county surcharges, it reaches 4.5% on Oahu and is passed on to consumers."
+          }
+        ],
+        "note_en": "Sales tax is never included in the sticker price; it is added at checkout. Rates vary heavily by state, county, and city. Five states (OR, MT, NH, DE, AK) have no state sales tax."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "n/a",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "No federal tax refund scheme available",
+        "how_it_works_en": "The United States does not have a national sales tax or a federal tourist refund scheme. However, Texas and Louisiana offer state-level sales tax refunds for international visitors through designated brokers.",
+        "where_to_claim_en": "Texas TaxFree Shopping kiosks at major airports/malls; Louisiana Tax Free Shopping redemption centers.",
+        "tips_en": [
+          "No national or federal sales tax refund program exists",
+          "Texas state refund requires physical goods, original paper receipts, passport, I-94/ESTA, and an international flight itinerary",
+          "Texas requires a minimum of USD 10 in tax per store"
+        ],
+        "official_url": "https://www.cbp.gov/travel/international-visitors"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR and BNO passport holders are NOT eligible for the Visa Waiver Program (ESTA) and MUST obtain a physical B1/B2 tourist visa in advance from a US Consulate.",
+        "official_url": "https://travel.state.gov/content/travel/en/us-visas.html"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "esta",
+          "name_en": "Electronic System for Travel Authorization (ESTA)",
+          "name_zh": "電子旅行授權系統 (ESTA)",
+          "official_url": "https://esta.cbp.dhs.gov/",
+          "applies_to": "visa_waiver_program_nationalities",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Only applicable to tourists entering under the Visa Waiver Program (VWP). HKSAR/BNO passport holders are NOT eligible and must apply for a B1/B2 visa. USD 21 fee.",
+          "notes_zh": "僅適用於免簽證計劃 (VWP) 國籍之護照。特區護照及BNO持有人不適用，必須預先申請實體簽證。費用為21美元。",
+          "confidence": "high"
+        },
+        {
+          "id": "mpc",
+          "name_en": "Mobile Passport Control (MPC)",
+          "name_zh": "行動護照管制 (MPC)",
+          "official_url": "https://www.cbp.gov/travel/us-citizens/mobile-passport-control",
+          "applies_to": "returning_esta_travelers_and_canadians",
+          "required_level": "optional_recommended",
+          "lead_days_before": 1,
+          "notes_en": "Free CBP mobile app that allows eligible travelers (like those with an approved ESTA) to submit passport and declaration info digitally to access an express lane at major US airports.",
+          "notes_zh": "美國海關及邊境保護局的免費應用程式，允許符合資格的旅客（如持有已獲批ESTA者）提前提交資料，以使用機場特快通道。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "CA",
+      "name_en": "Canada",
+      "name_zh": "加拿大",
+      "currency": "CAD",
+      "emergency": {
+        "police": "911",
+        "ambulance": "911",
+        "fire": "911"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Toronto",
+        "phone": "+1-416-924-5544",
+        "address_en": "174 St. George Street, Toronto, Ontario, M5R 2M7, Canada",
+        "official_url": "https://www.hketotoronto.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Yelp Canada",
+          "url": "https://www.yelp.ca/"
+        },
+        {
+          "label": "OpenTable Canada",
+          "url": "https://www.opentable.ca/"
+        }
+      ],
+      "power": {
+        "voltage": "120V",
+        "plugs": "A/B (US-style)",
+        "note": "60Hz frequency, identical to the United States."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          15,
+          18,
+          20
+        ],
+        "tip_on": "pre-tax bill",
+        "note_en": "Highly customary and expected. 15-20% is standard for sit-down restaurants, bar service, and taxis. Housekeeping and porters are also typically tipped CAD 2-5.",
+        "note_zh": "普遍預期且屬慣例。堂食服務、的士及酒吧標準小費為稅前總額的15%至20%。酒店清潔人員及行李搬運服務亦建議給予2至5加元小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_added",
+        "default_rate_percent": 5,
+        "regions": [
+          {
+            "name": "British Columbia",
+            "rate_percent": 12,
+            "caveats": "Consists of 5% federal GST and 7% Provincial Sales Tax (PST) shown as separate lines on receipt."
+          },
+          {
+            "name": "Ontario",
+            "rate_percent": 13,
+            "caveats": "13% Harmonized Sales Tax (HST) which blends federal GST and provincial sales tax into one combined tax rate."
+          },
+          {
+            "name": "Quebec",
+            "rate_percent": 14.975,
+            "caveats": "Consists of 5% federal GST and 9.975% Quebec Sales Tax (QST)."
+          },
+          {
+            "name": "Alberta",
+            "rate_percent": 5,
+            "caveats": "Charges 5% federal GST only. No provincial sales tax."
+          }
+        ],
+        "note_en": "Federal GST of 5% applies nationwide. Provinces add Provincial Sales Tax (PST/QST) or combine them into a Harmonized Sales Tax (HST) ranging from 5% to 15% total."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "n/a",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "No tourist refund scheme available",
+        "how_it_works_en": "Canada abolished its Visitor Rebate Program. Currently, there is no tax refund scheme for international tourists on retail purchases or accommodation.",
+        "where_to_claim_en": "n/a",
+        "tips_en": [
+          "No GST/HST refund options exist at Canadian airports",
+          "All retail consumption taxes paid are final for international visitors"
+        ],
+        "official_url": "https://www.canada.ca/en/revenue-agency.html"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong (HKSAR/BNO) passport holders can travel visa-exempt but MUST obtain an Electronic Travel Authorization (eTA) online before departure by air.",
+        "official_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/eta.html"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "canada-eta",
+          "name_en": "Electronic Travel Authorization (eTA)",
+          "name_zh": "電子旅行證 (eTA)",
+          "official_url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/eta.html",
+          "applies_to": "visa_exempt_air_travelers",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Required for visa-exempt foreign nationals (including HKSAR and BNO passports) flying to Canada. Valid for 5 years or until passport expires. CAD 7 fee applies.",
+          "notes_zh": "免簽證外籍旅客（包括特區護照及BNO持有人）乘搭飛機前往加拿大必須持有。有效期為5年或至護照失效為止。費用為7加元。",
+          "confidence": "high"
+        },
+        {
+          "id": "arrivecan",
+          "name_en": "ArriveCAN (Advance Declaration)",
+          "name_zh": "ArriveCAN (提前申報)",
+          "official_url": "https://www.canada.ca/en/border-services-agency/services/arrivecan.html",
+          "applies_to": "all_air_arrivals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 3,
+          "notes_en": "Optional but highly recommended digital tool to submit customs and immigration declarations up to 72 hours in advance to use fast-track express lanes at major Canadian airports.",
+          "notes_zh": "可選但強烈推薦的工具。可在抵達前72小時內提前提交海關和入境申報，以在加拿大主要機場使用快速通道。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "GB",
+      "name_en": "United Kingdom",
+      "name_zh": "英國",
+      "currency": "GBP",
+      "emergency": {
+        "police": "999",
+        "ambulance": "999",
+        "fire": "999"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, London",
+        "phone": "+44-20-7499-9821",
+        "address_en": "18 Bedford Square, London WC1B 3JA, United Kingdom",
+        "official_url": "https://www.hketolondon.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "OpenTable",
+          "url": "https://www.opentable.co.uk/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "G",
+        "note": "Standard UK 3-pin rectangular plugs"
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          10,
+          12,
+          15
+        ],
+        "tip_on": "pre-tax",
+        "note_en": "10-15% expected if a 'discretionary service charge' is not already added to the bill.",
+        "note_zh": "如果帳單未自動加入「酌情服務費」(discretionary service charge)，通常需支付10-15%的小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 20,
+        "regions": [],
+        "note_en": "VAT is included in the displayed retail prices."
+      },
+      "tax_refund": {
+        "available": false,
+        "scheme_name_en": "VAT Retail Export Scheme (Abolished)",
+        "typical_rate_percent": 0,
+        "min_purchase_note_en": "n/a",
+        "how_it_works_en": "Tax-free shopping for tourists taking items in luggage was abolished on Jan 1, 2021.",
+        "where_to_claim_en": "n/a",
+        "tips_en": [
+          "No longer available for leisure tourists carrying goods home."
+        ],
+        "official_url": "https://www.gov.uk/tax-on-shopping/taxfree-shopping"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders are visa-exempt for short visits, but require an ETA. Check specific rules.",
+        "official_url": "https://www.gov.uk/check-uk-visa"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "uk-eta",
+          "name_en": "Electronic Travel Authorisation (ETA)",
+          "name_zh": "英國電子旅行許可 (ETA)",
+          "official_url": "https://www.gov.uk/guidance/apply-for-an-electronic-travel-authorisation-eta",
+          "applies_to": "visa_exempt_nationals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Mandatory for HKSAR passport holders. Valid for 2 years. Applies to all ages including infants.",
+          "notes_zh": "香港特區護照持有人必須申請。有效期2年，所有年齡（包括嬰兒）均需單獨申請。",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "iso2": "IE",
+      "name_en": "Ireland",
+      "name_zh": "愛爾蘭",
+      "currency": "EUR",
+      "emergency": {
+        "police": "112",
+        "ambulance": "112",
+        "fire": "112"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Brussels (Covers Ireland)",
+        "phone": "+32-2-775-0088",
+        "address_en": "Rue d'Arlon 118, 1040 Brussels, Belgium",
+        "official_url": "https://www.hongkong-eu.org/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "OpenTable",
+          "url": "https://www.opentable.ie/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "G",
+        "note": "Same 3-pin rectangular plugs as the UK"
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          10,
+          15
+        ],
+        "tip_on": "pre-tax",
+        "note_en": "10-15% customary in restaurants if a service charge is not included. Not expected at pubs for drinks.",
+        "note_zh": "在餐廳若未收取服務費，通常支付10-15%小費。在酒吧點酒水通常無需給小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 23,
+        "regions": [],
+        "note_en": "Standard VAT rate of 23% is included in retail prices."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Retail Export Scheme",
+        "typical_rate_percent": 15,
+        "min_purchase_note_en": "€75 per receipt minimum",
+        "how_it_works_en": "Request tax-free form in store; validate at Customs or self-service drop box at the airport.",
+        "where_to_claim_en": "Airport customs desk or designated drop boxes before departure",
+        "tips_en": [
+          "Ensure goods remain unused and accessible for inspection",
+          "Net return is usually 11-15% after admin fees"
+        ],
+        "official_url": "https://www.revenue.ie/en/vat/retail-export-scheme/index.aspx"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders do not need a visa or ETA for Ireland, but transiting the UK requires a UK ETA.",
+        "official_url": "https://www.irishimmigration.ie/"
+      },
+      "pre_arrival_forms": []
+    },
+    {
+      "iso2": "FR",
+      "name_en": "France",
+      "name_zh": "法國",
+      "currency": "EUR",
+      "emergency": {
+        "police": "17",
+        "ambulance": "15",
+        "fire": "18"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Brussels (Covers France)",
+        "phone": "+32-2-775-0088",
+        "address_en": "Rue d'Arlon 118, 1040 Brussels, Belgium",
+        "official_url": "https://www.hongkong-eu.org/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "TheFork",
+          "url": "https://www.thefork.fr/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "C/E",
+        "note": "Europlug (C) or French plug with grounding pin (E)"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Service is legally included ('service compris'). Tipping is not expected; leaving small change is optional.",
+        "note_zh": "法律規定帳單已包含服務費（Service compris）。無需按比例支付小費，留下少許零錢僅為額外心意。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 20,
+        "regions": [],
+        "note_en": "VAT (TVA) of 20% included in listed prices."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Détaxe",
+        "typical_rate_percent": 12,
+        "min_purchase_note_en": "€100.01 minimum; can aggregate receipts using digital apps",
+        "how_it_works_en": "Scan tax-free forms at PABLO kiosks at the airport before security.",
+        "where_to_claim_en": "PABLO self-service kiosks at CDG and other major exit points",
+        "tips_en": [
+          "Green screen on PABLO means validation successful without customs officer",
+          "Goods must be exported within 3 months"
+        ],
+        "official_url": "https://www.douane.gouv.fr/fiche/eligibility-tax-free-shopping-france"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders currently enjoy 90-day visa-free access, but ETIAS will eventually be required.",
+        "official_url": "https://france-visas.gouv.fr/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "etias",
+          "name_en": "European Travel Information and Authorisation System (ETIAS)",
+          "name_zh": "歐洲旅行信息和授權系統 (ETIAS)",
+          "official_url": "https://travel-europe.europa.eu/etias_en",
+          "applies_to": "visa_exempt_nationals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 4,
+          "notes_en": "Deployment delayed to 2027 due to EES technical issues. Currently not enforced for HKSAR citizens.",
+          "notes_zh": "由於技術延遲，預計推遲至2027年實施。目前對香港特區護照持有人尚未強制執行。",
+          "confidence": "low"
+        }
+      ]
+    },
+    {
+      "iso2": "IT",
+      "name_en": "Italy",
+      "name_zh": "意大利",
+      "currency": "EUR",
+      "emergency": {
+        "police": "113",
+        "ambulance": "118",
+        "fire": "115"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Brussels (Covers Italy)",
+        "phone": "+32-2-775-0088",
+        "address_en": "Rue d'Arlon 118, 1040 Brussels, Belgium",
+        "official_url": "https://www.hongkong-eu.org/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "TheFork",
+          "url": "https://www.thefork.it/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "C/F/L",
+        "note": "Type L (three pins in a row) is standard, but Type C/F common"
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "A fixed cover charge ('coperto', €2-€5) is applied automatically. Percentage tipping is not expected.",
+        "note_zh": "餐廳入座後通常會自動收取固定座位費（Coperto，約2至5歐元）。無需按比例支付小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 22,
+        "regions": [],
+        "note_en": "VAT (IVA) of 22% included in listed prices."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax Free Refund (OTELLO 2.0)",
+        "typical_rate_percent": 15,
+        "min_purchase_note_en": "€70.01 per store per day",
+        "how_it_works_en": "Retailer issues digital invoice via OTELLO using your passport. Validate at OTELLO kiosks/desks at airport.",
+        "where_to_claim_en": "Airport refund operator desks or customs digital kiosks",
+        "tips_en": [
+          "Unique validation allows single scan for multiple invoices under one passport",
+          "Proof of export deadline extended to 6 months"
+        ],
+        "official_url": "https://www.adm.gov.it/portale/ee/citizen/"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders currently enjoy 90-day visa-free access, but ETIAS will eventually be required.",
+        "official_url": "https://vistoperitalia.esteri.it/home/en"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "etias",
+          "name_en": "European Travel Information and Authorisation System (ETIAS)",
+          "name_zh": "歐洲旅行信息和授權系統 (ETIAS)",
+          "official_url": "https://travel-europe.europa.eu/etias_en",
+          "applies_to": "visa_exempt_nationals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 4,
+          "notes_en": "Deployment delayed to 2027 due to EES technical issues. Currently not enforced for HKSAR citizens.",
+          "notes_zh": "由於技術延遲，預計推遲至2027年實施。目前對香港特區護照持有人尚未強制執行。",
+          "confidence": "low"
+        }
+      ]
+    },
+    {
+      "iso2": "CH",
+      "name_en": "Switzerland",
+      "name_zh": "瑞士",
+      "currency": "CHF",
+      "emergency": {
+        "police": "117",
+        "ambulance": "144",
+        "fire": "118"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Berlin (Covers Switzerland)",
+        "phone": "+49-30-22-66-77-228",
+        "address_en": "Jägerstrasse 33, 10117 Berlin, Germany",
+        "official_url": "https://www.hketoberlin.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "TheFork",
+          "url": "https://www.thefork.ch/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "J/C",
+        "note": "Type J (three pins) is standard; Type C often works."
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0
+        ],
+        "tip_on": "n/a",
+        "note_en": "Service charge legally included. Tipping 15-20% is highly unusual; rounding up the bill is a common courtesy.",
+        "note_zh": "法律規定帳單已包含服務費。高額小費非常罕見，通常只需將帳單金額向上取整數即可。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 8.1,
+        "regions": [],
+        "note_en": "Standard VAT (MWST/TVA) is 8.1% (increasing to 8.8% in 2028), included in prices."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax-Free Shopping",
+        "typical_rate_percent": 6,
+        "min_purchase_note_en": "300 CHF per transaction",
+        "how_it_works_en": "Process form at Swiss airport customs, or MUST obtain physical Swiss customs stamp at border before exiting by land/rail.",
+        "where_to_claim_en": "Swiss airports or land border crossing checkpoints prior to exiting Switzerland",
+        "tips_en": [
+          "CRITICAL: If leaving via train/car into the EU, get a Swiss customs stamp before crossing. EU customs cannot validate Swiss goods.",
+          "Net return is only 4-6%"
+        ],
+        "official_url": "https://www.bazg.admin.ch/bazg/en/home/information-individuals/travel-and-purchases--allowances-and-duty-free-limit/exportation-from-switzerland/tax-free-items.html"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passport holders currently enjoy 90-day visa-free access, but ETIAS will eventually be required.",
+        "official_url": "https://www.sem.admin.ch/sem/en/home/themen/einreise/merkblatt_einreise.html"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "etias",
+          "name_en": "European Travel Information and Authorisation System (ETIAS)",
+          "name_zh": "歐洲旅行信息和授權系統 (ETIAS)",
+          "official_url": "https://travel-europe.europa.eu/etias_en",
+          "applies_to": "visa_exempt_nationals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 4,
+          "notes_en": "Deployment delayed to 2027 due to EES technical issues. Currently not enforced for HKSAR citizens.",
+          "notes_zh": "由於技術延遲，預計推遲至2027年實施。目前對香港特區護照持有人尚未強制執行。",
+          "confidence": "low"
+        }
+      ]
     }
   ],
   "airports": [
@@ -905,6 +1755,105 @@
       "typical_minutes": 10,
       "international_departure_buffer_hours": 3,
       "assumptions_en": "Transit time strictly reflects travel from the airport island (Hulhulé) to Malé City. Does NOT account for lengthy, complex seaplane or speedboat transfers to private resort atolls."
+    },
+    {
+      "iata": "SYD",
+      "name": "Sydney Kingsford Smith Airport",
+      "city": "Sydney",
+      "country_iso2": "AU",
+      "reference_point_en": "Sydney Central Station",
+      "typical_transport_en": "Airport Link Train (T8 Line)",
+      "typical_minutes": 13,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Sydney Central Station via the direct T8 Airport Link train; does not account for peak rail disruptions, security queues, or heavy luggage transit time."
+    },
+    {
+      "iata": "AKL",
+      "name": "Auckland Airport",
+      "city": "Auckland",
+      "country_iso2": "NZ",
+      "reference_point_en": "SkyCity Bus Terminal (Downtown Auckland)",
+      "typical_transport_en": "SkyDrive Express Bus",
+      "typical_minutes": 40,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From SkyCity Bus Terminal (Hobson Street) via the non-stop SkyDrive Express bus; highly subject to traffic conditions on the Southern Motorway during rush hours."
+    },
+    {
+      "iata": "JFK",
+      "name": "John F. Kennedy International Airport",
+      "city": "New York",
+      "country_iso2": "US",
+      "reference_point_en": "New York Penn Station (Manhattan)",
+      "typical_transport_en": "AirTrain JFK + LIRR (Long Island Rail Road)",
+      "typical_minutes": 35,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Penn Station via LIRR to Jamaica Station, transferring to the AirTrain JFK; does not account for terminal walking distances, check-in, or track transfer wait times."
+    },
+    {
+      "iata": "YVR",
+      "name": "Vancouver International Airport",
+      "city": "Vancouver",
+      "country_iso2": "CA",
+      "reference_point_en": "Waterfront Station (Downtown Vancouver)",
+      "typical_transport_en": "Canada Line SkyTrain",
+      "typical_minutes": 26,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "From Waterfront Station via the direct Canada Line rapid transit; immune to road traffic, highly reliable. Does not include walking time inside terminals."
+    },
+    {
+      "iata": "LHR",
+      "name": "London Heathrow",
+      "city": "London",
+      "country_iso2": "GB",
+      "reference_point_en": "London Paddington",
+      "typical_transport_en": "Heathrow Express",
+      "typical_minutes": 15,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Non-stop from Terminals 2 & 3; add 6 mins for Terminal 5. Does not account for ticketing or walking time."
+    },
+    {
+      "iata": "DUB",
+      "name": "Dublin Airport",
+      "city": "Dublin",
+      "country_iso2": "IE",
+      "reference_point_en": "O'Connell Street / City Centre",
+      "typical_transport_en": "Dublin Express (Routes 782/784)",
+      "typical_minutes": 30,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Coach transit time assumes optimal conditions via Dublin Port Tunnel; highly susceptible to peak-hour traffic congestion."
+    },
+    {
+      "iata": "CDG",
+      "name": "Paris Charles de Gaulle",
+      "city": "Paris",
+      "country_iso2": "FR",
+      "reference_point_en": "Gare du Nord",
+      "typical_transport_en": "RER B",
+      "typical_minutes": 34,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Direct public rail transit; not live traffic. Travelers should monitor for frequent track maintenance and pickpockets."
+    },
+    {
+      "iata": "FCO",
+      "name": "Rome Fiumicino",
+      "city": "Rome",
+      "country_iso2": "IT",
+      "reference_point_en": "Roma Termini",
+      "typical_transport_en": "Leonardo Express",
+      "typical_minutes": 32,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Non-stop dedicated rail; immune to regular traffic and generally bypasses local transport strikes."
+    },
+    {
+      "iata": "ZRH",
+      "name": "Zurich Airport",
+      "city": "Zurich",
+      "country_iso2": "CH",
+      "reference_point_en": "Zurich Hauptbahnhof (HB)",
+      "typical_transport_en": "SBB Train",
+      "typical_minutes": 11,
+      "international_departure_buffer_hours": 3,
+      "assumptions_en": "Subterranean rail transit from airport station; runs highly frequently. Time averages 9-11 minutes."
     }
   ]
 }

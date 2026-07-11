@@ -7,9 +7,11 @@ locally with a visible staleness indicator.
 
 ## Deploying (GitHub Pages, no local install needed)
 
-1. Create a new GitHub repo named `travel-toolkit` (or update `base` in
-   `vite.config.ts` and `start_url`/`scope` in the PWA manifest block to match
-   whatever name you pick).
+1. Create a new GitHub repo (this project is configured for a repo named
+   `travel` — if you rename it, update `base` in `vite.config.ts` and
+   `start_url`/`scope` in the PWA manifest block to match, or you'll get a
+   blank page: Vite bakes the repo name into every asset URL at build time,
+   so a mismatch there means the JS/CSS 404 silently and React never mounts).
 2. Push this folder's contents to the repo's `main` branch — the GitHub web
    UI's "upload files" flow works fine for this, no terminal required.
 3. In the repo, go to **Settings → Pages** and set Source to **GitHub
@@ -48,14 +50,15 @@ HK embassy/consulate contact, dive emergency contacts where relevant, power,
 food links, visa summary, pre-arrival forms — all sourced from the same
 country DB).
 
-**Country DB status:** 9 of 19 planned destinations loaded (JP, KR, TW, TH,
-SG, MY, VN, ID, MV — batches 1–2 from `docs/country-db-gemini-prompt.md`).
-Batches 3–5 (Oceania/North America, Europe incl. Ireland, Middle East)
-pending — Gemini quota-limited, resume when it resets. The prompt's
-`emergency` schema was widened from `{police, ambulance_fire}` to
-`{police, ambulance, fire}` after batch 2 showed several countries (Vietnam,
-Indonesia, Maldives) use three genuinely different numbers — already fixed
-in the shipped data and the prompt template for remaining batches.
+**Country DB status:** 18 of 19 planned destinations loaded (all except
+AE/TR — batch 5, pending Gemini quota reset). Two recurring cleanup steps
+needed on every batch handoff so far, both handled automatically now rather
+than relied on via prompt wording: the merge process breaks the JSON
+structure at each batch boundary (fixed with a brace-matching recovery pass
+that doesn't depend on knowing where the breaks are), and Gemini wraps a
+chunk of URLs in markdown link syntax regardless of being told not to
+(stripped automatically). Batch 5, when it lands, will get the same
+treatment.
 
 Not yet built: flights, hotels, bookings feed, dive certs, document vault,
 settings screen, PWA icons (currently referenced in the manifest but not
