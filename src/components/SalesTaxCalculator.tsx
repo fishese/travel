@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { computeSalesTax, type TaxMode } from '../lib/tax'
 import { getCountry } from '../lib/countries'
-import { useCurrentCountry } from './CountrySelector'
+import { useCurrentCountry } from '../lib/currentCountry'
 import { Collapsible } from './Collapsible'
 
 // Generic reference rates — used when no country is selected, or the

@@ -1,9 +1,5 @@
 import { listCountries } from '../lib/countries'
-import { useSetting } from '../lib/useSetting'
-
-export function useCurrentCountry() {
-  return useSetting('travel_current_country', '')
-}
+import { useCurrentCountry } from '../lib/currentCountry'
 
 export function CountrySelector() {
   const [iso2, setIso2] = useCurrentCountry()

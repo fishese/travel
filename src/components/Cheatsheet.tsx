@@ -1,5 +1,5 @@
 import { getCountry } from '../lib/countries'
-import { useCurrentCountry } from './CountrySelector'
+import { useCurrentCountry } from '../lib/currentCountry'
 import { Collapsible } from './Collapsible'
 
 export function Cheatsheet() {

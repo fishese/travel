@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { computeTip } from '../lib/tax'
 import { getCountry } from '../lib/countries'
-import { useCurrentCountry } from './CountrySelector'
+import { useCurrentCountry } from '../lib/currentCountry'
 import { Collapsible } from './Collapsible'
 
 // Generic fallback presets — used when no country is selected, or the
