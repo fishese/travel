@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  getIPLocation,
   getGPSLocation,
   searchCity,
   type GeoLocation,
@@ -13,6 +14,12 @@ import {
 } from '../lib/weather'
 import { useSetting } from '../lib/useSetting'
 
+const SOURCE_LABEL: Record<GeoLocation['source'], string> = {
+  ip: 'via IP (approximate)',
+  gps: 'via GPS',
+  manual: 'manual',
+}
+
 export function WeatherCard() {
   const [location, setLocation] = useSetting<GeoLocation | null>('travel_weather_location', null)
   const [cache, setCache] = useState<WeatherCache | null>(null)
@@ -20,12 +27,37 @@ export function WeatherCard() {
   const [offline, setOffline] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [locating, setLocating] = useState(false)
 
   const [gpsLoading, setGpsLoading] = useState(false)
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<CitySearchResult[]>([])
   const [pickerOpen, setPickerOpen] = useState(false)
+
+  // First-run default: silently try IP-based location (no permission
+  // prompt) if nothing is set yet. Only runs once — after that, the
+  // location is sticky until the person explicitly changes it via GPS or
+  // manual search, so this never overrides a deliberate choice.
+  useEffect(() => {
+    if (location) return
+    let cancelled = false
+    setLocating(true)
+    getIPLocation()
+      .then((loc) => {
+        if (!cancelled) setLocation(loc)
+      })
+      .catch(() => {
+        // silent — this is just a best-effort default; the picker stays
+        // open and GPS/manual search are right there as explicit fallbacks
+      })
+      .finally(() => {
+        if (!cancelled) setLocating(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [location, setLocation])
 
   useEffect(() => {
     if (!location) return
@@ -77,7 +109,7 @@ export function WeatherCard() {
   }
 
   function selectCity(r: CitySearchResult) {
-    setLocation({ lat: r.lat, lon: r.lon, label: r.label })
+    setLocation({ lat: r.lat, lon: r.lon, label: r.label, source: 'manual' })
     setResults([])
     setQuery('')
     setPickerOpen(false)
@@ -89,7 +121,10 @@ export function WeatherCard() {
     <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm mt-3">
       {location && !showPicker && (
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-semibold truncate pr-2">{location.label}</h2>
+          <h2 className="text-sm font-semibold truncate pr-2">
+            {location.label}
+            <span className="text-xs font-normal text-[var(--color-muted)]"> · {SOURCE_LABEL[location.source]}</span>
+          </h2>
           <button
             type="button"
             onClick={() => setPickerOpen(true)}
@@ -98,6 +133,10 @@ export function WeatherCard() {
             Change
           </button>
         </div>
+      )}
+
+      {!location && locating && (
+        <p className="text-sm text-[var(--color-muted)] mb-2">Finding your approximate location…</p>
       )}
 
       {showPicker && (

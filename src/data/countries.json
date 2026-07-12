@@ -1658,19 +1658,19 @@
         "name_en": "Chinese Embassy in Manila",
         "phone": "+63-2-82311033",
         "address_en": "330 Sen. Gil J. Puyat Avenue, Makati City, Metro Manila",
-        "official_url": "[http://ph.china-embassy.gov.cn/eng/](http://ph.china-embassy.gov.cn/eng/)"
+        "official_url": "http://ph.china-embassy.gov.cn/eng/"
       },
       "dive_emergency": {
         "applicable": true,
         "dan_hotline": "+63-2-8231-3601",
         "nearest_hyperbaric_note_en": "Hyperbaric chambers are available at the Lung Center of the Philippines in Quezon City, the TIEZA Building in Mactan-Cebu, and the Sea Dive Resort in Coron.",
-        "official_url": "[https://www.danap.org/](https://www.danap.org/)"
+        "official_url": "https://www.danap.org/"
       },
       "last_verified": "2026-07-11",
       "food_links": [
         {
           "label": "Traveloka Guide",
-          "url": "[https://www.traveloka.com/](https://www.traveloka.com/)"
+          "url": "https://www.traveloka.com/"
         }
       ],
       "power": {
@@ -1704,19 +1704,19 @@
         "tips_en": [
           "Eligible goods must be physically taken out of the Philippines within 60 days of purchase."
         ],
-        "official_url": "[https://www.bir.gov.ph/](https://www.bir.gov.ph/)"
+        "official_url": "https://www.bir.gov.ph/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "Hong Kong SAR passport holders generally enjoy visa-free entry for up to 14 days, but strictly require a return or onward flight ticket within 14 days and a passport valid for at least six months.",
-        "official_url": "[https://evisa.gov.ph/page/policy](https://evisa.gov.ph/page/policy)"
+        "official_url": "https://evisa.gov.ph/page/policy"
       },
       "pre_arrival_forms": [
         {
           "id": "ph-etravel",
           "name_en": "eTravel Pass",
           "name_zh": "eTravel Pass",
-          "official_url": "[https://etravel.gov.ph/](https://etravel.gov.ph/)",
+          "official_url": "https://etravel.gov.ph/",
           "applies_to": "all_international_arrivals",
           "required_level": "mandatory",
           "lead_days_before": 3,
@@ -1740,7 +1740,7 @@
         "name_en": "Hong Kong Economic and Trade Office, Berlin",
         "phone": "+49 (0) 30 22 66 77 228",
         "address_en": "Jägerstraße 33, 10117 Berlin, Germany",
-        "official_url": "[https://www.hketoberlin.gov.hk/](https://www.hketoberlin.gov.hk/)"
+        "official_url": "https://www.hketoberlin.gov.hk/"
       },
       "dive_emergency": {
         "applicable": false,
@@ -1752,7 +1752,7 @@
       "food_links": [
         {
           "label": "Yelp Germany",
-          "url": "[https://www.yelp.de/](https://www.yelp.de/)"
+          "url": "https://www.yelp.de/"
         }
       ],
       "power": {
@@ -1787,19 +1787,19 @@
           "Goods must be strictly unused, still in original packaging, and exported within three months.",
           "After processing commissions, the net cash return generally ranges from 10% to 14%."
         ],
-        "official_url": "[https://www.zoll.de/](https://www.zoll.de/)"
+        "official_url": "https://www.zoll.de/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "Hong Kong SAR passports grant visa-free entry for up to 90 days in any 180-day period. Note that EES biometric registration is now active at all Schengen borders, and ETIAS will become mandatory in Q4 2026.",
-        "official_url": "[https://travel-europe.europa.eu/etias](https://travel-europe.europa.eu/etias)"
+        "official_url": "https://travel-europe.europa.eu/etias"
       },
       "pre_arrival_forms": [
         {
           "id": "eu-etias",
           "name_en": "ETIAS",
           "name_zh": "ETIAS (歐洲旅行資訊及授權系統)",
-          "official_url": "[https://travel-europe.europa.eu/etias](https://travel-europe.europa.eu/etias)",
+          "official_url": "https://travel-europe.europa.eu/etias",
           "applies_to": "visa_exempt_nationals",
           "required_level": "optional_recommended",
           "lead_days_before": 0,
@@ -1823,19 +1823,19 @@
         "name_en": "Chinese Embassy in Cairo",
         "phone": "00202-27361219",
         "address_en": "14 Bahgat Aly Street, Zamalek, Cairo, Egypt",
-        "official_url": "[http://eg.china-embassy.gov.cn/eng/](http://eg.china-embassy.gov.cn/eng/)"
+        "official_url": "http://eg.china-embassy.gov.cn/eng/"
       },
       "dive_emergency": {
         "applicable": true,
         "dan_hotline": "+39 06 4211 8685",
         "nearest_hyperbaric_note_en": "Hyperbaric chambers are accessible in Sharm el Sheikh (+20 69 360 0865), Dahab (+20 10 143 3325), and Hurghada (+20 10 218 7550).",
-        "official_url": "[https://dan.org/](https://dan.org/)"
+        "official_url": "https://dan.org/"
       },
       "last_verified": "2026-07-11",
       "food_links": [
         {
           "label": "Elmenus",
-          "url": "[https://www.elmenus.com/](https://www.elmenus.com/)"
+          "url": "https://www.elmenus.com/"
         }
       ],
       "power": {
@@ -1869,19 +1869,19 @@
         "tips_en": [
           "Recent 'White List' incentives aim to speed up refunds, but largely target commercial exporters rather than leisure tourists."
         ],
-        "official_url": "[https://eta.gov.eg/](https://eta.gov.eg/)"
+        "official_url": "https://eta.gov.eg/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "Hong Kong SAR passports are permitted 90 days of visa-free travel. However, ensure passports remain valid for at least six months from arrival with two blank pages.",
-        "official_url": "[https://www.visa2egypt.gov.eg/](https://www.visa2egypt.gov.eg/)"
+        "official_url": "https://www.visa2egypt.gov.eg/"
       },
       "pre_arrival_forms": [
         {
           "id": "eg-digital-arrival",
           "name_en": "Digital Immigration Card / e-Visa",
           "name_zh": "數位入境卡 / 電子簽證",
-          "official_url": "[https://www.visa2egypt.gov.eg/](https://www.visa2egypt.gov.eg/)",
+          "official_url": "https://www.visa2egypt.gov.eg/",
           "applies_to": "all_international_arrivals",
           "required_level": "mandatory",
           "lead_days_before": 2,
@@ -1905,7 +1905,7 @@
         "name_en": "Chinese Consulate General in Barcelona",
         "phone": "0034-93-2541199",
         "address_en": "No.34, Avda. Tibidabo, 08022-Barcelona, Spain",
-        "official_url": "[http://barcelona.china-consulate.gov.cn/](http://barcelona.china-consulate.gov.cn/)"
+        "official_url": "http://barcelona.china-consulate.gov.cn/"
       },
       "dive_emergency": {
         "applicable": false,
@@ -1917,7 +1917,7 @@
       "food_links": [
         {
           "label": "TheFork Spain",
-          "url": "[https://www.thefork.es/](https://www.thefork.es/)"
+          "url": "https://www.thefork.es/"
         }
       ],
       "power": {
@@ -1952,19 +1952,19 @@
           "Actual net returns average 15-17% due to the administrative fees charged by refund operators.",
           "Items must be exported out of the EU unused within 3 months."
         ],
-        "official_url": "[https://sede.agenciatributaria.gob.es/](https://sede.agenciatributaria.gob.es/)"
+        "official_url": "https://sede.agenciatributaria.gob.es/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "Visa-free entry up to 90 days in any 180-day period. Note that EES biometrics capture is active, and border guards may demand proof of €122.10 daily financial means.",
-        "official_url": "[https://www.exteriores.gob.es/](https://www.exteriores.gob.es/)"
+        "official_url": "https://www.exteriores.gob.es/"
       },
       "pre_arrival_forms": [
         {
           "id": "eu-etias",
           "name_en": "ETIAS",
           "name_zh": "ETIAS (歐洲旅行資訊及授權系統)",
-          "official_url": "[https://travel-europe.europa.eu/etias](https://travel-europe.europa.eu/etias)",
+          "official_url": "https://travel-europe.europa.eu/etias",
           "applies_to": "visa_exempt_nationals",
           "required_level": "optional_recommended",
           "lead_days_before": 0,
@@ -1988,7 +1988,7 @@
         "name_en": "Chinese Embassy in Mexico City",
         "phone": "+52-55-56160609",
         "address_en": "Av. San Jerónimo 217 B, Colonia La Otra Banda, 01090 México, D.F.",
-        "official_url": "[https://mx.china-embassy.gov.cn/esp/](https://mx.china-embassy.gov.cn/esp/)"
+        "official_url": "https://mx.china-embassy.gov.cn/esp/"
       },
       "dive_emergency": {
         "applicable": false,
@@ -2000,7 +2000,7 @@
       "food_links": [
         {
           "label": "OpenTable Mexico",
-          "url": "[https://www.opentable.com.mx/](https://www.opentable.com.mx/)"
+          "url": "https://www.opentable.com.mx/"
         }
       ],
       "power": {
@@ -2046,19 +2046,19 @@
           "The system is highly paper-centric without automated DIVA-style kiosks.",
           "Cash payouts are strictly capped at 10,000 MXN (or 50% of the refund); the remainder must be deposited electronically."
         ],
-        "official_url": "[https://www.sat.gob.mx/](https://www.sat.gob.mx/)"
+        "official_url": "https://www.sat.gob.mx/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "HK SAR passports enter visa-free (up to 180 days theoretically). However, immigration officers heavily scrutinize itineraries and actively grant shorter stays based entirely on the return flight dates shown.",
-        "official_url": "[https://consulmex.sre.gob.mx/](https://consulmex.sre.gob.mx/)"
+        "official_url": "https://consulmex.sre.gob.mx/"
       },
       "pre_arrival_forms": [
         {
           "id": "mx-fmmd",
           "name_en": "Digital Forma Migratoria Múltiple (FMMd)",
           "name_zh": "數位多次入境表格 (FMMd)",
-          "official_url": "[https://www.inm.gob.mx/spublic/portal/inmex.html](https://www.inm.gob.mx/spublic/portal/inmex.html)",
+          "official_url": "https://www.inm.gob.mx/spublic/portal/inmex.html",
           "applies_to": "all_international_arrivals",
           "required_level": "mandatory",
           "lead_days_before": 0,
@@ -2070,7 +2070,7 @@
           "id": "mx-customs",
           "name_en": "Electronic Customs Declaration",
           "name_zh": "電子海關申報",
-          "official_url": "[https://www.anam.gob.mx/declaracion-de-mercancia-ing/](https://www.anam.gob.mx/declaracion-de-mercancia-ing/)",
+          "official_url": "https://www.anam.gob.mx/declaracion-de-mercancia-ing/",
           "applies_to": "all_international_arrivals",
           "required_level": "mandatory",
           "lead_days_before": 1,
@@ -2094,7 +2094,7 @@
         "name_en": "Chinese Embassy in Suva",
         "phone": "+679 330 0215",
         "address_en": "183 Queen Elizabeth Drive, Nasese, Suva, Fiji",
-        "official_url": "[http://fj.chineseembassy.org/chn/](http://fj.chineseembassy.org/chn/)"
+        "official_url": "http://fj.chineseembassy.org/chn/"
       },
       "dive_emergency": {
         "applicable": false,
@@ -2106,7 +2106,7 @@
       "food_links": [
         {
           "label": "Fiji Travel Dining Guide",
-          "url": "[https://www.fiji.travel/](https://www.fiji.travel/)"
+          "url": "https://www.fiji.travel/"
         }
       ],
       "power": {
@@ -2139,19 +2139,19 @@
         "tips_en": [
           "Goods must be exported from Fiji within 2 months of the transaction."
         ],
-        "official_url": "[https://frcs.org.fj/our-services/customs/travellers/departing-the-country/tourist-vat-refund-scheme-tvrs/](https://frcs.org.fj/our-services/customs/travellers/departing-the-country/tourist-vat-refund-scheme-tvrs/)"
+        "official_url": "https://frcs.org.fj/our-services/customs/travellers/departing-the-country/tourist-vat-refund-scheme-tvrs/"
       },
       "visa_caution": {
         "level": "check_requirements",
         "summary": "Hong Kong SAR passport holders generally benefit from visa-exempt visitor permits valid for up to 4 months. Valid onward or return tickets are strictly mandated.",
-        "official_url": "[https://www.immigration.gov.fj/](https://www.immigration.gov.fj/)"
+        "official_url": "https://www.immigration.gov.fj/"
       },
       "pre_arrival_forms": [
         {
           "id": "fj-arrival-card",
           "name_en": "Fiji Passenger Arrival Card",
           "name_zh": "斐濟入境卡",
-          "official_url": "[https://www.immigration.gov.fj/](https://www.immigration.gov.fj/)",
+          "official_url": "https://www.immigration.gov.fj/",
           "applies_to": "all_international_arrivals",
           "required_level": "mandatory",
           "lead_days_before": 0,

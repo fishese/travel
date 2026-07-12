@@ -7,9 +7,9 @@ function App() {
   return (
     <main className="min-h-screen px-4 py-6 max-w-md mx-auto">
       <h1 className="font-display text-xl mb-4">Travel Toolkit</h1>
+      <WeatherCard />
       <CountrySelector />
       <CurrencyCalculator />
-      <WeatherCard />
       <Cheatsheet />
     </main>
   )

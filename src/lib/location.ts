@@ -2,6 +2,28 @@ export interface GeoLocation {
   lat: number
   lon: number
   label: string
+  source: 'ip' | 'gps' | 'manual'
+}
+
+/** No permission prompt, no user action needed — used as the low-friction
+ * default on first load. Approximate (city-level, sometimes off by tens of
+ * km), which is normally fine for a weather forecast but is exactly why
+ * this is a starting point, not a substitute for the GPS/manual options. */
+export async function getIPLocation(): Promise<GeoLocation> {
+  const res = await fetch('https://ipapi.co/json/')
+  if (!res.ok) throw new Error('IP location lookup failed.')
+  const data = await res.json()
+  if (data.error) throw new Error(data.reason || 'IP location lookup failed.')
+  if (typeof data.latitude !== 'number' || typeof data.longitude !== 'number') {
+    throw new Error('IP location lookup returned no coordinates.')
+  }
+  const label = [data.city, data.country_name].filter(Boolean).join(', ')
+  return {
+    lat: data.latitude,
+    lon: data.longitude,
+    label: label || 'Approximate location',
+    source: 'ip',
+  }
 }
 
 /** Only called on explicit user action (a button tap) — never auto-fired on
@@ -18,6 +40,7 @@ export function getGPSLocation(): Promise<GeoLocation> {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
           label: 'Current location',
+          source: 'gps',
         })
       },
       (err) => {
