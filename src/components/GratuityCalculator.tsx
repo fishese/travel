@@ -42,13 +42,13 @@ export function GratuityCalculator({ currency, onUseAmount }: Props) {
         </p>
       )}
 
-      <label className="block mb-3">
+      <label className="block mb-2">
         <span className="block text-xs text-[var(--color-muted)] mb-1">Bill amount ({currency})</span>
         <input
           inputMode="decimal"
           value={bill}
           onChange={(e) => setBill(e.target.value.replace(/[^0-9.]/g, ''))}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-lg tabular"
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-lg tabular"
         />
       </label>
 
@@ -66,7 +66,7 @@ export function GratuityCalculator({ currency, onUseAmount }: Props) {
               'rounded-full px-3 py-1 text-xs border tabular ' +
               (customTip === '' && tipPercent === p
                 ? 'bg-[var(--color-pine)] text-white border-[var(--color-pine)]'
-                : 'border-[var(--color-border)] text-[var(--color-muted)] bg-white')
+                : 'border-[var(--color-border)] text-[var(--color-muted)] bg-[var(--color-surface)]')
             }
           >
             {p}%
@@ -80,7 +80,7 @@ export function GratuityCalculator({ currency, onUseAmount }: Props) {
         />
       </div>
 
-      <label className="flex items-center gap-2 text-sm mb-3">
+      <label className="flex items-center gap-2 text-sm mb-2">
         Split between
         <input
           type="number"

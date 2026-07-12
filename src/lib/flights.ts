@@ -1,0 +1,158 @@
+import { useSetting } from './useSetting'
+
+export interface SavedFlight {
+  id: string
+  flightIata: string // e.g. "CX500"
+  date: string // YYYY-MM-DD, local to however the person entered it
+  notes?: string
+  savedAt: string
+}
+
+export function useSavedFlights() {
+  return useSetting<SavedFlight[]>('travel_flights', [])
+}
+
+function makeId() {
+  return Math.random().toString(36).slice(2, 9)
+}
+
+export function newFlight(flightIata: string, date: string, notes?: string): SavedFlight {
+  return {
+    id: makeId(),
+    flightIata: flightIata.toUpperCase().replace(/\s+/g, ''),
+    date,
+    notes: notes?.trim() || undefined,
+    savedAt: new Date().toISOString(),
+  }
+}
+
+// ---- API key + quota (shared across all flights) ----
+
+export function useAviationstackKey() {
+  return useSetting('travel_aviationstack_key', '')
+}
+
+const QUOTA_LIMIT = 100
+
+export function useFlightApiQuota() {
+  const [count, setCount] = useSetting('travel_flight_api_count', 0)
+  const [month, setMonth] = useSetting('travel_flight_api_month', '')
+
+  const currentMonth = new Date().toISOString().slice(0, 7) // "2026-07"
+  const effectiveCount = month === currentMonth ? count : 0
+
+  function recordCall() {
+    if (month !== currentMonth) {
+      setMonth(currentMonth)
+      setCount(1)
+    } else {
+      setCount((c) => c + 1)
+    }
+  }
+
+  return { count: effectiveCount, limit: QUOTA_LIMIT, recordCall }
+}
+
+// ---- Status fetch + per-flight cache ----
+
+export interface FlightStatus {
+  fetchedAt: string
+  flightStatus: string // scheduled | active | landed | cancelled | incident | diverted
+  airlineName: string | null
+  departure: {
+    airport: string
+    iata: string
+    terminal: string | null
+    gate: string | null
+    scheduled: string | null // ISO
+    estimated: string | null
+    delayMinutes: number | null
+  }
+  arrival: {
+    airport: string
+    iata: string
+    scheduled: string | null
+    estimated: string | null
+  }
+}
+
+function cacheKey(flightId: string) {
+  return `travel_flight_status_${flightId}`
+}
+
+export function readCachedStatus(flightId: string): FlightStatus | null {
+  const raw = localStorage.getItem(cacheKey(flightId))
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as FlightStatus
+  } catch {
+    return null
+  }
+}
+
+export function writeCachedStatus(flightId: string, status: FlightStatus) {
+  localStorage.setItem(cacheKey(flightId), JSON.stringify(status))
+}
+
+/** True once real-time data could plausibly exist for this flight — the
+ * free Aviationstack plan only serves today's flights; historical and
+ * future-schedule lookups are paid-only features. */
+export function isStatusCheckable(dateStr: string): boolean {
+  const today = new Date().toISOString().slice(0, 10)
+  return dateStr === today
+}
+
+export function isFinalStatus(status: string): boolean {
+  return status === 'landed' || status === 'cancelled'
+}
+
+/** Minutes until this flight's scheduled departure, or null if unknown. */
+export function minutesToDeparture(status: FlightStatus | null): number | null {
+  const scheduled = status?.departure.scheduled
+  if (!scheduled) return null
+  return Math.round((new Date(scheduled).getTime() - Date.now()) / 60_000)
+}
+
+export async function fetchFlightStatus(
+  apiKey: string,
+  flightIata: string,
+  recordCall: () => void,
+): Promise<FlightStatus> {
+  const today = new Date().toISOString().slice(0, 10)
+  const url =
+    `https://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(apiKey)}` +
+    `&flight_iata=${encodeURIComponent(flightIata)}&flight_date=${today}`
+  const res = await fetch(url)
+  recordCall() // count it even on a non-2xx response — it still consumed quota
+  if (!res.ok) throw new Error(`Aviationstack request failed (${res.status}).`)
+  const data = await res.json()
+  if (data.error) {
+    throw new Error(data.error.message || 'Aviationstack request failed.')
+  }
+  const flight = data.data?.[0]
+  if (!flight) {
+    throw new Error('No data for this flight today — check the flight number, or it may not be published yet.')
+  }
+
+  const status: FlightStatus = {
+    fetchedAt: new Date().toISOString(),
+    flightStatus: flight.flight_status,
+    airlineName: flight.airline?.name ?? null,
+    departure: {
+      airport: flight.departure?.airport ?? '',
+      iata: flight.departure?.iata ?? '',
+      terminal: flight.departure?.terminal ?? null,
+      gate: flight.departure?.gate ?? null,
+      scheduled: flight.departure?.scheduled ?? null,
+      estimated: flight.departure?.estimated ?? null,
+      delayMinutes: flight.departure?.delay ?? null,
+    },
+    arrival: {
+      airport: flight.arrival?.airport ?? '',
+      iata: flight.arrival?.iata ?? '',
+      scheduled: flight.arrival?.scheduled ?? null,
+      estimated: flight.arrival?.estimated ?? null,
+    },
+  }
+  return status
+}

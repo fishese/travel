@@ -59,12 +59,12 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
         </p>
       )}
 
-      <div className="flex rounded-lg border border-[var(--color-border)] overflow-hidden mb-3 text-sm">
+      <div className="flex rounded-lg border border-[var(--color-border)] overflow-hidden mb-2 text-sm">
         <button
           type="button"
           onClick={() => setMode('add')}
           aria-pressed={mode === 'add'}
-          className={'flex-1 py-2 ' + (mode === 'add' ? 'bg-[var(--color-pine)] text-white' : 'bg-white')}
+          className={'flex-1 py-2 ' + (mode === 'add' ? 'bg-[var(--color-pine)] text-white' : 'bg-[var(--color-surface)]')}
         >
           Add tax
         </button>
@@ -72,13 +72,13 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
           type="button"
           onClick={() => setMode('extract')}
           aria-pressed={mode === 'extract'}
-          className={'flex-1 py-2 ' + (mode === 'extract' ? 'bg-[var(--color-pine)] text-white' : 'bg-white')}
+          className={'flex-1 py-2 ' + (mode === 'extract' ? 'bg-[var(--color-pine)] text-white' : 'bg-[var(--color-surface)]')}
         >
           Extract tax
         </button>
       </div>
 
-      <label className="block mb-3">
+      <label className="block mb-2">
         <span className="block text-xs text-[var(--color-muted)] mb-1">
           {mode === 'add' ? 'Shelf / subtotal' : 'Tax-included total'} ({currency})
         </span>
@@ -86,7 +86,7 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-lg tabular"
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-lg tabular"
         />
       </label>
 
@@ -97,17 +97,17 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
           value={rate}
           onChange={(e) => setRate(e.target.value.replace(/[^0-9.]/g, ''))}
           placeholder="e.g. 8.875"
-          className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-lg tabular"
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-lg tabular"
         />
       </label>
       {!country && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 mb-2">
           {REFERENCE_RATES.map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => setRate(String(r))}
-              className="rounded-full px-3 py-1 text-xs border border-[var(--color-border)] text-[var(--color-muted)] bg-white tabular"
+              className="rounded-full px-3 py-1 text-xs border border-[var(--color-border)] text-[var(--color-muted)] bg-[var(--color-surface)] tabular"
             >
               {r}%
             </button>

@@ -10,7 +10,7 @@ export function Cheatsheet() {
 
   return (
     <Collapsible title={`Cheatsheet — ${country.name_en}`}>
-      <div className="space-y-3 text-sm">
+      <div className="space-y-2 text-sm">
         <div>
           <h3 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Emergency</h3>
           <p className="tabular">

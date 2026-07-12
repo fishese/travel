@@ -79,9 +79,9 @@ export function CurrencyCalculator() {
 
   return (
     <>
-    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
+    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-sm">
       {/* time line — one quiet ticket-stub touch, not repeated elsewhere */}
-      <div className="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-3 pb-2 border-b border-dashed border-[var(--color-border)]">
+      <div className="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-2 pb-1.5 border-b border-dashed border-[var(--color-border)]">
         <span className="tabular">Local {localTime}</span>
         {!sameTz && (
           <>
@@ -91,33 +91,33 @@ export function CurrencyCalculator() {
         )}
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-end mb-3">
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-start mb-2">
         <CurrencyPicker label="From" value={from} onChange={setFrom} />
         <button
           type="button"
           onClick={swap}
           aria-label="Swap currencies"
-          className="mb-1 rounded-full border border-[var(--color-border)] w-9 h-9 flex items-center justify-center text-[var(--color-pine)] hover:bg-[var(--color-pine-dim)]"
+          className="mt-5 rounded-full border border-[var(--color-border)] w-8 h-8 flex items-center justify-center text-[var(--color-pine)] hover:bg-[var(--color-pine-dim)] shrink-0"
         >
           ⇄
         </button>
         <CurrencyPicker label="To" value={to} onChange={setTo} />
       </div>
 
-      <label className="block mb-3">
-        <span className="block text-xs text-[var(--color-muted)] mb-1">Amount</span>
+      <label className="block mb-2">
+        <span className="block text-xs text-[var(--color-muted)] mb-0.5">Amount</span>
         <input
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ''))}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-3 text-2xl tabular font-display"
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xl tabular font-display"
         />
       </label>
 
       <MarkupProfileBar />
 
       {/* the one number that matters */}
-      <div className="rounded-xl bg-[var(--color-pine-dim)] px-4 py-4 mb-3">
+      <div className="rounded-xl bg-[var(--color-pine-dim)] px-3 py-3 mb-2">
         {loading && !cache && (
           <p className="text-sm text-[var(--color-muted)]">Fetching rate…</p>
         )}
@@ -126,12 +126,12 @@ export function CurrencyCalculator() {
         )}
         {result && (
           <>
-            <p className="text-3xl font-display tabular text-[var(--color-pine)]">
+            <p className="text-2xl font-display tabular text-[var(--color-pine)]">
               {result.withMarkup.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
-              <span className="text-lg">{to}</span>
+              <span className="text-base">{to}</span>
             </p>
             {markupProfile.percent > 0 && (
-              <p className="text-xs text-[var(--color-muted)] mt-1">
+              <p className="text-xs text-[var(--color-muted)] mt-0.5">
                 Includes ~{markupProfile.percent}% ({markupProfile.label}) for card/FX spread ·
                 raw rate: {result.raw.toLocaleString(undefined, { maximumFractionDigits: 2 })} {to}
               </p>

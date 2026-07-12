@@ -6,7 +6,7 @@ export function CountrySelector() {
   const countries = listCountries()
 
   return (
-    <div className="mb-3">
+    <div className="mb-2">
       <label className="block">
         <span className="block text-xs text-[var(--color-muted)] mb-1">
           Where are you? (unlocks real tip/tax defaults + cheatsheet)
@@ -14,7 +14,7 @@ export function CountrySelector() {
         <select
           value={iso2}
           onChange={(e) => setIso2(e.target.value)}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
         >
           <option value="">Not set — generic defaults</option>
           {countries.map((c) => (

@@ -33,7 +33,7 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
   }
 
   return (
-    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 mt-3">
+    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 mt-2">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-semibold">Shopping notes</h2>
         {notes.trim() && (
@@ -55,14 +55,14 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
         onChange={(e) => setNotes(e.target.value)}
         placeholder={'Ceramic knife ¥2980 @ Donki\nSame knife, other stall 32 x 5\nWhiskey 30 per bottle /5'}
         rows={4}
-        className="w-full rounded-lg border border-[var(--color-border)] bg-white px-3 py-2 text-sm resize-y"
+        className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm resize-y"
       />
       <p className="text-xs text-[var(--color-muted)] mt-1">
         Lines with math (e.g. <span className="tabular">32 x 5</span>) show a total below — plain notes are left alone.
       </p>
 
       {lines.length > 0 && (
-        <div className="mt-3 border-t border-dashed border-[var(--color-border)] pt-2 space-y-1">
+        <div className="mt-2 border-t border-dashed border-[var(--color-border)] pt-2 space-y-1">
           {lines.map((l, i) => (
             <div key={i} className="flex items-center justify-between text-sm gap-2">
               <span className="text-[var(--color-muted)] truncate">{l.text.trim()}</span>

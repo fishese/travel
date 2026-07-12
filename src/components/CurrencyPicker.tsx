@@ -27,7 +27,7 @@ export function CurrencyPicker({ value, onChange, label }: Props) {
 
   return (
     <div className="relative">
-      <span className="block text-xs text-[var(--color-muted)] mb-1">{label}</span>
+      <span className="block text-xs text-[var(--color-muted)] mb-0.5">{label}</span>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -35,12 +35,16 @@ export function CurrencyPicker({ value, onChange, label }: Props) {
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span>
-          <span className="font-semibold tabular">{value}</span>
-          <span className="ml-2 text-sm text-[var(--color-muted)]">{current.en}</span>
-        </span>
+        <span className="font-semibold tabular text-base">{value}</span>
         <span aria-hidden className="text-[var(--color-muted)]">▾</span>
       </button>
+      {/* Full name lives outside the box, truncated to one line — so a long
+          name (e.g. "United Arab Emirates Dirham") never makes this picker
+          taller than its sibling and throws the row out of alignment. Tap
+          the picker to see the full name in the dropdown if truncated. */}
+      <p className="text-xs text-[var(--color-muted)] mt-0.5 truncate" title={current.en}>
+        {current.en}
+      </p>
 
       {open && (
         <div className="absolute z-10 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg">

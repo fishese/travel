@@ -118,7 +118,7 @@ export function WeatherCard() {
   const showPicker = pickerOpen || !location
 
   return (
-    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm mt-3">
+    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-sm mt-2">
       {location && !showPicker && (
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold truncate pr-2">
@@ -140,7 +140,7 @@ export function WeatherCard() {
       )}
 
       {showPicker && (
-        <div className="space-y-2 mb-3">
+        <div className="space-y-2 mb-2">
           <button
             type="button"
             onClick={handleUseGPS}
@@ -230,8 +230,8 @@ function WeatherSummary({ cache }: { cache: WeatherCache }) {
 
   return (
     <div>
-      <div className="rounded-xl bg-[var(--color-pine-dim)] px-4 py-4 mb-3">
-        <p className="text-2xl font-display">
+      <div className="rounded-xl bg-[var(--color-pine-dim)] px-3 py-3 mb-2">
+        <p className="text-xl font-display">
           {umbrella.bringUmbrella ? `🌂 Bring an umbrella` : '☀️ Dry for the next couple hours'}
         </p>
         {umbrella.bringUmbrella && umbrella.atHour && (

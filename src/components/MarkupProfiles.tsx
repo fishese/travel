@@ -7,7 +7,7 @@ export function MarkupProfileBar() {
   const [editing, setEditing] = useState(false)
 
   return (
-    <div className="mb-3">
+    <div className="mb-2">
       <div className="flex flex-wrap gap-2">
         {profiles.map((p) => (
           <button
