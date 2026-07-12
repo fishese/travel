@@ -1,5 +1,6 @@
 import { CurrencyCalculator } from './components/CurrencyCalculator'
 import { CountrySelector } from './components/CountrySelector'
+import { WeatherCard } from './components/WeatherCard'
 import { Cheatsheet } from './components/Cheatsheet'
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
       <h1 className="font-display text-xl mb-4">Travel Toolkit</h1>
       <CountrySelector />
       <CurrencyCalculator />
+      <WeatherCard />
       <Cheatsheet />
     </main>
   )

@@ -1643,217 +1643,459 @@
           "confidence": "low"
         }
       ]
-    }
-  ],
-  "airports": [
-    {
-      "iata": "HND",
-      "name": "Tokyo Haneda",
-      "city": "Tokyo",
-      "country_iso2": "JP",
-      "reference_point_en": "Tokyo Station",
-      "typical_transport_en": "Tokyo Monorail + JR or Keikyu Line",
-      "typical_minutes": 35,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Tokyo Station area via public transport; not live traffic; excludes peak hour congestion and baggage retrieval times"
     },
     {
-      "iata": "NRT",
-      "name": "Tokyo Narita",
-      "city": "Tokyo",
-      "country_iso2": "JP",
-      "reference_point_en": "Tokyo Station",
-      "typical_transport_en": "JR Narita Express (N'EX) or Keisei Skyliner",
-      "typical_minutes": 60,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Tokyo Station area via express rail; excludes live traffic and internal station navigation times"
+      "iso2": "AE",
+      "name_en": "United Arab Emirates",
+      "name_zh": "阿拉伯聯合酋長國",
+      "currency": "AED",
+      "emergency": {
+        "police": "999",
+        "ambulance": "998",
+        "fire": "997"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Dubai",
+        "phone": "+971-4-453-3800",
+        "address_en": "Unit OT 27-34, Level 27, Central Park Office Tower, Dubai International Financial Centre (DIFC), Dubai, UAE",
+        "official_url": "https://www.hketodubai.gov.hk/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Talabat",
+          "url": "https://www.talabat.com/uae"
+        },
+        {
+          "label": "Careem Food",
+          "url": "https://www.careem.com/en-AE/food/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "G (UK-style)",
+        "note": "Standard UK three-pin plug"
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          10,
+          15
+        ],
+        "tip_on": "pre_tax",
+        "note_en": "Service charge often included, but an additional 10-15% tip is still expected by staff. Cash preferred.",
+        "note_zh": "賬單通常已包含服務費，但普遍仍會給予員工10-15%的額外小費。建議支付現金。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 5,
+        "regions": [],
+        "note_en": "5% VAT included in displayed prices"
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax Refunds for Tourists Scheme",
+        "typical_rate_percent": 5,
+        "min_purchase_note_en": "Minimum AED 250 (VAT inclusive) per purchase",
+        "how_it_works_en": "Retailer issues a digital tax-free invoice via Planet Tax Free system; validate at airport before departure.",
+        "where_to_claim_en": "Planet validation kiosks/desks at airport (before check-in for large goods)",
+        "tips_en": [
+          "13% admin fee + AED 3.6 per tag deducted from refund amount",
+          "Validate before checking luggage"
+        ],
+        "official_url": "https://taxfree.weareplanet.com/countries/uae"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passports get 30 days visa-free on arrival; BN(O) and others require pre-arranged e-visa. Confirm requirements based on exact passport type.",
+        "official_url": "https://www.mofa.gov.ae/en/missions/hong-kong/services/visas"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "icp-smart-services",
+          "name_en": "ICP Smart Services (e-Visa)",
+          "name_zh": "ICP 智能服務 (電子簽證)",
+          "official_url": "https://smartservices.icp.gov.ae",
+          "applies_to": "travelers_requiring_visa",
+          "required_level": "mandatory_if_applicable",
+          "lead_days_before": 14,
+          "notes_en": "Required only for passports not eligible for visa-on-arrival (e.g., BN(O)).",
+          "notes_zh": "僅適用於不符合落地簽證資格的護照（如英國國民(海外)護照）。",
+          "confidence": "high"
+        },
+        {
+          "id": "ideclare",
+          "name_en": "Dubai Customs iDeclare",
+          "name_zh": "杜拜海關 iDeclare",
+          "official_url": "https://www.dubaicustoms.gov.ae/en/CustomsInformation/Pages/iDeclare.aspx",
+          "applies_to": "travelers_carrying_excess_cash_or_goods",
+          "required_level": "mandatory_if_applicable",
+          "lead_days_before": 1,
+          "notes_en": "Mandatory to declare cash > AED 60,000 or commercial goods; app makes process faster.",
+          "notes_zh": "必須申報超過 60,000 迪拉姆的現金或商業物品；使用應用程式可加快程序。",
+          "confidence": "high"
+        }
+      ]
     },
     {
-      "iata": "ICN",
-      "name": "Seoul Incheon",
-      "city": "Seoul",
-      "country_iso2": "KR",
-      "reference_point_en": "Seoul Station",
-      "typical_transport_en": "Airport Railroad Express (AREX) Non-Stop",
-      "typical_minutes": 43,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Seoul Station via direct express rail; not live traffic; avoids road congestion"
+      "iso2": "TR",
+      "name_en": "Türkiye",
+      "name_zh": "土耳其",
+      "currency": "TRY",
+      "emergency": {
+        "police": "112",
+        "ambulance": "112",
+        "fire": "112"
+      },
+      "embassy_hk": {
+        "name_en": "Consulate-General of the People's Republic of China in Istanbul",
+        "phone": "+90-212-2992188",
+        "address_en": "Tarabya Mahallesi, Ahi Çelebi Cad. Çoban Çeşme Sokak No.4, Sariyer, Istanbul, Türkiye",
+        "official_url": "http://istanbul.china-consulate.gov.cn/"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Yemeksepeti",
+          "url": "https://www.yemeksepeti.com/"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "F (European-style)",
+        "note": "Standard European two-pin circular plug"
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          10
+        ],
+        "tip_on": "pre_tax",
+        "note_en": "Expected (bahşiş). Most POS terminals cannot add tips, so keep small TRY notes to leave cash.",
+        "note_zh": "普遍設有小費文化 (bahşiş)。多數信用卡終端機無法加入小費，請備妥小額土耳其里拉現金支付。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 20,
+        "regions": [],
+        "note_en": "VAT (KDV) is tiered: 20% standard (electronics, cosmetics), 10% reduced (clothing, bags, carpets), 1% minimum (basic food)."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax Free Shopping",
+        "typical_rate_percent": 20,
+        "min_purchase_note_en": "Minimum 1,000 TRY on a single receipt",
+        "how_it_works_en": "Request Tax Free invoice (e-Fatura) in store. MUST get physical customs validation stamp at airport before submitting to Global Blue/Planet desk.",
+        "where_to_claim_en": "Customs validation desk at airport, then intermediary refund operator desk (e.g., Global Blue)",
+        "tips_en": [
+          "Physical customs stamp is strictly mandatory",
+          "Have goods ready for inspection",
+          "Expect high admin/currency fees reducing effective refund to 10-12%"
+        ],
+        "official_url": "https://taxfree.weareplanet.com/countries/turkey"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "HKSAR passports get 90 days visa-free. BN(O) passports MUST obtain an e-Visa before travel.",
+        "official_url": "https://www.evisa.gov.tr/"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "tr-evisa",
+          "name_en": "Türkiye e-Visa",
+          "name_zh": "土耳其電子簽證",
+          "official_url": "https://www.evisa.gov.tr/",
+          "applies_to": "bno_and_other_required_passports",
+          "required_level": "mandatory_if_applicable",
+          "lead_days_before": 3,
+          "notes_en": "Required for BN(O) holders (select 'China' as nationality). Not required for HKSAR passports.",
+          "notes_zh": "英國國民(海外)護照持有人必須申請（國籍請選擇「中國」）。香港特區護照持有人則無需申請。",
+          "confidence": "high"
+        },
+        {
+          "id": "trdac",
+          "name_en": "Turkey Digital Arrival Card (TRDAC)",
+          "name_zh": "土耳其數碼入境卡",
+          "official_url": "https://register.health.gov.tr/",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "Electronic arrival form generating a QR code. Highly recommended to complete within 72h before arrival to prevent boarding issues.",
+          "notes_zh": "電子入境表，填寫後會生成二維碼。強烈建議在抵達前 72 小時內完成，以免被拒絕登機。",
+          "confidence": "low"
+        }
+      ]
     },
     {
-      "iata": "TPE",
-      "name": "Taipei Taoyuan",
-      "city": "Taipei",
-      "country_iso2": "TW",
-      "reference_point_en": "Taipei Main Station",
-      "typical_transport_en": "Taoyuan Airport MRT (Express)",
-      "typical_minutes": 36,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Taipei Main Station via Express train service; not live traffic; avoids heavy expressway traffic"
+      "iso2": "PH",
+      "name_en": "Philippines",
+      "name_zh": "菲律賓",
+      "currency": "PHP",
+      "emergency": {
+        "police": "117",
+        "ambulance": "911",
+        "fire": "911"
+      },
+      "embassy_hk": {
+        "name_en": "Chinese Embassy in Manila",
+        "phone": "+63-2-82311033",
+        "address_en": "330 Sen. Gil J. Puyat Avenue, Makati City, Metro Manila",
+        "official_url": "[http://ph.china-embassy.gov.cn/eng/](http://ph.china-embassy.gov.cn/eng/)"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+63-2-8231-3601",
+        "nearest_hyperbaric_note_en": "Hyperbaric chambers are available at the Lung Center of the Philippines in Quezon City, the TIEZA Building in Mactan-Cebu, and the Sea Dive Resort in Coron.",
+        "official_url": "[https://www.danap.org/](https://www.danap.org/)"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Traveloka Guide",
+          "url": "[https://www.traveloka.com/](https://www.traveloka.com/)"
+        }
+      ],
+      "power": {
+        "voltage": "220V",
+        "plugs": "A/B/C",
+        "note": "60Hz frequency."
+      },
+      "tipping": {
+        "customary": false,
+        "default_percents": [
+          0,
+          10
+        ],
+        "tip_on": "pre_tax",
+        "note_en": "While not a native custom, a 10% gratuity is generally expected in tourist areas if a service charge has not already been included in the bill.",
+        "note_zh": "雖無傳統小費文化，但在旅遊區若帳單未內含10%服務費，通常期望給予10%的額外小費。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 12,
+        "regions": [],
+        "note_en": "A standard 12% Value-Added Tax applies to most consumer goods."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "VAT Refund for Non-Resident Tourists",
+        "typical_rate_percent": 12,
+        "min_purchase_note_en": "₱3,000 per transaction at accredited retailers.",
+        "how_it_works_en": "Tourists may claim VAT refunds on eligible retail goods strictly intended for personal use.",
+        "where_to_claim_en": "Airport Customs validation prior to departure.",
+        "tips_en": [
+          "Eligible goods must be physically taken out of the Philippines within 60 days of purchase."
+        ],
+        "official_url": "[https://www.bir.gov.ph/](https://www.bir.gov.ph/)"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong SAR passport holders generally enjoy visa-free entry for up to 14 days, but strictly require a return or onward flight ticket within 14 days and a passport valid for at least six months.",
+        "official_url": "[https://evisa.gov.ph/page/policy](https://evisa.gov.ph/page/policy)"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "ph-etravel",
+          "name_en": "eTravel Pass",
+          "name_zh": "eTravel Pass",
+          "official_url": "[https://etravel.gov.ph/](https://etravel.gov.ph/)",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 3,
+          "notes_en": "A mandatory electronic travel declaration platform covering immigration, health, and customs. It must be completed within 72 hours before your flight to generate a valid entry QR code.",
+          "notes_zh": "強制性電子申報系統，整合入境、健康與海關資訊。必須於起飛前72小時內完成填寫並取得QR碼。",
+          "confidence": "high"
+        }
+      ]
     },
     {
-      "iata": "BKK",
-      "name": "Bangkok Suvarnabhumi",
-      "city": "Bangkok",
-      "country_iso2": "TH",
-      "reference_point_en": "Siam Station",
-      "typical_transport_en": "Airport Rail Link (ARL) + BTS Skytrain",
-      "typical_minutes": 45,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From central nodes like Siam Station via rail network; not live traffic; highly recommended to avoid notorious surface traffic"
+      "iso2": "DE",
+      "name_en": "Germany",
+      "name_zh": "德國",
+      "currency": "EUR",
+      "emergency": {
+        "police": "110",
+        "ambulance": "112",
+        "fire": "112"
+      },
+      "embassy_hk": {
+        "name_en": "Hong Kong Economic and Trade Office, Berlin",
+        "phone": "+49 (0) 30 22 66 77 228",
+        "address_en": "Jägerstraße 33, 10117 Berlin, Germany",
+        "official_url": "[https://www.hketoberlin.gov.hk/](https://www.hketoberlin.gov.hk/)"
+      },
+      "dive_emergency": {
+        "applicable": false,
+        "dan_hotline": "",
+        "nearest_hyperbaric_note_en": "",
+        "official_url": ""
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Yelp Germany",
+          "url": "[https://www.yelp.de/](https://www.yelp.de/)"
+        }
+      ],
+      "power": {
+        "voltage": "230V",
+        "plugs": "C/F",
+        "note": "50Hz frequency; standard Europlug and Schuko sockets."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          5,
+          10
+        ],
+        "tip_on": "tax_included",
+        "note_en": "Tipping (Trinkgeld) is customary; patrons usually round up the bill by 5% to 10%. Hand the tip directly to the server by stating your total; leaving loose change on the table is impolite.",
+        "note_zh": "習慣上會給予5%至10%的「Trinkgeld」（小費）。結帳時請直接告知服務生您要支付的總額，不要將零錢直接留在桌上。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 19,
+        "regions": [],
+        "note_en": "Standard VAT is 19%, with a reduced rate of 7% applying to books, medical equipment, and certain foods."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tax-Free Shopping",
+        "typical_rate_percent": 19,
+        "min_purchase_note_en": "Strict minimum of €50.01 per receipt; aggregating multiple smaller receipts is not permitted.",
+        "how_it_works_en": "Request a Tax-Free Form at purchase, and secure a physical customs stamp before departing the final point in the EU.",
+        "where_to_claim_en": "Airport Customs desks, followed by refund operator kiosks (e.g., Global Blue).",
+        "tips_en": [
+          "Goods must be strictly unused, still in original packaging, and exported within three months.",
+          "After processing commissions, the net cash return generally ranges from 10% to 14%."
+        ],
+        "official_url": "[https://www.zoll.de/](https://www.zoll.de/)"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong SAR passports grant visa-free entry for up to 90 days in any 180-day period. Note that EES biometric registration is now active at all Schengen borders, and ETIAS will become mandatory in Q4 2026.",
+        "official_url": "[https://travel-europe.europa.eu/etias](https://travel-europe.europa.eu/etias)"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "eu-etias",
+          "name_en": "ETIAS",
+          "name_zh": "ETIAS (歐洲旅行資訊及授權系統)",
+          "official_url": "[https://travel-europe.europa.eu/etias](https://travel-europe.europa.eu/etias)",
+          "applies_to": "visa_exempt_nationals",
+          "required_level": "optional_recommended",
+          "lead_days_before": 0,
+          "notes_en": "Mandatory pre-travel authorization for visa-exempt travelers, launching Q4 2026. Costs €20 and remains valid for three years.",
+          "notes_zh": "免簽證旅客強制事前授權系統，預計2026年第四季啟用。費用為20歐元，效期三年。",
+          "confidence": "high"
+        }
+      ]
     },
     {
-      "iata": "SIN",
-      "name": "Singapore Changi",
-      "city": "Singapore",
-      "country_iso2": "SG",
-      "reference_point_en": "City Hall Station",
-      "typical_transport_en": "MRT East-West Line (with transfer at Tanah Merah)",
-      "typical_minutes": 35,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From urban core via public transport; actual train ride is short but buffer additional time for vast walking distances within Changi terminals"
+      "iso2": "EG",
+      "name_en": "Egypt",
+      "name_zh": "埃及",
+      "currency": "EGP",
+      "emergency": {
+        "police": "122",
+        "ambulance": "123",
+        "fire": "180"
+      },
+      "embassy_hk": {
+        "name_en": "Chinese Embassy in Cairo",
+        "phone": "00202-27361219",
+        "address_en": "14 Bahgat Aly Street, Zamalek, Cairo, Egypt",
+        "official_url": "[http://eg.china-embassy.gov.cn/eng/](http://eg.china-embassy.gov.cn/eng/)"
+      },
+      "dive_emergency": {
+        "applicable": true,
+        "dan_hotline": "+39 06 4211 8685",
+        "nearest_hyperbaric_note_en": "Hyperbaric chambers are accessible in Sharm el Sheikh (+20 69 360 0865), Dahab (+20 10 143 3325), and Hurghada (+20 10 218 7550).",
+        "official_url": "[https://dan.org/](https://dan.org/)"
+      },
+      "last_verified": "2026-07-11",
+      "food_links": [
+        {
+          "label": "Elmenus",
+          "url": "[https://www.elmenus.com/](https://www.elmenus.com/)"
+        }
+      ],
+      "power": {
+        "voltage": "220V",
+        "plugs": "C/F",
+        "note": "50Hz frequency."
+      },
+      "tipping": {
+        "customary": true,
+        "default_percents": [
+          10,
+          15
+        ],
+        "tip_on": "pre_tax",
+        "note_en": "The concept of Baksheesh is deeply culturally ingrained. Even if a service charge applies, an extra 10-15% is expected in restaurants.",
+        "note_zh": "當地 Baksheesh（小費）文化根深蒂固；除帳單服務費外，餐廳多期望額外10-15%小費。建議多準備小面額現金。"
+      },
+      "sales_tax": {
+        "price_display": "tax_included",
+        "default_rate_percent": 14,
+        "regions": [],
+        "note_en": "14% standard VAT on goods and services."
+      },
+      "tax_refund": {
+        "available": true,
+        "scheme_name_en": "Tourist VAT Refund",
+        "typical_rate_percent": 14,
+        "min_purchase_note_en": "Minimum spend varies; recent digital reforms are being actively rolled out in 2026.",
+        "how_it_works_en": "Mechanisms for retail tourist refunds are highly complex, traditionally paper-bound, and can carry heavy delays, although digital streamlining is ongoing.",
+        "where_to_claim_en": "Airport departure desks.",
+        "tips_en": [
+          "Recent 'White List' incentives aim to speed up refunds, but largely target commercial exporters rather than leisure tourists."
+        ],
+        "official_url": "[https://eta.gov.eg/](https://eta.gov.eg/)"
+      },
+      "visa_caution": {
+        "level": "check_requirements",
+        "summary": "Hong Kong SAR passports are permitted 90 days of visa-free travel. However, ensure passports remain valid for at least six months from arrival with two blank pages.",
+        "official_url": "[https://www.visa2egypt.gov.eg/](https://www.visa2egypt.gov.eg/)"
+      },
+      "pre_arrival_forms": [
+        {
+          "id": "eg-digital-arrival",
+          "name_en": "Digital Immigration Card / e-Visa",
+          "name_zh": "數位入境卡 / 電子簽證",
+          "official_url": "[https://www.visa2egypt.gov.eg/](https://www.visa2egypt.gov.eg/)",
+          "applies_to": "all_international_arrivals",
+          "required_level": "mandatory",
+          "lead_days_before": 2,
+          "notes_en": "A digital immigration card must be completed 48 hours prior to the flight. Egypt is also rolling out a fully digital visa-on-arrival (QR code) system starting August 2026.",
+          "notes_zh": "需於航班起飛前48小時填寫數位入境申報以取得QR碼。埃及將於2026年8月全面實施數位落地簽證系統。",
+          "confidence": "high"
+        }
+      ]
     },
     {
-      "iata": "KUL",
-      "name": "Kuala Lumpur International Airport",
-      "city": "Kuala Lumpur",
-      "country_iso2": "MY",
-      "reference_point_en": "KL Sentral",
-      "typical_transport_en": "KLIA Ekspres",
-      "typical_minutes": 28,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "28 minutes reflects pure train transit time from T1 to KL Sentral. Add time for terminal navigation, check-in, and transfer from final hotel to the KL Sentral hub."
-    },
-    {
-      "iata": "SGN",
-      "name": "Tan Son Nhat International Airport",
-      "city": "Ho Chi Minh City",
-      "country_iso2": "VN",
-      "reference_point_en": "District 1 City Center",
-      "typical_transport_en": "Ride-hailing (Grab/Be/Gojek) or Taxi",
-      "typical_minutes": 35,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Varies drastically with traffic. Off-peak can be 20 mins; rush hour (07:00-09:00, 16:30-19:30) can exceed 60 minutes. 3-hour airport buffer advised due to immigration queues."
-    },
-    {
-      "iata": "DPS",
-      "name": "I Gusti Ngurah Rai International Airport",
-      "city": "Bali",
-      "country_iso2": "ID",
-      "reference_point_en": "Seminyak",
-      "typical_transport_en": "Pre-booked Private Transfer or Official Taxi",
-      "typical_minutes": 40,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Assumes journey to Seminyak. Highly volatile traffic corridor; peak afternoon/evening travel (16:00-19:00) routinely extends trips to 75+ minutes."
-    },
-    {
-      "iata": "MLE",
-      "name": "Velana International Airport",
-      "city": "Malé",
-      "country_iso2": "MV",
-      "reference_point_en": "Malé City Center",
-      "typical_transport_en": "Taxi (via Sinamalé Bridge) or Airport Express Ferry",
-      "typical_minutes": 10,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Transit time strictly reflects travel from the airport island (Hulhulé) to Malé City. Does NOT account for lengthy, complex seaplane or speedboat transfers to private resort atolls."
-    },
-    {
-      "iata": "SYD",
-      "name": "Sydney Kingsford Smith Airport",
-      "city": "Sydney",
-      "country_iso2": "AU",
-      "reference_point_en": "Sydney Central Station",
-      "typical_transport_en": "Airport Link Train (T8 Line)",
-      "typical_minutes": 13,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Sydney Central Station via the direct T8 Airport Link train; does not account for peak rail disruptions, security queues, or heavy luggage transit time."
-    },
-    {
-      "iata": "AKL",
-      "name": "Auckland Airport",
-      "city": "Auckland",
-      "country_iso2": "NZ",
-      "reference_point_en": "SkyCity Bus Terminal (Downtown Auckland)",
-      "typical_transport_en": "SkyDrive Express Bus",
-      "typical_minutes": 40,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From SkyCity Bus Terminal (Hobson Street) via the non-stop SkyDrive Express bus; highly subject to traffic conditions on the Southern Motorway during rush hours."
-    },
-    {
-      "iata": "JFK",
-      "name": "John F. Kennedy International Airport",
-      "city": "New York",
-      "country_iso2": "US",
-      "reference_point_en": "New York Penn Station (Manhattan)",
-      "typical_transport_en": "AirTrain JFK + LIRR (Long Island Rail Road)",
-      "typical_minutes": 35,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Penn Station via LIRR to Jamaica Station, transferring to the AirTrain JFK; does not account for terminal walking distances, check-in, or track transfer wait times."
-    },
-    {
-      "iata": "YVR",
-      "name": "Vancouver International Airport",
-      "city": "Vancouver",
-      "country_iso2": "CA",
-      "reference_point_en": "Waterfront Station (Downtown Vancouver)",
-      "typical_transport_en": "Canada Line SkyTrain",
-      "typical_minutes": 26,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "From Waterfront Station via the direct Canada Line rapid transit; immune to road traffic, highly reliable. Does not include walking time inside terminals."
-    },
-    {
-      "iata": "LHR",
-      "name": "London Heathrow",
-      "city": "London",
-      "country_iso2": "GB",
-      "reference_point_en": "London Paddington",
-      "typical_transport_en": "Heathrow Express",
-      "typical_minutes": 15,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Non-stop from Terminals 2 & 3; add 6 mins for Terminal 5. Does not account for ticketing or walking time."
-    },
-    {
-      "iata": "DUB",
-      "name": "Dublin Airport",
-      "city": "Dublin",
-      "country_iso2": "IE",
-      "reference_point_en": "O'Connell Street / City Centre",
-      "typical_transport_en": "Dublin Express (Routes 782/784)",
-      "typical_minutes": 30,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Coach transit time assumes optimal conditions via Dublin Port Tunnel; highly susceptible to peak-hour traffic congestion."
-    },
-    {
-      "iata": "CDG",
-      "name": "Paris Charles de Gaulle",
-      "city": "Paris",
-      "country_iso2": "FR",
-      "reference_point_en": "Gare du Nord",
-      "typical_transport_en": "RER B",
-      "typical_minutes": 34,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Direct public rail transit; not live traffic. Travelers should monitor for frequent track maintenance and pickpockets."
-    },
-    {
-      "iata": "FCO",
-      "name": "Rome Fiumicino",
-      "city": "Rome",
-      "country_iso2": "IT",
-      "reference_point_en": "Roma Termini",
-      "typical_transport_en": "Leonardo Express",
-      "typical_minutes": 32,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Non-stop dedicated rail; immune to regular traffic and generally bypasses local transport strikes."
-    },
-    {
-      "iata": "ZRH",
-      "name": "Zurich Airport",
-      "city": "Zurich",
-      "country_iso2": "CH",
-      "reference_point_en": "Zurich Hauptbahnhof (HB)",
-      "typical_transport_en": "SBB Train",
-      "typical_minutes": 11,
-      "international_departure_buffer_hours": 3,
-      "assumptions_en": "Subterranean rail transit from airport station; runs highly frequently. Time averages 9-11 minutes."
-    }
-  ]
-}
+      "iso2": "ES",
+      "name_en": "Spain",
+      "name_zh": "西班牙",
+      "currency": "EUR",
+      "emergency": {
+        "police": "091",
+        "ambulance": "061",
+        "fire": "080"
+      },
+      "embassy_hk": {
+        "name_en": "Chinese Consulate General in Barcelona",
+        "phone": "0034-93-2541199",
+        "address_en": "No.34, Avda. Tibidabo,
