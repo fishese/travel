@@ -3,6 +3,9 @@ import { CountrySelector } from './components/CountrySelector'
 import { WeatherCard } from './components/WeatherCard'
 import { Cheatsheet } from './components/Cheatsheet'
 import { FlightsSection } from './components/FlightsSection'
+import { HotelsSection } from './components/HotelsSection'
+import { BookingsSection } from './components/BookingsSection'
+import { ReminderFeed } from './components/ReminderFeed'
 import { ThemeToggle } from './components/ThemeToggle'
 
 function App() {
@@ -12,10 +15,13 @@ function App() {
         <h1 className="font-display text-lg">Travel Toolkit</h1>
         <ThemeToggle />
       </div>
+      <ReminderFeed />
       <WeatherCard />
       <CountrySelector />
       <CurrencyCalculator />
       <FlightsSection />
+      <HotelsSection />
+      <BookingsSection />
       <Cheatsheet />
     </main>
   )
