@@ -2,7 +2,7 @@ import { listCountries } from '../lib/countries'
 import { useCurrentCountry } from '../lib/currentCountry'
 
 export function CountrySelector() {
-  const [iso2, setIso2] = useCurrentCountry()
+  const { iso2, setIso2, isOverridden, locationIso2, useWeatherLocation } = useCurrentCountry()
   const countries = listCountries()
 
   return (
@@ -24,11 +24,25 @@ export function CountrySelector() {
           ))}
         </select>
       </label>
-      {countries.length < 19 && (
-        <p className="text-xs text-[var(--color-muted)] mt-1">
-          {countries.length} of 19 planned destinations loaded so far — more arrive as later batches finish.
+
+      <div className="flex items-center justify-between mt-1 gap-2">
+        <p className="text-xs text-[var(--color-muted)]">
+          {isOverridden
+            ? 'Picked for this session — resets to your weather location on reload.'
+            : locationIso2
+              ? 'Following your weather location.'
+              : 'Set a weather location above, or pick a country manually.'}
         </p>
-      )}
+        {isOverridden && locationIso2 && (
+          <button
+            type="button"
+            onClick={useWeatherLocation}
+            className="text-xs text-[var(--color-pine)] underline shrink-0"
+          >
+            Use weather location
+          </button>
+        )}
+      </div>
     </div>
   )
 }

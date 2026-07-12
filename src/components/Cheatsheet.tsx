@@ -3,7 +3,7 @@ import { useCurrentCountry } from '../lib/currentCountry'
 import { Collapsible } from './Collapsible'
 
 export function Cheatsheet() {
-  const [iso2] = useCurrentCountry()
+  const { iso2 } = useCurrentCountry()
   const country = getCountry(iso2)
 
   if (!country) return null

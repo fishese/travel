@@ -109,7 +109,7 @@ export function WeatherCard() {
   }
 
   function selectCity(r: CitySearchResult) {
-    setLocation({ lat: r.lat, lon: r.lon, label: r.label, source: 'manual' })
+    setLocation({ lat: r.lat, lon: r.lon, label: r.label, source: 'manual', countryCode: r.countryCode })
     setResults([])
     setQuery('')
     setPickerOpen(false)

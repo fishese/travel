@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function GratuityCalculator({ currency, onUseAmount }: Props) {
-  const [countryIso2] = useCurrentCountry()
+  const { iso2: countryIso2 } = useCurrentCountry()
   const country = countryIso2 ? getCountry(countryIso2) : undefined
 
   const [bill, setBill] = useState('')

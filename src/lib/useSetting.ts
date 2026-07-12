@@ -1,10 +1,9 @@
 import { useCallback, useSyncExternalStore } from 'react'
 
 // A localStorage-backed setting shared across every component that reads
-// the same key — e.g. picking a country in <CountrySelector> must be seen
-// immediately by <GratuityCalculator>, <SalesTaxCalculator>, and
-// <Cheatsheet>, which each call useSetting('travel_current_country', ...)
-// independently. A plain per-component useState can't do that (each
+// the same key — e.g. multiple components reading the same weather
+// location or FX markup profile all need to see updates from each other
+// immediately. A plain per-component useState can't do that (each
 // instance is isolated); this uses a module-level store shared by every
 // hook call for the same key, wired through useSyncExternalStore so React
 // re-renders every subscriber when any one of them writes.

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
-  const [countryIso2] = useCurrentCountry()
+  const { iso2: countryIso2 } = useCurrentCountry()
   const country = countryIso2 ? getCountry(countryIso2) : undefined
 
   // tax_included countries (JP, UK, most of EU/Asia) mostly just want to

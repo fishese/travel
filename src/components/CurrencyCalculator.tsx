@@ -15,7 +15,7 @@ export function CurrencyCalculator() {
   const [homeCurrency] = useSetting('travel_home_currency', 'HKD')
   const [homeTimezone] = useSetting('travel_home_timezone', 'Asia/Hong_Kong')
   const { active: markupProfile } = useMarkupProfiles()
-  const [countryIso2] = useCurrentCountry()
+  const { iso2: countryIso2 } = useCurrentCountry()
   const country = countryIso2 ? getCountry(countryIso2) : undefined
 
   const [from, setFrom] = useState(homeCurrency) // home side
