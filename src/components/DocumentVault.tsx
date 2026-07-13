@@ -30,7 +30,12 @@ function VaultThumb({ file }: { file: VaultFile }) {
   )
 }
 
-export function DocumentVault() {
+interface Props {
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+}
+
+export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   const { files, loading, refresh } = useVaultFiles()
   const generalFiles = files.filter((f) => f.category !== 'dive-cert')
 
@@ -62,7 +67,7 @@ export function DocumentVault() {
   }
 
   return (
-    <Collapsible title="Documents">
+    <Collapsible id="documents" title="Documents" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
         E-tickets, booking confirmations, park/show reservations — stored on this device only. Not meant for ID
         documents (no PIN lock yet).

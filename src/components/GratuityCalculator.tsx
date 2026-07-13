@@ -31,7 +31,7 @@ export function GratuityCalculator({ currency, onUseAmount }: Props) {
   )
 
   return (
-    <Collapsible title="Gratuity">
+    <Collapsible id="gratuity" title="Gratuity">
       {country ? (
         <p className="text-xs text-[var(--color-muted)] mb-2">
           {country.tipping.note_en}

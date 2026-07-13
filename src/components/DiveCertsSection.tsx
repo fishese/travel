@@ -29,7 +29,12 @@ function CertPhoto({ fileId }: { fileId: string }) {
   return <img src={url} alt="Certification card" className="w-full rounded-lg mt-2 max-h-40 object-cover" />
 }
 
-export function DiveCertsSection() {
+interface Props {
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+}
+
+export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   const [certs, setCerts] = useSavedDiveCerts()
 
   const [agency, setAgency] = useState('')
@@ -68,7 +73,7 @@ export function DiveCertsSection() {
   }
 
   return (
-    <Collapsible title="Dive certs">
+    <Collapsible id="dive-certs" title="Dive certs" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
         Offline-accessible proof of certification for dive shops/liveaboards — useful with no signal.
       </p>

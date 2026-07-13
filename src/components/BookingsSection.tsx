@@ -11,7 +11,12 @@ import { Collapsible } from './Collapsible'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
-export function BookingsSection() {
+interface Props {
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+}
+
+export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   const [bookings, setBookings] = useSavedBookings()
 
   const [category, setCategory] = useState<BookingCategory>('other')
@@ -35,7 +40,7 @@ export function BookingsSection() {
   const sorted = [...bookings].sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? '').localeCompare(b.time ?? ''))
 
   return (
-    <Collapsible title="Bookings">
+    <Collapsible id="bookings" title="Bookings" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
         Anything with a date that isn't a flight or hotel — shows, tours, restaurants, trains. Shows up in the
         Today/Tomorrow reminders above.

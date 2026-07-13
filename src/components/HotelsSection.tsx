@@ -3,7 +3,12 @@ import { useSavedHotels, newHotel, lookupHotel, type HotelLookupResult } from '.
 import { Collapsible } from './Collapsible'
 import { ShowToDriver } from './ShowToDriver'
 
-export function HotelsSection() {
+interface Props {
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+}
+
+export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   const [hotels, setHotels] = useSavedHotels()
 
   const [name, setName] = useState('')
@@ -70,7 +75,7 @@ export function HotelsSection() {
   const sorted = [...hotels].sort((a, b) => (a.checkIn ?? '9999').localeCompare(b.checkIn ?? '9999'))
 
   return (
-    <Collapsible title="Hotels">
+    <Collapsible id="hotels" title="Hotels" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
         <div className="flex gap-2">
           <input

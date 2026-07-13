@@ -4,7 +4,12 @@ import { localDateStr } from '../lib/dateUtils'
 import { FlightCard } from './FlightCard'
 import { Collapsible } from './Collapsible'
 
-export function FlightsSection() {
+interface Props {
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+}
+
+export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   const [flights, setFlights] = useSavedFlights()
   const [apiKey, setApiKey] = useAviationstackKey()
   const quota = useFlightApiQuota()
@@ -30,7 +35,7 @@ export function FlightsSection() {
   const sorted = [...flights].sort((a, b) => a.date.localeCompare(b.date))
 
   return (
-    <Collapsible title="Flights">
+    <Collapsible id="flights" title="Flights" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       {showKeyInput ? (
         <div className="mb-2 space-y-1">
           <p className="text-xs text-[var(--color-muted)]">

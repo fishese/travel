@@ -41,7 +41,7 @@ export function SalesTaxCalculator({ currency, onUseAmount }: Props) {
   )
 
   return (
-    <Collapsible title="Sales tax / VAT">
+    <Collapsible id="sales-tax" title="Sales tax / VAT">
       {country ? (
         <div className="text-xs text-[var(--color-muted)] mb-2 space-y-1">
           <p>{country.sales_tax.note_en}</p>
