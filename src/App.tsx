@@ -5,6 +5,8 @@ import { Cheatsheet } from './components/Cheatsheet'
 import { FlightsSection } from './components/FlightsSection'
 import { HotelsSection } from './components/HotelsSection'
 import { BookingsSection } from './components/BookingsSection'
+import { DiveCertsSection } from './components/DiveCertsSection'
+import { DocumentVault } from './components/DocumentVault'
 import { ReminderFeed } from './components/ReminderFeed'
 import { ThemeToggle } from './components/ThemeToggle'
 
@@ -22,6 +24,8 @@ function App() {
       <FlightsSection />
       <HotelsSection />
       <BookingsSection />
+      <DiveCertsSection />
+      <DocumentVault />
       <Cheatsheet />
     </main>
   )

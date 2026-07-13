@@ -6,6 +6,7 @@ import {
   CATEGORY_LABELS,
   type BookingCategory,
 } from '../lib/bookings'
+import { localDateStr } from '../lib/dateUtils'
 import { Collapsible } from './Collapsible'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
@@ -14,7 +15,7 @@ export function BookingsSection() {
   const [bookings, setBookings] = useSavedBookings()
 
   const [category, setCategory] = useState<BookingCategory>('other')
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [date, setDate] = useState(() => localDateStr())
   const [time, setTime] = useState('')
   const [label, setLabel] = useState('')
   const [notes, setNotes] = useState('')

@@ -1,4 +1,5 @@
 import { useSetting } from './useSetting'
+import { localDateStr, localTomorrowStr } from './dateUtils'
 import type { SavedFlight } from './flights'
 import type { SavedHotel } from './hotels'
 import type { Booking } from './bookings'
@@ -15,10 +16,10 @@ export interface ReminderItem {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10)
+  return localDateStr()
 }
 function tomorrowStr(): string {
-  return new Date(Date.now() + 86_400_000).toISOString().slice(0, 10)
+  return localTomorrowStr()
 }
 
 export function buildReminders(

@@ -1,4 +1,5 @@
 import { useSetting } from './useSetting'
+import { localDateStr, localMonthStr } from './dateUtils'
 
 export interface SavedFlight {
   id: string
@@ -38,7 +39,7 @@ export function useFlightApiQuota() {
   const [count, setCount] = useSetting('travel_flight_api_count', 0)
   const [month, setMonth] = useSetting('travel_flight_api_month', '')
 
-  const currentMonth = new Date().toISOString().slice(0, 7) // "2026-07"
+  const currentMonth = localMonthStr() // "2026-07"
   const effectiveCount = month === currentMonth ? count : 0
 
   function recordCall() {
@@ -98,7 +99,7 @@ export function writeCachedStatus(flightId: string, status: FlightStatus) {
  * free Aviationstack plan only serves today's flights; historical and
  * future-schedule lookups are paid-only features. */
 export function isStatusCheckable(dateStr: string): boolean {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = localDateStr()
   return dateStr === today
 }
 
@@ -118,7 +119,15 @@ export async function fetchFlightStatus(
   flightIata: string,
   recordCall: () => void,
 ): Promise<FlightStatus> {
-  const today = new Date().toISOString().slice(0, 10)
+  // "Today" here means the browser's local date, which matches the flight's
+  // actual date in the overwhelmingly common case (checking a flight from
+  // wherever you currently are). It can still be wrong in the edge case of
+  // checking a flight departing a very different timezone while the
+  // browser's clock is on a different one — there's no way to know the
+  // departure airport's timezone before the first successful response,
+  // which is exactly what tells us it. Not solved, just narrowed from "off
+  // by a day in Hong Kong every morning" to "off only in that narrower case".
+  const today = localDateStr()
   const url =
     `https://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(apiKey)}` +
     `&flight_iata=${encodeURIComponent(flightIata)}&flight_date=${today}`

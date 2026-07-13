@@ -9,6 +9,7 @@ import {
   isFinalStatus,
   minutesToDeparture,
 } from '../lib/flights'
+import { localDateStr, localTomorrowStr } from '../lib/dateUtils'
 
 interface Props {
   flight: SavedFlight
@@ -69,8 +70,8 @@ function useFlightStatusPolling(flight: SavedFlight, apiKey: string, recordCall:
 export function FlightCard({ flight, apiKey, recordCall, onDelete }: Props) {
   const { status, loading, error, refresh, checkable } = useFlightStatusPolling(flight, apiKey, recordCall)
 
-  const today = new Date().toISOString().slice(0, 10)
-  const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10)
+  const today = localDateStr()
+  const tomorrow = localTomorrowStr()
   const isToday = flight.date === today
   const isTomorrow = flight.date === tomorrow
 

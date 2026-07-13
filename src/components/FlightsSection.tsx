@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight } from '../lib/flights'
+import { localDateStr } from '../lib/dateUtils'
 import { FlightCard } from './FlightCard'
 import { Collapsible } from './Collapsible'
 
@@ -12,7 +13,7 @@ export function FlightsSection() {
   const [showKeyInput, setShowKeyInput] = useState(!apiKey)
 
   const [flightIataInput, setFlightIataInput] = useState('')
-  const [dateInput, setDateInput] = useState(() => new Date().toISOString().slice(0, 10))
+  const [dateInput, setDateInput] = useState(() => localDateStr())
   const [notesInput, setNotesInput] = useState('')
 
   function addFlight() {

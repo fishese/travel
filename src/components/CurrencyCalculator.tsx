@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { convert, getRates, isStale, type RateCache } from '../lib/currency'
+import { describeMentalMath } from '../lib/mentalMath'
 import { formatTimeInZone, guessLocalTimeZone } from '../lib/time'
 import { useSetting } from '../lib/useSetting'
 import { useMarkupProfiles } from '../lib/markupProfiles'
@@ -71,6 +72,9 @@ export function CurrencyCalculator() {
   const parsedAmount = parseFloat(amount) || 0
   const result = rate ? convert(parsedAmount, rate, markupProfile.percent) : null
   const stale = isStale(cache)
+  // Mental math describes the actual currency conversion, not the
+  // card-fee-adjusted amount — same raw rate the line below already shows.
+  const mentalMath = rate ? describeMentalMath(rate) : null
 
   function swap() {
     setFrom(to)
@@ -134,6 +138,17 @@ export function CurrencyCalculator() {
               <p className="text-xs text-[var(--color-muted)] mt-0.5">
                 Includes ~{markupProfile.percent}% ({markupProfile.label}) for card/FX spread ·
                 raw rate: {result.raw.toLocaleString(undefined, { maximumFractionDigits: 2 })} {to}
+              </p>
+            )}
+            {mentalMath && mentalMath.text && (
+              <p className="text-xs text-[var(--color-pine)] mt-1 flex items-start gap-1">
+                <span aria-hidden>🧮</span>
+                <span>
+                  {mentalMath.text}
+                  {mentalMath.errorPercent > 1 && (
+                    <span className="text-[var(--color-muted)]"> (~{mentalMath.errorPercent}% off)</span>
+                  )}
+                </span>
               </p>
             )}
           </>
