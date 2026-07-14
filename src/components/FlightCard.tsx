@@ -4,6 +4,8 @@ import {
   type FlightStatus,
   readCachedStatus,
   writeCachedStatus,
+  readLastAttempt,
+  writeLastAttempt,
   fetchFlightStatus,
   isStatusCheckable,
   isFinalStatus,
@@ -15,6 +17,8 @@ interface Props {
   flight: SavedFlight
   apiKey: string
   recordCall: () => void
+  quotaCount: number
+  quotaLimit: number
   onDelete: (id: string) => void
 }
 
@@ -22,15 +26,27 @@ function fmtTime(iso: string) {
   return new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 }
 
-function useFlightStatusPolling(flight: SavedFlight, apiKey: string, recordCall: () => void) {
+function useFlightStatusPolling(
+  flight: SavedFlight,
+  apiKey: string,
+  recordCall: () => void,
+  quotaCount: number,
+  quotaLimit: number,
+) {
   const [status, setStatus] = useState<FlightStatus | null>(() => readCachedStatus(flight.id))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const checkable = isStatusCheckable(flight.date)
+  const quotaExhausted = quotaCount >= quotaLimit
 
   const doFetch = useCallback(async () => {
     if (!apiKey || !checkable) return
+    if (quotaCount >= quotaLimit) {
+      setError('Monthly quota reached — try again next month, or check flightaware.com directly.')
+      return
+    }
+    writeLastAttempt(flight.id) // before the call, so a failure still counts toward back-off
     setLoading(true)
     setError(null)
     try {
@@ -42,33 +58,48 @@ function useFlightStatusPolling(flight: SavedFlight, apiKey: string, recordCall:
     } finally {
       setLoading(false)
     }
-  }, [apiKey, checkable, flight.flightIata, flight.id, recordCall])
+  }, [apiKey, checkable, flight.flightIata, flight.id, recordCall, quotaCount, quotaLimit])
 
   // While this card is mounted (i.e. the app is open), re-check every
   // minute whether it's time to fetch — cheap local check, only calls the
   // API once the relevant staleness threshold has actually passed.
   useEffect(() => {
-    if (!checkable || !apiKey) return
+    if (!checkable || !apiKey || quotaExhausted) return
 
     function maybeFetch() {
       const cached = readCachedStatus(flight.id)
       if (cached && isFinalStatus(cached.flightStatus)) return
+
+      // Back off on repeated failures too, not just successful fetches —
+      // whichever happened more recently (a success or just an attempt)
+      // is what staleness is measured from.
+      const lastSuccess = cached ? new Date(cached.fetchedAt).getTime() : 0
+      const lastAttemptRaw = readLastAttempt(flight.id)
+      const lastAttempt = lastAttemptRaw ? new Date(lastAttemptRaw).getTime() : 0
+      const lastActivity = Math.max(lastSuccess, lastAttempt)
+
       const mins = minutesToDeparture(cached)
       const staleAfterMs = mins !== null && mins <= 240 ? 15 * 60_000 : 60 * 60_000
-      const age = cached ? Date.now() - new Date(cached.fetchedAt).getTime() : Infinity
+      const age = lastActivity ? Date.now() - lastActivity : Infinity
       if (age > staleAfterMs) doFetch()
     }
 
     maybeFetch()
     const interval = setInterval(maybeFetch, 60_000)
     return () => clearInterval(interval)
-  }, [checkable, apiKey, flight.id, doFetch])
+  }, [checkable, apiKey, quotaExhausted, flight.id, doFetch])
 
-  return { status, loading, error, refresh: doFetch, checkable }
+  return { status, loading, error, refresh: doFetch, checkable, quotaExhausted }
 }
 
-export function FlightCard({ flight, apiKey, recordCall, onDelete }: Props) {
-  const { status, loading, error, refresh, checkable } = useFlightStatusPolling(flight, apiKey, recordCall)
+export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit, onDelete }: Props) {
+  const { status, loading, error, refresh, checkable, quotaExhausted } = useFlightStatusPolling(
+    flight,
+    apiKey,
+    recordCall,
+    quotaCount,
+    quotaLimit,
+  )
 
   const today = localDateStr()
   const tomorrow = localTomorrowStr()
@@ -135,7 +166,7 @@ export function FlightCard({ flight, apiKey, recordCall, onDelete }: Props) {
                 <button
                   type="button"
                   onClick={refresh}
-                  disabled={loading}
+                  disabled={loading || quotaExhausted}
                   className="text-[var(--color-pine)] underline disabled:opacity-40"
                 >
                   Refresh
@@ -145,7 +176,12 @@ export function FlightCard({ flight, apiKey, recordCall, onDelete }: Props) {
           )}
 
           {!status && !loading && !error && (
-            <button type="button" onClick={refresh} className="text-xs text-[var(--color-pine)] underline">
+            <button
+              type="button"
+              onClick={refresh}
+              disabled={quotaExhausted}
+              className="text-xs text-[var(--color-pine)] underline disabled:opacity-40"
+            >
               Check status
             </button>
           )}

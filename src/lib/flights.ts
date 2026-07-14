@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { useSetting } from './useSetting'
 import { localDateStr, localMonthStr } from './dateUtils'
 
@@ -42,16 +43,28 @@ export function useFlightApiQuota() {
   const currentMonth = localMonthStr() // "2026-07"
   const effectiveCount = month === currentMonth ? count : 0
 
-  function recordCall() {
+  // Deliberately depends on `month` (changes at most once a month) and NOT
+  // on `count` (changes on every single call) — including count here would
+  // silently reintroduce the exact bug this fixes: recordCall recreated on
+  // every call, cascading through doFetch's useCallback into the polling
+  // effect's deps, re-triggering an immediate fetch each time. setCount
+  // uses the functional-update form specifically so it never needs to
+  // close over the current count value at all.
+  const recordCall = useCallback(() => {
     if (month !== currentMonth) {
       setMonth(currentMonth)
       setCount(1)
     } else {
       setCount((c) => c + 1)
     }
-  }
+  }, [month, currentMonth, setCount, setMonth])
 
-  return { count: effectiveCount, limit: QUOTA_LIMIT, recordCall }
+  const resetCount = useCallback(() => {
+    setMonth(currentMonth)
+    setCount(0)
+  }, [currentMonth, setCount, setMonth])
+
+  return { count: effectiveCount, limit: QUOTA_LIMIT, recordCall, resetCount }
 }
 
 // ---- Status fetch + per-flight cache ----
@@ -93,6 +106,24 @@ export function readCachedStatus(flightId: string): FlightStatus | null {
 
 export function writeCachedStatus(flightId: string, status: FlightStatus) {
   localStorage.setItem(cacheKey(flightId), JSON.stringify(status))
+}
+
+function lastAttemptKey(flightId: string) {
+  return `travel_flight_last_attempt_${flightId}`
+}
+
+/** Tracks every attempt — success or failure — separately from the
+ * last-successful cache above. Without this, a flight number that keeps
+ * erroring (wrong number, no data published, etc.) never has a "last
+ * fetched" timestamp to check staleness against, so the polling logic sees
+ * an infinitely-stale cache and retries on every single interval tick
+ * forever instead of backing off like a successful fetch would. */
+export function readLastAttempt(flightId: string): string | null {
+  return localStorage.getItem(lastAttemptKey(flightId))
+}
+
+export function writeLastAttempt(flightId: string) {
+  localStorage.setItem(lastAttemptKey(flightId), new Date().toISOString())
 }
 
 /** True once real-time data could plausibly exist for this flight — the

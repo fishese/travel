@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { calculateLine } from '../lib/napkinMath'
 import { useSetting } from '../lib/useSetting'
+import { Collapsible } from './Collapsible'
 
 interface Props {
   currency: string
@@ -33,10 +34,9 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
   }
 
   return (
-    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-semibold">Shopping notes</h2>
-        {notes.trim() && (
+    <Collapsible id="shopping-notes" title="Shopping notes">
+      {notes.trim() && (
+        <div className="flex justify-end mb-1">
           <button
             type="button"
             onClick={handleClearClick}
@@ -47,8 +47,8 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
           >
             {confirmingClear ? 'Tap again to clear' : 'Clear'}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <textarea
         value={notes}
@@ -90,6 +90,6 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
           )}
         </div>
       )}
-    </section>
+    </Collapsible>
   )
 }

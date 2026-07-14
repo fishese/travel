@@ -11,6 +11,7 @@ import { MarkupProfileBar } from './MarkupProfiles'
 import { ShoppingNotes } from './ShoppingNotes'
 import { GratuityCalculator } from './GratuityCalculator'
 import { SalesTaxCalculator } from './SalesTaxCalculator'
+import { Collapsible } from './Collapsible'
 
 export function CurrencyCalculator() {
   const [homeCurrency] = useSetting('travel_home_currency', 'HKD')
@@ -83,7 +84,7 @@ export function CurrencyCalculator() {
 
   return (
     <>
-    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-sm">
+    <Collapsible id="currency" title="Currency" defaultOpen>
       {/* time line — one quiet ticket-stub touch, not repeated elsewhere */}
       <div className="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-2 pb-1.5 border-b border-dashed border-[var(--color-border)]">
         <span className="tabular">Local {localTime}</span>
@@ -169,7 +170,7 @@ export function CurrencyCalculator() {
           </span>
         )}
       </div>
-    </section>
+    </Collapsible>
 
     <ShoppingNotes currency={to} onUseAmount={(v) => setAmount(String(v))} />
     <GratuityCalculator currency={to} onUseAmount={(v) => setAmount(String(v))} />

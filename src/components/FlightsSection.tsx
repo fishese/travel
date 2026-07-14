@@ -16,6 +16,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
 
   const [keyInput, setKeyInput] = useState(apiKey)
   const [showKeyInput, setShowKeyInput] = useState(!apiKey)
+  const [confirmingReset, setConfirmingReset] = useState(false)
 
   const [flightIataInput, setFlightIataInput] = useState('')
   const [dateInput, setDateInput] = useState(() => localDateStr())
@@ -74,16 +75,35 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
           <span className="tabular">
             Flight data: {quota.count}/{quota.limit} this month
           </span>
-          <button
-            type="button"
-            onClick={() => {
-              setKeyInput(apiKey)
-              setShowKeyInput(true)
-            }}
-            className="text-[var(--color-pine)] underline"
-          >
-            Change key
-          </button>
+          <div className="flex items-center gap-2">
+            {quota.count > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!confirmingReset) {
+                    setConfirmingReset(true)
+                    setTimeout(() => setConfirmingReset(false), 3000)
+                    return
+                  }
+                  quota.resetCount()
+                  setConfirmingReset(false)
+                }}
+                className={confirmingReset ? 'text-[var(--color-amber)]' : 'text-[var(--color-pine)] underline'}
+              >
+                {confirmingReset ? 'Tap again to reset' : 'Reset count'}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setKeyInput(apiKey)
+                setShowKeyInput(true)
+              }}
+              className="text-[var(--color-pine)] underline"
+            >
+              Change key
+            </button>
+          </div>
         </div>
       )}
 
@@ -123,7 +143,15 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
       ) : (
         <div className="space-y-2">
           {sorted.map((f) => (
-            <FlightCard key={f.id} flight={f} apiKey={apiKey} recordCall={quota.recordCall} onDelete={removeFlight} />
+            <FlightCard
+              key={f.id}
+              flight={f}
+              apiKey={apiKey}
+              recordCall={quota.recordCall}
+              quotaCount={quota.count}
+              quotaLimit={quota.limit}
+              onDelete={removeFlight}
+            />
           ))}
         </div>
       )}

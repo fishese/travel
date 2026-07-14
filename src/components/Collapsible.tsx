@@ -7,13 +7,13 @@ interface Props {
   children: ReactNode
   onMoveUp?: () => void
   onMoveDown?: () => void
+  defaultOpen?: boolean
 }
 
-export function Collapsible({ id, title, children, onMoveUp, onMoveDown }: Props) {
+export function Collapsible({ id, title, children, onMoveUp, onMoveDown, defaultOpen = false }: Props) {
   // Persisted per section — whatever you leave open stays open next time,
   // which is the "pinning" behavior without needing a separate pin concept.
-  // Defaults to closed, matching the previous (non-persisted) behavior.
-  const [open, setOpen] = useSetting(`travel_section_open_${id}`, false)
+  const [open, setOpen] = useSetting(`travel_section_open_${id}`, defaultOpen)
 
   return (
     <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] mt-2">
