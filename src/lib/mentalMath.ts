@@ -4,8 +4,9 @@
  *
  * Based on the six-rule algorithm in mental_math_algo.md, redesigned around
  * one shared "describe this mantissa" function rather than separate
- * bespoke logic per rule. Two real bugs turned up in the original while
- * validating against its own worked examples, both fixed here:
+ * bespoke logic per rule. Three real bugs turned up — two during initial
+ * validation against the doc's own worked examples, one from user testing
+ * on a real rate — all fixed here:
  *
  * 1. Redundant zero-shift: for a rate like 0.001, the original produced
  *    "Drop 4 zeros, then multiply by 10" — mathematically identical to just
@@ -23,6 +24,14 @@
  *    keeping whichever fits best, with a tie-break that resists floating
  *    point noise so boundary rates don't flip to an awkward double-zero
  *    phrasing for no real accuracy gain.
+ *
+ * 3. Ugly percentages near the ends of the 0.5–2.0 band: a mantissa of 1.9
+ *    (a real HKD→KRW rate) produced "Add 90%" — exact, but 90% isn't a
+ *    fraction anyone actually thinks in, while "double it" is both simpler
+ *    and still close enough to be worth the small accuracy trade. Fixed by
+ *    comparing against ×2/÷0.5 whenever the percentage isn't already one
+ *    of the clean named fractions (quarter, third, half, two-thirds,
+ *    three-quarters).
  *
  * Validated against every worked example in the source doc (matches
  * exactly or improves on them) plus boundary/degenerate inputs (exact
@@ -72,15 +81,36 @@ function describeMantissa(m: number): MantissaDescription {
 
     const sign = diff > 0 ? 1 : -1
     const estimate = 1 + sign * (percent / 100)
-    const err = rawError(estimate, m)
+    const percErr = rawError(estimate, m)
     const verb = sign > 0 ? 'Add' : 'Subtract'
+    const NICE_FRACTIONS = new Set([25, 33, 35, 50, 65, 66, 75])
     const fraction =
       percent === 25 ? ' (a quarter)' :
       percent === 50 ? ' (half)' :
       percent === 33 || percent === 35 ? ' (a third)' :
       percent === 65 || percent === 66 ? ' (two-thirds)' :
       percent === 75 ? ' (three-quarters)' : ''
-    return { text: `${verb} ${percent}%${fraction}`, err }
+
+    // Near the top/bottom of this range, "double it"/"halve it" can beat an
+    // ugly percentage even at slightly worse accuracy. A mantissa of 1.9 is
+    // exactly "Add 90%" — but 90% isn't a fraction anyone actually thinks
+    // in, while "about double" is both simpler and, in a case like this,
+    // still close (found via user testing: HKD→KRW was producing "Add 2
+    // zeros, then add 90%" when "then double it" is plainly better). Only
+    // worth the accuracy trade when the percentage isn't already one of
+    // the clean fractions above, since those are just as easy as doubling.
+    if (!NICE_FRACTIONS.has(percent)) {
+      const altValue = sign > 0 ? 2 : 0.5
+      const altErr = rawError(altValue, m)
+      if (altErr <= percErr + 0.08) {
+        const altDiff = altValue - m
+        const qualifier = Math.abs(altDiff) / m > 0.01 ? (altDiff > 0 ? ' and subtract a bit' : ' and add a bit') : ''
+        const altText = sign > 0 ? `Multiply by 2${qualifier}` : `Divide by 2${qualifier}`
+        return { text: altText, err: altErr }
+      }
+    }
+
+    return { text: `${verb} ${percent}%${fraction}`, err: percErr }
   }
 
   // >= 2.0: direct multiplier.
