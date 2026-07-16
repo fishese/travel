@@ -60,7 +60,7 @@ function ProfileRow({
       <input
         value={profile.label}
         onChange={(e) => onChange(profile.id, { label: e.target.value })}
-        className="flex-1 rounded border border-[var(--color-border)] px-2 py-1"
+        className="flex-1 min-w-0 rounded border border-[var(--color-border)] px-2 py-1"
       />
       <input
         type="number"
@@ -94,7 +94,7 @@ function AddProfileRow({ onAdd }: { onAdd: (label: string, percent: number) => v
         value={label}
         onChange={(e) => setLabel(e.target.value)}
         placeholder="New profile (e.g. Amex)"
-        className="flex-1 rounded border border-[var(--color-border)] px-2 py-1"
+        className="flex-1 min-w-0 rounded border border-[var(--color-border)] px-2 py-1"
       />
       <input
         type="number"

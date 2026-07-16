@@ -116,6 +116,11 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
             {isToday && ' · Today'}
             {isTomorrow && ' · Tomorrow'}
           </p>
+          {(flight.origin || flight.destination || flight.departureTime || flight.arrivalTime) && (
+            <p className="text-xs text-[var(--color-muted)] tabular">
+              {flight.origin ?? '?'} {flight.departureTime ?? ''} → {flight.destination ?? '?'} {flight.arrivalTime ?? ''}
+            </p>
+          )}
           {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
         </div>
         <button

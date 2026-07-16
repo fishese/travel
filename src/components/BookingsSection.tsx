@@ -66,19 +66,19 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
           ))}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
             placeholder="optional"
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>
 

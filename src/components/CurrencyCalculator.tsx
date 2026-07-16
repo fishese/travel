@@ -14,28 +14,41 @@ import { SalesTaxCalculator } from './SalesTaxCalculator'
 import { Collapsible } from './Collapsible'
 
 export function CurrencyCalculator() {
-  const [homeCurrency] = useSetting('travel_home_currency', 'HKD')
+  const [homeCurrency, setHomeCurrency] = useSetting('travel_home_currency', 'HKD')
   const [homeTimezone] = useSetting('travel_home_timezone', 'Asia/Hong_Kong')
   const { active: markupProfile } = useMarkupProfiles()
   const { iso2: countryIso2 } = useCurrentCountry()
   const country = countryIso2 ? getCountry(countryIso2) : undefined
 
-  const [from, setFrom] = useState(homeCurrency) // home side
-  const [to, setTo] = useState(homeCurrency) // local/destination side — same convention GratuityCalculator and SalesTaxCalculator already use
+  // Flipped from an earlier version: typing an amount should default to
+  // meaning "this many units of the local currency," converting to home —
+  // e.g. jotting "450" for a jacket in Taiwan should assume 450 TWD and
+  // show its HKD value, not the other way around. So "from" is local
+  // (synced to country selection below) and "to" is home (defaults to the
+  // remembered home currency; manually changing it updates that memory).
+  const [from, setFrom] = useState(homeCurrency) // local side
+  const [to, setTo] = useState(homeCurrency) // home side
   const [amount, setAmount] = useState('100')
 
-  // Sync "to" to the selected country's currency whenever the country
-  // selection itself changes (not on every render, so a manual override
-  // afterwards — e.g. checking EUR while actually in Japan — isn't clobbered
-  // until the country picker changes again).
+  // Sync "from" (local) to the selected country's currency whenever the
+  // country selection itself changes (not on every render, so a manual
+  // override afterwards — e.g. checking EUR while actually in Japan — isn't
+  // clobbered until the country picker changes again).
   useEffect(() => {
     if (country) {
-      setTo(country.currency)
+      setFrom(country.currency)
     }
     // country is a stable reference for a given countryIso2 (looked up from
     // a module-level constant), so this only actually re-runs when the
     // country selection itself changes.
   }, [countryIso2, country])
+
+  // Manually changing the home side remembers it as the new default home
+  // currency for next time — "save last used for home currency."
+  function handleToChange(newTo: string) {
+    setTo(newTo)
+    setHomeCurrency(newTo)
+  }
 
   const [cache, setCache] = useState<RateCache | null>(null)
   const [offline, setOffline] = useState(false)
@@ -106,7 +119,7 @@ export function CurrencyCalculator() {
         >
           ⇄
         </button>
-        <CurrencyPicker label="To" value={to} onChange={setTo} />
+        <CurrencyPicker label="To" value={to} onChange={handleToChange} />
       </div>
 
       <label className="block mb-2">
@@ -172,9 +185,9 @@ export function CurrencyCalculator() {
       </div>
     </Collapsible>
 
-    <ShoppingNotes currency={to} onUseAmount={(v) => setAmount(String(v))} />
-    <GratuityCalculator currency={to} onUseAmount={(v) => setAmount(String(v))} />
-    <SalesTaxCalculator currency={to} onUseAmount={(v) => setAmount(String(v))} />
+    <ShoppingNotes currency={from} onUseAmount={(v) => setAmount(String(v))} />
+    <GratuityCalculator currency={from} onUseAmount={(v) => setAmount(String(v))} />
+    <SalesTaxCalculator currency={from} onUseAmount={(v) => setAmount(String(v))} />
     </>
   )
 }

@@ -17,7 +17,10 @@ function makeId() {
 
 export function useMarkupProfiles() {
   const [profiles, setProfiles] = useSetting<MarkupProfile[]>('travel_fx_profiles', DEFAULT_PROFILES)
-  const [activeId, setActiveId] = useSetting('travel_fx_active_profile', DEFAULT_PROFILES[1].id)
+  // Defaults to Cash (0%) rather than Card (3%) — this is the same rate
+  // the mental math shortcut describes, so the hero result and the mental
+  // math hint agree with each other by default. 3% is still one tap away.
+  const [activeId, setActiveId] = useSetting('travel_fx_active_profile', DEFAULT_PROFILES[0].id)
 
   const active = profiles.find((p) => p.id === activeId) ?? profiles[0]
 

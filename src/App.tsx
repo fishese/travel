@@ -10,6 +10,9 @@ import { DiveCertsSection } from './components/DiveCertsSection'
 import { DocumentVault } from './components/DocumentVault'
 import { ReminderFeed } from './components/ReminderFeed'
 import { ThemeToggle } from './components/ThemeToggle'
+import { TabBar } from './components/TabBar'
+import { FloatingShortcut } from './components/FloatingShortcut'
+import { useActiveTab } from './lib/tabs'
 import { useSectionOrder } from './lib/sectionOrder'
 
 interface SectionProps {
@@ -17,45 +20,58 @@ interface SectionProps {
   onMoveDown?: () => void
 }
 
-// Secondary, reorderable sections — the hero block above (reminders,
-// weather, country, currency) stays fixed since those are the daily-use
-// tools regardless of trip phase. Keys must match lib/sectionOrder.ts's
-// DEFAULT_SECTION_ORDER.
+// Planner tab's reorderable sections. Keys must match
+// lib/sectionOrder.ts's DEFAULT_SECTION_ORDER. Cheatsheet lives in its own
+// tab now, not mixed in with these.
 const SECTION_COMPONENTS: Record<string, ComponentType<SectionProps>> = {
   flights: FlightsSection,
   hotels: HotelsSection,
   bookings: BookingsSection,
   'dive-certs': DiveCertsSection,
   documents: DocumentVault,
-  cheatsheet: Cheatsheet,
 }
 
 function App() {
+  const [activeTab] = useActiveTab()
   const { order, moveUp, moveDown } = useSectionOrder()
 
   return (
-    <main className="min-h-screen px-3 py-3 max-w-md mx-auto">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="font-display text-lg">Travel Toolkit</h1>
-        <ThemeToggle />
-      </div>
-      <ReminderFeed />
-      <WeatherCard />
-      <CountrySelector />
-      <CurrencyCalculator />
+    <>
+      <main className="min-h-screen px-3 py-3 pb-24 max-w-md mx-auto">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="font-display text-lg">Travel Toolkit</h1>
+          <ThemeToggle />
+        </div>
 
-      {order.map((id, idx) => {
-        const Section = SECTION_COMPONENTS[id]
-        if (!Section) return null
-        return (
-          <Section
-            key={id}
-            onMoveUp={idx > 0 ? () => moveUp(id) : undefined}
-            onMoveDown={idx < order.length - 1 ? () => moveDown(id) : undefined}
-          />
-        )
-      })}
-    </main>
+        {activeTab === 'dashboard' && (
+          <>
+            <ReminderFeed />
+            <WeatherCard />
+            <CountrySelector />
+          </>
+        )}
+
+        {activeTab === 'money' && <CurrencyCalculator />}
+
+        {activeTab === 'planner' &&
+          order.map((id, idx) => {
+            const Section = SECTION_COMPONENTS[id]
+            if (!Section) return null
+            return (
+              <Section
+                key={id}
+                onMoveUp={idx > 0 ? () => moveUp(id) : undefined}
+                onMoveDown={idx < order.length - 1 ? () => moveDown(id) : undefined}
+              />
+            )
+          })}
+
+        {activeTab === 'cheatsheet' && <Cheatsheet />}
+      </main>
+
+      <FloatingShortcut />
+      <TabBar />
+    </>
   )
 }
 

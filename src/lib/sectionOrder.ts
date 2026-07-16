@@ -1,6 +1,6 @@
 import { useSetting } from './useSetting'
 
-export const DEFAULT_SECTION_ORDER = ['flights', 'hotels', 'bookings', 'dive-certs', 'documents', 'cheatsheet']
+export const DEFAULT_SECTION_ORDER = ['flights', 'hotels', 'bookings', 'dive-certs', 'documents']
 
 /**
  * Persisted section order with up/down moves. Self-healing: if a future

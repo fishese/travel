@@ -20,12 +20,31 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
 
   const [flightIataInput, setFlightIataInput] = useState('')
   const [dateInput, setDateInput] = useState(() => localDateStr())
+  const [originInput, setOriginInput] = useState('')
+  const [destinationInput, setDestinationInput] = useState('')
+  const [departureTimeInput, setDepartureTimeInput] = useState('')
+  const [arrivalTimeInput, setArrivalTimeInput] = useState('')
   const [notesInput, setNotesInput] = useState('')
 
   function addFlight() {
     if (!flightIataInput.trim()) return
-    setFlights((prev) => [...prev, newFlight(flightIataInput, dateInput, notesInput)])
+    setFlights((prev) => [
+      ...prev,
+      newFlight({
+        flightIata: flightIataInput,
+        date: dateInput,
+        origin: originInput,
+        destination: destinationInput,
+        departureTime: departureTimeInput,
+        arrivalTime: arrivalTimeInput,
+        notes: notesInput,
+      }),
+    ])
     setFlightIataInput('')
+    setOriginInput('')
+    setDestinationInput('')
+    setDepartureTimeInput('')
+    setArrivalTimeInput('')
     setNotesInput('')
   }
 
@@ -51,12 +70,12 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
             </a>
             . Reminders below work without it.
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               placeholder="API key"
-              className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+              className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
             />
             <button
               type="button"
@@ -108,24 +127,60 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
       )}
 
       <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             value={flightIataInput}
             onChange={(e) => setFlightIataInput(e.target.value)}
             placeholder="Flight # (e.g. CX500)"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             type="date"
             value={dateInput}
             onChange={(e) => setDateInput(e.target.value)}
-            className="rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          <input
+            value={originInput}
+            onChange={(e) => setOriginInput(e.target.value)}
+            placeholder="From (e.g. HKG, optional)"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+          />
+          <input
+            type="time"
+            value={departureTimeInput}
+            onChange={(e) => setDepartureTimeInput(e.target.value)}
+            aria-label="Departure time, local to origin"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <input
+            value={destinationInput}
+            onChange={(e) => setDestinationInput(e.target.value)}
+            placeholder="To (e.g. NRT, optional)"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+          />
+          <input
+            type="time"
+            value={arrivalTimeInput}
+            onChange={(e) => setArrivalTimeInput(e.target.value)}
+            aria-label="Arrival time, local to destination"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+          />
+        </div>
+        <p className="text-xs text-[var(--color-muted)]">
+          Departure/arrival times are each local to their own airport — enter what your boarding pass shows, no
+          conversion needed.
+        </p>
+
         <input
           value={notesInput}
           onChange={(e) => setNotesInput(e.target.value)}
-          placeholder="Notes (optional) — e.g. HKG→NRT"
+          placeholder="Notes (optional)"
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
         <button

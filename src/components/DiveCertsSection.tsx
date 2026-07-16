@@ -79,18 +79,18 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
       </p>
 
       <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             value={agency}
             onChange={(e) => setAgency(e.target.value)}
             placeholder="Agency (PADI, SSI…)"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             value={level}
             onChange={(e) => setLevel(e.target.value)}
             placeholder="Level (Open Water…)"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>
         <input
@@ -99,18 +99,18 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
           placeholder="Cert number"
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             type="date"
             value={issueDate}
             onChange={(e) => setIssueDate(e.target.value)}
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             value={instructorName}
             onChange={(e) => setInstructorName(e.target.value)}
             placeholder="Instructor (optional)"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>
         <input

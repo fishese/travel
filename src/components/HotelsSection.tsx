@@ -77,18 +77,18 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   return (
     <Collapsible id="hotels" title="Hotels" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Hotel name"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City"
-            className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>
 
@@ -130,8 +130,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
 
-        <div className="flex gap-2">
-          <label className="flex-1">
+        <div className="flex flex-wrap gap-2">
+          <label className="flex-1 min-w-0">
             <span className="block text-xs text-[var(--color-muted)] mb-0.5">Check-in</span>
             <input
               type="date"
@@ -140,7 +140,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
               className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
             />
           </label>
-          <label className="flex-1">
+          <label className="flex-1 min-w-0">
             <span className="block text-xs text-[var(--color-muted)] mb-0.5">Check-out</span>
             <input
               type="date"

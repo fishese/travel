@@ -36,9 +36,10 @@ export function buildReminders(
       items.push({
         id: `flight:${f.id}|${f.date}`,
         date: f.date,
+        time: f.departureTime,
         emoji: '✈️',
         title: f.flightIata,
-        subtitle: f.notes,
+        subtitle: f.origin && f.destination ? `${f.origin} → ${f.destination}` : f.notes,
         kind: 'flight',
       })
     }

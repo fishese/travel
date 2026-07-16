@@ -6,6 +6,10 @@ export interface SavedFlight {
   id: string
   flightIata: string // e.g. "CX500"
   date: string // YYYY-MM-DD, local to however the person entered it
+  origin?: string // IATA code, e.g. "HKG" — for labeling which timezone departureTime is in
+  destination?: string // IATA code, e.g. "NRT" — for labeling which timezone arrivalTime is in
+  departureTime?: string // HH:mm, local to origin
+  arrivalTime?: string // HH:mm, local to destination — overnight arrivals (next calendar day) aren't tracked separately, a known v1 limitation
   notes?: string
   savedAt: string
 }
@@ -18,12 +22,24 @@ function makeId() {
   return Math.random().toString(36).slice(2, 9)
 }
 
-export function newFlight(flightIata: string, date: string, notes?: string): SavedFlight {
+export function newFlight(fields: {
+  flightIata: string
+  date: string
+  origin?: string
+  destination?: string
+  departureTime?: string
+  arrivalTime?: string
+  notes?: string
+}): SavedFlight {
   return {
     id: makeId(),
-    flightIata: flightIata.toUpperCase().replace(/\s+/g, ''),
-    date,
-    notes: notes?.trim() || undefined,
+    flightIata: fields.flightIata.toUpperCase().replace(/\s+/g, ''),
+    date: fields.date,
+    origin: fields.origin?.trim().toUpperCase() || undefined,
+    destination: fields.destination?.trim().toUpperCase() || undefined,
+    departureTime: fields.departureTime || undefined,
+    arrivalTime: fields.arrivalTime || undefined,
+    notes: fields.notes?.trim() || undefined,
     savedAt: new Date().toISOString(),
   }
 }

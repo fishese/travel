@@ -2,19 +2,14 @@ import { getCountry } from '../lib/countries'
 import { useCurrentCountry } from '../lib/currentCountry'
 import { Collapsible } from './Collapsible'
 
-interface Props {
-  onMoveUp?: () => void
-  onMoveDown?: () => void
-}
-
-export function Cheatsheet({ onMoveUp, onMoveDown }: Props) {
+export function Cheatsheet() {
   const { iso2 } = useCurrentCountry()
   const country = getCountry(iso2)
 
   if (!country) return null
 
   return (
-    <Collapsible id="cheatsheet" title={`Cheatsheet — ${country.name_en}`} onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
+    <Collapsible id="cheatsheet" title={`Cheatsheet — ${country.name_en}`} defaultOpen>
       <div className="space-y-2 text-sm">
         <div>
           <h3 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Emergency</h3>

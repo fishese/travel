@@ -42,6 +42,16 @@ html, body, #root {
   height: 100%;
 }
 
+/* Defensive: no component should ever cause horizontal page scroll on
+   mobile. The actual bugs (flex children refusing to shrink below their
+   content's intrinsic width — missing min-w-0 — combined with a native
+   date/time input's wide rendering) are fixed at the source in each
+   component, but this is a backstop in case a future one has the same
+   oversight: clip rather than let the whole page scroll sideways. */
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);

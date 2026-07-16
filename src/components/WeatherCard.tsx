@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   getIPLocation,
   getGPSLocation,
@@ -30,17 +30,25 @@ export function WeatherCard() {
   const [locating, setLocating] = useState(false)
 
   const [gpsLoading, setGpsLoading] = useState(false)
+  const [ipPickerLoading, setIpPickerLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<CitySearchResult[]>([])
   const [pickerOpen, setPickerOpen] = useState(false)
 
-  // First-run default: silently try IP-based location (no permission
-  // prompt) if nothing is set yet. Only runs once — after that, the
-  // location is sticky until the person explicitly changes it via GPS or
-  // manual search, so this never overrides a deliberate choice.
+  // First-run-per-load default: silently try IP-based location (no
+  // permission prompt) on every mount (page load/refresh) — unless the
+  // current location was an explicit choice (GPS or manual search), which
+  // should stick until changed again rather than being silently
+  // overridden. Uses a ref snapshot of the *initial* source rather than
+  // depending on `location` reactively — depending on it directly would
+  // re-fire this same effect after its own setLocation call (still
+  // source:'ip'), hammering the IP lookup endpoint repeatedly instead of
+  // running once per load as intended.
+  const initialSourceRef = useRef(location?.source)
   useEffect(() => {
-    if (location) return
+    if (initialSourceRef.current === 'gps' || initialSourceRef.current === 'manual') return
     let cancelled = false
     setLocating(true)
     getIPLocation()
@@ -57,7 +65,7 @@ export function WeatherCard() {
     return () => {
       cancelled = true
     }
-  }, [location, setLocation])
+  }, [setLocation])
 
   useEffect(() => {
     if (!location) return
@@ -96,6 +104,38 @@ export function WeatherCard() {
     }
   }
 
+  async function handleUseIP() {
+    setIpPickerLoading(true)
+    setError(null)
+    try {
+      const loc = await getIPLocation()
+      setLocation(loc)
+      setPickerOpen(false)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setIpPickerLoading(false)
+    }
+  }
+
+  /** Re-runs whatever mechanism produced the current location — GPS stays
+   * GPS, IP stays IP — without needing to go into "Change" first. A manual
+   * search result has nothing to re-fetch (a picked city's coordinates
+   * don't change), so the button is hidden for that source. */
+  async function handleRefresh() {
+    if (!location || location.source === 'manual') return
+    setRefreshing(true)
+    setError(null)
+    try {
+      const loc = location.source === 'gps' ? await getGPSLocation() : await getIPLocation()
+      setLocation(loc)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   async function handleSearch() {
     setSearching(true)
     setError(null)
@@ -125,13 +165,26 @@ export function WeatherCard() {
             {location.label}
             <span className="text-xs font-normal text-[var(--color-muted)]"> · {SOURCE_LABEL[location.source]}</span>
           </h2>
-          <button
-            type="button"
-            onClick={() => setPickerOpen(true)}
-            className="text-xs text-[var(--color-pine)] underline shrink-0"
-          >
-            Change
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {location.source !== 'manual' && (
+              <button
+                type="button"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                aria-label="Refresh location"
+                className="text-[var(--color-pine)] disabled:opacity-40"
+              >
+                {refreshing ? '…' : '🔄'}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="text-xs text-[var(--color-pine)] underline"
+            >
+              Change
+            </button>
+          </div>
         </div>
       )}
 
@@ -150,13 +203,22 @@ export function WeatherCard() {
             {gpsLoading ? 'Getting location…' : '📍 Use my location'}
           </button>
 
-          <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleUseIP}
+            disabled={ipPickerLoading}
+            className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm disabled:opacity-50"
+          >
+            {ipPickerLoading ? 'Looking up…' : '🌐 Use approximate location (IP)'}
+          </button>
+
+          <div className="flex flex-wrap gap-2">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="or search a city…"
-              className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+              className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
             />
             <button
               type="button"
