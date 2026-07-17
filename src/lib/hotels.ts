@@ -21,8 +21,13 @@ export interface SavedHotel {
   rawText?: string
 }
 
+// Stable module-level reference — useSetting's setter/getSnapshot
+// memoization keys off this by identity, so a fresh `[]` literal here would
+// silently defeat it on every render (see useSetting.ts's header comment).
+const EMPTY_HOTELS: SavedHotel[] = []
+
 export function useSavedHotels() {
-  return useSetting<SavedHotel[]>('travel_hotels', [])
+  return useSetting<SavedHotel[]>('travel_hotels', EMPTY_HOTELS)
 }
 
 function makeId() {

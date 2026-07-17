@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import {
   getIPLocation,
   getGPSLocation,
@@ -20,7 +20,15 @@ const SOURCE_LABEL: Record<GeoLocation['source'], string> = {
   manual: 'manual',
 }
 
-export function WeatherCard() {
+export interface WeatherCardHandle {
+  /** Re-fetches the forecast — re-detects GPS/IP location first for those
+   * sources (same as the inline 🔄 button), or just re-fetches at the
+   * existing coordinates for a manual search pick. Used by the
+   * pull-to-refresh gesture on the Dashboard tab. */
+  refresh: () => Promise<void>
+}
+
+export const WeatherCard = forwardRef<WeatherCardHandle>(function WeatherCard(_props, ref) {
   const [location, setLocation] = useSetting<GeoLocation | null>('travel_weather_location', null)
   const [cache, setCache] = useState<WeatherCache | null>(null)
   const [stale, setStale] = useState(false)
@@ -135,6 +143,33 @@ export function WeatherCard() {
       setRefreshing(false)
     }
   }
+
+  /** Re-fetches the forecast at the current coordinates without touching
+   * location at all — the manual-search counterpart to handleRefresh
+   * above, since a picked city has no "re-detect" step. */
+  async function refreshWeatherOnly() {
+    if (!location) return
+    setLoading(true)
+    setError(null)
+    try {
+      const r = await getWeather(location.lat, location.lon)
+      setCache(r.cache)
+      setStale(r.stale)
+      setOffline(r.offline)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useImperativeHandle(ref, () => ({
+    refresh: async () => {
+      if (!location) return
+      if (location.source === 'manual') await refreshWeatherOnly()
+      else await handleRefresh()
+    },
+  }))
 
   async function handleSearch() {
     setSearching(true)
@@ -281,7 +316,7 @@ export function WeatherCard() {
       )}
     </section>
   )
-}
+})
 
 function WeatherSummary({ cache }: { cache: WeatherCache }) {
   const umbrella = computeUmbrellaSignal(cache)

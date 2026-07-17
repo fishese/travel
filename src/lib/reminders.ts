@@ -82,8 +82,13 @@ export function buildReminders(
  * bring back something already seen) but self-prune: each item's dismiss
  * key embeds its own date, so a stale entry for a date before today is
  * simply dropped on next write rather than needing a separate cleanup job. */
+// Stable module-level reference — see useSetting.ts's header comment for
+// why a fresh `[]` literal here would defeat the setter/getSnapshot
+// memoization on every render.
+const EMPTY_DISMISSED: string[] = []
+
 export function useDismissedReminders() {
-  const [dismissed, setDismissed] = useSetting<string[]>('travel_dismissed_reminders', [])
+  const [dismissed, setDismissed] = useSetting<string[]>('travel_dismissed_reminders', EMPTY_DISMISSED)
 
   function isDismissed(id: string): boolean {
     return dismissed.includes(id)

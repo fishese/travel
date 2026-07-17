@@ -1,7 +1,7 @@
-import type { ComponentType } from 'react'
+import { useRef, type ComponentType } from 'react'
 import { CurrencyCalculator } from './components/CurrencyCalculator'
 import { CountrySelector } from './components/CountrySelector'
-import { WeatherCard } from './components/WeatherCard'
+import { WeatherCard, type WeatherCardHandle } from './components/WeatherCard'
 import { Cheatsheet } from './components/Cheatsheet'
 import { FlightsSection } from './components/FlightsSection'
 import { HotelsSection } from './components/HotelsSection'
@@ -12,6 +12,7 @@ import { ReminderFeed } from './components/ReminderFeed'
 import { ThemeToggle } from './components/ThemeToggle'
 import { TabBar } from './components/TabBar'
 import { FloatingShortcut } from './components/FloatingShortcut'
+import { PullToRefresh } from './components/PullToRefresh'
 import { useActiveTab } from './lib/tabs'
 import { useSectionOrder } from './lib/sectionOrder'
 
@@ -34,6 +35,11 @@ const SECTION_COMPONENTS: Record<string, ComponentType<SectionProps>> = {
 function App() {
   const [activeTab] = useActiveTab()
   const { order, moveUp, moveDown } = useSectionOrder()
+  const weatherRef = useRef<WeatherCardHandle>(null)
+
+  async function refreshDashboard() {
+    await weatherRef.current?.refresh()
+  }
 
   return (
     <>
@@ -44,11 +50,11 @@ function App() {
         </div>
 
         {activeTab === 'dashboard' && (
-          <>
+          <PullToRefresh onRefresh={refreshDashboard}>
             <ReminderFeed />
-            <WeatherCard />
+            <WeatherCard ref={weatherRef} />
             <CountrySelector />
-          </>
+          </PullToRefresh>
         )}
 
         {activeTab === 'money' && <CurrencyCalculator />}

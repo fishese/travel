@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { computeTip } from '../lib/tax'
 import { getCountry } from '../lib/countries'
 import { useCurrentCountry } from '../lib/currentCountry'
@@ -21,6 +21,15 @@ export function GratuityCalculator({ currency, onUseAmount }: Props) {
   const [tipPercent, setTipPercent] = useState(country?.tipping.default_percents[0] ?? 15)
   const [customTip, setCustomTip] = useState('')
   const [split, setSplit] = useState(1)
+
+  // Re-sync the selected preset when the current country changes — without
+  // this, switching country left tipPercent frozen at whatever it was
+  // before, so none of the new country's preset chips would show as
+  // selected even though the math was still using the stale value.
+  useEffect(() => {
+    setTipPercent(country?.tipping.default_percents[0] ?? 15)
+    setCustomTip('')
+  }, [countryIso2, country])
 
   const tipPresets = country ? country.tipping.default_percents : GENERIC_TIP_PRESETS
   const effectiveTip = customTip !== '' ? Number(customTip) || 0 : tipPercent

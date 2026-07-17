@@ -12,10 +12,24 @@ export interface SavedFlight {
   arrivalTime?: string // HH:mm, local to destination — overnight arrivals (next calendar day) aren't tracked separately, a known v1 limitation
   notes?: string
   savedAt: string
+
+  // Same provenance pair as lib/bookings.ts's Booking — a pasted entry
+  // keeps its source text around so a wrong parse can be checked against
+  // the original rather than just silently trusted. Optional (unlike
+  // Booking's required version) because real flights already exist in
+  // storage from before this field was added; treat a missing source as
+  // equivalent to 'manual' everywhere it's read.
+  source?: 'manual' | 'pasted'
+  rawText?: string
 }
 
+// Stable module-level reference — see useSetting.ts's header comment for
+// why a fresh `[]` literal here would defeat the setter/getSnapshot
+// memoization on every render.
+const EMPTY_FLIGHTS: SavedFlight[] = []
+
 export function useSavedFlights() {
-  return useSetting<SavedFlight[]>('travel_flights', [])
+  return useSetting<SavedFlight[]>('travel_flights', EMPTY_FLIGHTS)
 }
 
 function makeId() {
@@ -30,6 +44,8 @@ export function newFlight(fields: {
   departureTime?: string
   arrivalTime?: string
   notes?: string
+  source?: SavedFlight['source']
+  rawText?: string
 }): SavedFlight {
   return {
     id: makeId(),
@@ -41,6 +57,8 @@ export function newFlight(fields: {
     arrivalTime: fields.arrivalTime || undefined,
     notes: fields.notes?.trim() || undefined,
     savedAt: new Date().toISOString(),
+    source: fields.source ?? 'manual',
+    rawText: fields.rawText,
   }
 }
 

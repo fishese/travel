@@ -41,23 +41,30 @@ export function ReminderFeed() {
   if (visibleToday.length === 0 && visibleTomorrow.length === 0) return null
 
   return (
-    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-amber-dim)] p-3 mb-2">
-      {visibleToday.length > 0 && (
-        <div className={visibleTomorrow.length > 0 ? 'mb-2' : ''}>
-          <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Today</h2>
-          {visibleToday.map((item) => (
-            <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
-          ))}
-        </div>
-      )}
-      {visibleTomorrow.length > 0 && (
-        <div>
-          <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Tomorrow</h2>
-          {visibleTomorrow.map((item) => (
-            <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
-          ))}
-        </div>
-      )}
-    </section>
+    // Sticky against the viewport, not just its own scroll area — stays
+    // visible as weather/country content scrolls past underneath. The
+    // negative margin + matching padding makes it full-bleed behind the
+    // page's own left/right padding, so a solid backdrop can sit behind
+    // the (semi-transparent) amber card without a gap at the edges.
+    <div className="sticky top-0 z-20 -mx-3 px-3 pt-3 pb-2 bg-[var(--color-paper)]">
+      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-amber-dim)] p-3">
+        {visibleToday.length > 0 && (
+          <div className={visibleTomorrow.length > 0 ? 'mb-2' : ''}>
+            <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Today</h2>
+            {visibleToday.map((item) => (
+              <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
+            ))}
+          </div>
+        )}
+        {visibleTomorrow.length > 0 && (
+          <div>
+            <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Tomorrow</h2>
+            {visibleTomorrow.map((item) => (
+              <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   )
 }

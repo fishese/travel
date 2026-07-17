@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useSavedDiveCerts, newDiveCert, type DiveCert } from '../lib/diveCerts'
 import { saveFile, getFile, deleteFile, fileObjectUrl, type VaultFile } from '../lib/fileVault'
 import { Collapsible } from './Collapsible'
+import { AddFormToggle } from './AddFormToggle'
+import { SwipeToDelete } from './SwipeToDelete'
+import { requestOpen } from '../lib/swipeCoordinator'
 
 function CertPhoto({ fileId }: { fileId: string }) {
   const [file, setFile] = useState<VaultFile | undefined>(undefined)
@@ -45,6 +48,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   const [notes, setNotes] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showAddForm, setShowAddForm] = useState(() => certs.length === 0)
 
   async function addCert() {
     if (!agency.trim() || !level.trim()) return
@@ -65,6 +69,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
     setNotes('')
     setPhotoFile(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
+    setShowAddForm(false)
   }
 
   async function removeCert(cert: DiveCert) {
@@ -78,7 +83,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
         Offline-accessible proof of certification for dive shops/liveaboards — useful with no signal.
       </p>
 
-      <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
+      <AddFormToggle label="Add dive cert" open={showAddForm} onOpenChange={setShowAddForm}>
         <div className="flex flex-wrap gap-2">
           <input
             value={agency}
@@ -134,34 +139,36 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
         >
           Save cert
         </button>
-      </div>
+      </AddFormToggle>
 
       {certs.length === 0 ? (
         <p className="text-sm text-[var(--color-muted)]">No certs saved yet.</p>
       ) : (
         <div className="space-y-2">
           {certs.map((c) => (
-            <div key={c.id} className="rounded-lg border border-[var(--color-border)] p-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">
-                    {c.agency} · {c.level}
-                  </p>
-                  <p className="text-xs text-[var(--color-muted)] truncate">
-                    {[c.certNumber, c.issueDate, c.instructorName].filter(Boolean).join(' · ')}
-                  </p>
-                  {c.notes && <p className="text-xs text-[var(--color-muted)] truncate">{c.notes}</p>}
+            <SwipeToDelete key={c.id} id={c.id} label={`${c.agency} ${c.level}`} onDelete={() => removeCert(c)}>
+              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">
+                      {c.agency} · {c.level}
+                    </p>
+                    <p className="text-xs text-[var(--color-muted)] truncate">
+                      {[c.certNumber, c.issueDate, c.instructorName].filter(Boolean).join(' · ')}
+                    </p>
+                    {c.notes && <p className="text-xs text-[var(--color-muted)] truncate">{c.notes}</p>}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => requestOpen(c.id)}
+                    className="text-xs text-[var(--color-amber)] shrink-0"
+                  >
+                    Remove
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeCert(c)}
-                  className="text-xs text-[var(--color-amber)] shrink-0"
-                >
-                  Remove
-                </button>
+                {c.photoFileId && <CertPhoto fileId={c.photoFileId} />}
               </div>
-              {c.photoFileId && <CertPhoto fileId={c.photoFileId} />}
-            </div>
+            </SwipeToDelete>
           ))}
         </div>
       )}

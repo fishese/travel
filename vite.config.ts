@@ -26,6 +26,31 @@ export default defineConfig({
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
         ],
+        // Long-press the home-screen icon (Android) for quick jumps,
+        // skipping the tab bar entirely. tab=… is read once on load by
+        // lib/tabs.ts's useActiveTab. No per-shortcut icons — reusing the
+        // main 192px icon rather than shipping near-duplicate assets for
+        // a handful of shortcuts.
+        shortcuts: [
+          {
+            name: 'Currency converter',
+            short_name: 'Money',
+            url: '/travel/?tab=money',
+            icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Planner',
+            short_name: 'Planner',
+            url: '/travel/?tab=planner',
+            icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Cheatsheet',
+            short_name: 'Cheatsheet',
+            url: '/travel/?tab=cheatsheet',
+            icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],

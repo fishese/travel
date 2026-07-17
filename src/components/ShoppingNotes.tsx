@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { calculateLine } from '../lib/napkinMath'
 import { useSetting } from '../lib/useSetting'
+import { hapticTick, hapticConfirm } from '../lib/haptics'
 import { Collapsible } from './Collapsible'
 
 interface Props {
@@ -26,9 +27,11 @@ export function ShoppingNotes({ currency, onUseAmount }: Props) {
   function handleClearClick() {
     if (!confirmingClear) {
       setConfirmingClear(true)
+      hapticTick()
       setTimeout(() => setConfirmingClear(false), 3000)
       return
     }
+    hapticConfirm()
     setNotes('')
     setConfirmingClear(false)
   }

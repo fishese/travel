@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { useSavedHotels, newHotel, lookupHotel, type HotelLookupResult } from '../lib/hotels'
+import { isPastDate } from '../lib/archive'
 import { Collapsible } from './Collapsible'
 import { ShowToDriver } from './ShowToDriver'
+import { AddFormToggle } from './AddFormToggle'
+import { PastEntries } from './PastEntries'
+import { SwipeToDelete } from './SwipeToDelete'
+import { requestOpen } from '../lib/swipeCoordinator'
 
 interface Props {
   onMoveUp?: () => void
@@ -27,6 +32,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   const [results, setResults] = useState<HotelLookupResult[]>([])
 
   const [driverView, setDriverView] = useState<{ name: string; address: string; mapsUrl?: string } | null>(null)
+  const [showAddForm, setShowAddForm] = useState(() => hotels.length === 0)
 
   async function handleLookup() {
     setLooking(true)
@@ -66,6 +72,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setLon(undefined)
     setOsmPlaceId(undefined)
     setResults([])
+    setShowAddForm(false)
   }
 
   function removeHotel(id: string) {
@@ -73,10 +80,56 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   }
 
   const sorted = [...hotels].sort((a, b) => (a.checkIn ?? '9999').localeCompare(b.checkIn ?? '9999'))
+  // A hotel is only really "past" once you've checked out — fall back to
+  // check-in if no check-out date was given, since that's the best signal
+  // available at that point.
+  const upcoming = sorted.filter((h) => !isPastDate(h.checkOut ?? h.checkIn))
+  const past = sorted.filter((h) => isPastDate(h.checkOut ?? h.checkIn))
+
+  function renderHotel(h: (typeof hotels)[number]) {
+    return (
+      <SwipeToDelete key={h.id} id={h.id} label={h.name} onDelete={() => removeHotel(h.id)}>
+        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate">{h.name}</p>
+              <p className="text-xs text-[var(--color-muted)] truncate">
+                {[h.checkIn, h.checkOut].filter(Boolean).join(' → ') || h.city}
+              </p>
+              {h.address && <p className="text-xs text-[var(--color-muted)] truncate">{h.address}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={() => requestOpen(h.id)}
+              className="text-xs text-[var(--color-amber)] shrink-0"
+            >
+              Remove
+            </button>
+          </div>
+          <div className="flex gap-3 mt-1 text-xs">
+            {h.address && (
+              <button
+                type="button"
+                onClick={() => setDriverView({ name: h.name, address: h.address, mapsUrl: h.mapsUrl })}
+                className="text-[var(--color-pine)] underline"
+              >
+                Show to driver
+              </button>
+            )}
+            {h.mapsUrl && (
+              <a href={h.mapsUrl} target="_blank" rel="noreferrer" className="text-[var(--color-pine)] underline">
+                Open in Maps
+              </a>
+            )}
+          </div>
+        </div>
+      </SwipeToDelete>
+    )
+  }
 
   return (
     <Collapsible id="hotels" title="Hotels" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
-      <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
+      <AddFormToggle label="Add hotel" open={showAddForm} onOpenChange={setShowAddForm}>
         <div className="flex flex-wrap gap-2">
           <input
             value={name}
@@ -166,49 +219,16 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
         >
           Save hotel
         </button>
-      </div>
+      </AddFormToggle>
 
       {sorted.length === 0 ? (
         <p className="text-sm text-[var(--color-muted)]">No hotels saved yet.</p>
       ) : (
-        <div className="space-y-2">
-          {sorted.map((h) => (
-            <div key={h.id} className="rounded-lg border border-[var(--color-border)] p-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">{h.name}</p>
-                  <p className="text-xs text-[var(--color-muted)] truncate">
-                    {[h.checkIn, h.checkOut].filter(Boolean).join(' → ') || h.city}
-                  </p>
-                  {h.address && <p className="text-xs text-[var(--color-muted)] truncate">{h.address}</p>}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeHotel(h.id)}
-                  className="text-xs text-[var(--color-amber)] shrink-0"
-                >
-                  Remove
-                </button>
-              </div>
-              <div className="flex gap-3 mt-1 text-xs">
-                {h.address && (
-                  <button
-                    type="button"
-                    onClick={() => setDriverView({ name: h.name, address: h.address, mapsUrl: h.mapsUrl })}
-                    className="text-[var(--color-pine)] underline"
-                  >
-                    Show to driver
-                  </button>
-                )}
-                {h.mapsUrl && (
-                  <a href={h.mapsUrl} target="_blank" rel="noreferrer" className="text-[var(--color-pine)] underline">
-                    Open in Maps
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <>
+          {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming hotels.</p>}
+          <div className="space-y-2">{upcoming.map(renderHotel)}</div>
+          <PastEntries count={past.length}>{past.map(renderHotel)}</PastEntries>
+        </>
       )}
 
       {driverView && (

@@ -38,8 +38,12 @@ export interface Booking {
   rawText?: string
 }
 
+// Stable module-level reference — see hotels.ts / useSetting.ts for why a
+// fresh `[]` literal here would defeat the setter/getSnapshot memoization.
+const EMPTY_BOOKINGS: Booking[] = []
+
 export function useSavedBookings() {
-  return useSetting<Booking[]>('travel_bookings', [])
+  return useSetting<Booking[]>('travel_bookings', EMPTY_BOOKINGS)
 }
 
 function makeId() {

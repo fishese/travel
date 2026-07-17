@@ -17,6 +17,8 @@
   --color-pine-dim: #16544450;
   --color-amber: #b8622e;
   --color-amber-dim: #b8622e1a;
+  --color-danger: #b3261e;
+  --color-danger-dim: #b3261e1a;
 
   --font-display: ui-serif, Georgia, "Times New Roman", serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -36,6 +38,8 @@
   --color-pine-dim: #14b8a633;
   --color-amber: #f97316;
   --color-amber-dim: #f973161f;
+  --color-danger: #e5484d;
+  --color-danger-dim: #e5484d26;
 }
 
 html, body, #root {

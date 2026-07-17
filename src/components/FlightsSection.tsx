@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight } from '../lib/flights'
 import { localDateStr } from '../lib/dateUtils'
+import { isPastDate } from '../lib/archive'
+import { hapticTick, hapticConfirm } from '../lib/haptics'
+import { parseFlightText } from '../lib/pasteParse'
 import { FlightCard } from './FlightCard'
 import { Collapsible } from './Collapsible'
+import { AddFormToggle } from './AddFormToggle'
+import { PastEntries } from './PastEntries'
+import { PasteParseBox } from './PasteParseBox'
 
 interface Props {
   onMoveUp?: () => void
@@ -25,6 +31,21 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   const [departureTimeInput, setDepartureTimeInput] = useState('')
   const [arrivalTimeInput, setArrivalTimeInput] = useState('')
   const [notesInput, setNotesInput] = useState('')
+  const [showAddForm, setShowAddForm] = useState(() => flights.length === 0)
+  const [pastedText, setPastedText] = useState<string | undefined>(undefined)
+  const [yearWasInferred, setYearWasInferred] = useState(false)
+
+  function handleParse(text: string) {
+    const parsed = parseFlightText(text)
+    if (parsed.flightIata) setFlightIataInput(parsed.flightIata)
+    if (parsed.date) setDateInput(parsed.date)
+    if (parsed.origin) setOriginInput(parsed.origin)
+    if (parsed.destination) setDestinationInput(parsed.destination)
+    if (parsed.departureTime) setDepartureTimeInput(parsed.departureTime)
+    if (parsed.arrivalTime) setArrivalTimeInput(parsed.arrivalTime)
+    setPastedText(text)
+    setYearWasInferred(parsed.yearInferred)
+  }
 
   function addFlight() {
     if (!flightIataInput.trim()) return
@@ -38,6 +59,8 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
         departureTime: departureTimeInput,
         arrivalTime: arrivalTimeInput,
         notes: notesInput,
+        source: pastedText ? 'pasted' : 'manual',
+        rawText: pastedText,
       }),
     ])
     setFlightIataInput('')
@@ -46,6 +69,9 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setDepartureTimeInput('')
     setArrivalTimeInput('')
     setNotesInput('')
+    setPastedText(undefined)
+    setYearWasInferred(false)
+    setShowAddForm(false)
   }
 
   function removeFlight(id: string) {
@@ -53,6 +79,8 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   }
 
   const sorted = [...flights].sort((a, b) => a.date.localeCompare(b.date))
+  const upcoming = sorted.filter((f) => !isPastDate(f.date))
+  const past = sorted.filter((f) => isPastDate(f.date))
 
   return (
     <Collapsible id="flights" title="Flights" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
@@ -101,9 +129,11 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
                 onClick={() => {
                   if (!confirmingReset) {
                     setConfirmingReset(true)
+                    hapticTick()
                     setTimeout(() => setConfirmingReset(false), 3000)
                     return
                   }
+                  hapticConfirm()
                   quota.resetCount()
                   setConfirmingReset(false)
                 }}
@@ -126,7 +156,17 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
         </div>
       )}
 
-      <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
+      <AddFormToggle label="Add flight" open={showAddForm} onOpenChange={setShowAddForm}>
+        <PasteParseBox
+          placeholder="Paste a boarding pass, e-ticket, or confirmation email here…"
+          onParse={handleParse}
+        />
+        {yearWasInferred && (
+          <p className="text-xs text-[var(--color-amber)]">
+            No year in the pasted text — assumed {dateInput.slice(0, 4)}. Double-check the date below.
+          </p>
+        )}
+
         <div className="flex flex-wrap gap-2">
           <input
             value={flightIataInput}
@@ -191,24 +231,40 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
         >
           Add flight
         </button>
-      </div>
+      </AddFormToggle>
 
       {sorted.length === 0 ? (
         <p className="text-sm text-[var(--color-muted)]">No flights saved yet.</p>
       ) : (
-        <div className="space-y-2">
-          {sorted.map((f) => (
-            <FlightCard
-              key={f.id}
-              flight={f}
-              apiKey={apiKey}
-              recordCall={quota.recordCall}
-              quotaCount={quota.count}
-              quotaLimit={quota.limit}
-              onDelete={removeFlight}
-            />
-          ))}
-        </div>
+        <>
+          {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming flights.</p>}
+          <div className="space-y-2">
+            {upcoming.map((f) => (
+              <FlightCard
+                key={f.id}
+                flight={f}
+                apiKey={apiKey}
+                recordCall={quota.recordCall}
+                quotaCount={quota.count}
+                quotaLimit={quota.limit}
+                onDelete={removeFlight}
+              />
+            ))}
+          </div>
+          <PastEntries count={past.length}>
+            {past.map((f) => (
+              <FlightCard
+                key={f.id}
+                flight={f}
+                apiKey={apiKey}
+                recordCall={quota.recordCall}
+                quotaCount={quota.count}
+                quotaLimit={quota.limit}
+                onDelete={removeFlight}
+              />
+            ))}
+          </PastEntries>
+        </>
       )}
     </Collapsible>
   )

@@ -5,6 +5,9 @@ import { useSavedHotels, type SavedHotel } from '../lib/hotels'
 import { useSavedBookings, type Booking } from '../lib/bookings'
 import { localDateStr, localTomorrowStr } from '../lib/dateUtils'
 import { Collapsible } from './Collapsible'
+import { AddFormToggle } from './AddFormToggle'
+import { SwipeToDelete } from './SwipeToDelete'
+import { requestOpen } from '../lib/swipeCoordinator'
 
 const CATEGORIES: { value: VaultCategory; label: string }[] = [
   { value: 'flight', label: 'Flight' },
@@ -93,6 +96,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   const [linkedId, setLinkedId] = useState('')
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showAddForm, setShowAddForm] = useState(() => generalFiles.length === 0)
 
   const linkOptions = linkOptionsFor(category, flights, hotels, bookings)
   const today = localDateStr()
@@ -105,6 +109,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
     setPendingFile(null)
     setLinkedId('')
     if (fileInputRef.current) fileInputRef.current.value = ''
+    setShowAddForm(false)
     refresh()
   }
 
@@ -147,7 +152,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
         relevant day.
       </p>
 
-      <div className="space-y-2 mb-2 pb-2 border-b border-dashed border-[var(--color-border)]">
+      <AddFormToggle label="Add document" open={showAddForm} onOpenChange={setShowAddForm}>
         <input
           ref={fileInputRef}
           type="file"
@@ -207,7 +212,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
         >
           Save to vault
         </button>
-      </div>
+      </AddFormToggle>
 
       {loading ? (
         <p className="text-sm text-[var(--color-muted)]">Loading…</p>
@@ -219,27 +224,29 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
             const badge = dateBadge(f)
             const isUrgent = badge === 'Today' || badge === 'Tomorrow'
             return (
-              <div key={f.id} className="flex items-center gap-2">
-                <button type="button" onClick={() => openFile(f)} className="shrink-0">
-                  <VaultThumb file={f} />
-                </button>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm truncate">{f.label}</p>
-                  <p className="text-xs text-[var(--color-muted)] capitalize">
-                    {f.category}
-                    {badge && (
-                      <span className={isUrgent ? 'text-[var(--color-pine)] font-semibold' : ''}> · {badge}</span>
-                    )}
-                  </p>
+              <SwipeToDelete key={f.id} id={f.id} label={f.label} onDelete={() => handleDelete(f.id)}>
+                <div className="flex items-center gap-2 bg-[var(--color-surface)] p-1">
+                  <button type="button" onClick={() => openFile(f)} className="shrink-0">
+                    <VaultThumb file={f} />
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm truncate">{f.label}</p>
+                    <p className="text-xs text-[var(--color-muted)] capitalize">
+                      {f.category}
+                      {badge && (
+                        <span className={isUrgent ? 'text-[var(--color-pine)] font-semibold' : ''}> · {badge}</span>
+                      )}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => requestOpen(f.id)}
+                    className="text-xs text-[var(--color-amber)] shrink-0"
+                  >
+                    Remove
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(f.id)}
-                  className="text-xs text-[var(--color-amber)] shrink-0"
-                >
-                  Remove
-                </button>
-              </div>
+              </SwipeToDelete>
             )
           })}
         </div>

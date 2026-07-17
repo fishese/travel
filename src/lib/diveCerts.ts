@@ -12,8 +12,12 @@ export interface DiveCert {
   savedAt: string
 }
 
+// Stable module-level reference — see hotels.ts / useSetting.ts for why a
+// fresh `[]` literal here would defeat the setter/getSnapshot memoization.
+const EMPTY_DIVE_CERTS: DiveCert[] = []
+
 export function useSavedDiveCerts() {
-  return useSetting<DiveCert[]>('travel_dive_certs', [])
+  return useSetting<DiveCert[]>('travel_dive_certs', EMPTY_DIVE_CERTS)
 }
 
 function makeId() {
