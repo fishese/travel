@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { downloadSessionExport, importSessionFile } from '../lib/sessionTransfer'
+import { downloadSessionExport, importSessionFile, type ImportMode } from '../lib/sessionTransfer'
 import { hapticConfirm } from '../lib/haptics'
 
 type Status =
@@ -7,7 +7,7 @@ type Status =
   | { kind: 'confirming'; file: File }
   | { kind: 'working' }
   | { kind: 'exported'; settingsCount: number; filesCount: number }
-  | { kind: 'imported'; settingsCount: number; filesCount: number }
+  | { kind: 'imported'; message: string }
   | { kind: 'error'; message: string }
 
 export function SessionBackup() {
@@ -30,18 +30,24 @@ export function SessionBackup() {
     setStatus({ kind: 'confirming', file })
   }
 
-  async function handleConfirmImport(file: File) {
+  async function handleConfirmImport(file: File, mode: ImportMode) {
     setStatus({ kind: 'working' })
     try {
-      const { settingsCount, filesCount } = await importSessionFile(file)
+      const summary = await importSessionFile(file, mode)
       hapticConfirm()
-      setStatus({ kind: 'imported', settingsCount, filesCount })
-      // A full reload is deliberate here rather than trying to nudge every
-      // useSetting hook and the file vault's useVaultFiles into re-reading
-      // — this touches essentially all of the app's state at once, and a
-      // clean reload is the only way to be sure nothing is left showing a
-      // stale in-memory value after a restore.
-      setTimeout(() => window.location.reload(), 1200)
+      const message =
+        summary.mode === 'replace'
+          ? `Restored ${summary.settingsCount} settings and ${summary.filesCount} file${summary.filesCount === 1 ? '' : 's'}.`
+          : `Added ${summary.added.flights} flight${summary.added.flights === 1 ? '' : 's'}, ${summary.added.hotels} hotel${summary.added.hotels === 1 ? '' : 's'}, ${summary.added.bookings} booking${summary.added.bookings === 1 ? '' : 's'}, ${summary.added['dive certs']} dive cert${summary.added['dive certs'] === 1 ? '' : 's'}, and ${summary.added.files} file${summary.added.files === 1 ? '' : 's'}. Everything else on this device was left as-is.`
+      setStatus({ kind: 'imported', message })
+      // A full reload keeps this simple and reliably consistent — merge
+      // already updates settings live (see writeSettingExternally), but
+      // the file vault (dive cert photos, documents) has no equivalent
+      // live-update path, so newly merged files wouldn't show up anywhere
+      // already mounted without one anyway. Reloading covers both modes
+      // the same way rather than having merge and replace behave
+      // differently here.
+      setTimeout(() => window.location.reload(), 1600)
     } catch (e) {
       setStatus({ kind: 'error', message: (e as Error).message })
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -101,30 +107,48 @@ export function SessionBackup() {
       </div>
 
       {status.kind === 'confirming' && (
-        <div className="mt-2 rounded-lg border border-[var(--color-danger)] bg-[var(--color-danger-dim)] p-2">
-          <p className="text-xs mb-2">
-            This replaces <strong>everything</strong> currently saved in this app with the contents of{' '}
-            <span className="font-medium">{status.file.name}</span>. This can't be undone.
+        <div className="mt-2 rounded-lg border border-[var(--color-border)] p-2 space-y-2">
+          <p className="text-xs">
+            Importing <span className="font-medium">{status.file.name}</span>. Choose how:
           </p>
-          <div className="flex gap-2">
+
+          <div>
             <button
               type="button"
-              onClick={() => handleConfirmImport(status.file)}
-              className="flex-1 rounded-lg bg-[var(--color-danger)] text-white px-3 py-2 text-xs"
+              onClick={() => handleConfirmImport(status.file, 'merge')}
+              className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-xs"
+            >
+              Merge — add what's new
+            </button>
+            <p className="text-xs text-[var(--color-muted)] mt-1">
+              Adds any flights/hotels/bookings/dive certs/documents from the file that aren't already here. Nothing
+              is removed; settings on this device are left as-is.
+            </p>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => handleConfirmImport(status.file, 'replace')}
+              className="w-full rounded-lg bg-[var(--color-danger)] text-white px-3 py-2 text-xs"
             >
               Replace everything
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStatus({ kind: 'idle' })
-                if (fileInputRef.current) fileInputRef.current.value = ''
-              }}
-              className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-xs"
-            >
-              Cancel
-            </button>
+            <p className="text-xs text-[var(--color-muted)] mt-1">
+              Wipes everything currently saved in this app and replaces it with the file's contents. Can't be undone.
+            </p>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setStatus({ kind: 'idle' })
+              if (fileInputRef.current) fileInputRef.current.value = ''
+            }}
+            className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-xs"
+          >
+            Cancel
+          </button>
         </div>
       )}
 
@@ -138,10 +162,7 @@ export function SessionBackup() {
       )}
 
       {status.kind === 'imported' && (
-        <p className="text-xs text-[var(--color-pine)] mt-2">
-          Restored {status.settingsCount} settings and {status.filesCount} file
-          {status.filesCount === 1 ? '' : 's'} — reloading…
-        </p>
+        <p className="text-xs text-[var(--color-pine)] mt-2">{status.message} Reloading…</p>
       )}
 
       {status.kind === 'error' && <p className="text-xs text-[var(--color-danger)] mt-2">{status.message}</p>}

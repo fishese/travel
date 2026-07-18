@@ -1,10 +1,31 @@
 import { listFiles, putFile, clearAllFiles, type VaultFile } from './fileVault'
+import { writeSettingExternally } from './useSetting'
 
 // Every setting this app writes uses this prefix (confirmed by grepping
 // every localStorage.getItem/setItem call site) — scanning by prefix
 // means a new setting added later is automatically included in exports
 // without this file needing to know its key name.
 const KEY_PREFIX = 'travel_'
+
+// The only keys 'merge' mode ever touches: the trip-data lists, each a
+// JSON array of records with a unique `id`. Merging means "add whatever's
+// in the import that isn't already here by id" — everything else
+// (currency/theme/API key/shopping notes/section order/etc.) is left
+// exactly as the current device has it, on the theory that those are
+// per-device preferences or transient scratch state, not trip data you'd
+// want synced between devices. A record is never edited in place anywhere
+// in this app (only added or deleted), so an id collision always means
+// "the same record on both sides" — there's no meaningful conflict to
+// resolve, just a duplicate to skip.
+const MERGEABLE_LIST_KEYS = [
+  { key: 'travel_flights', label: 'flights' as const },
+  { key: 'travel_hotels', label: 'hotels' as const },
+  { key: 'travel_bookings', label: 'bookings' as const },
+  { key: 'travel_dive_certs', label: 'dive certs' as const },
+]
+const DISMISSED_REMINDERS_KEY = 'travel_dismissed_reminders'
+
+export type ImportMode = 'replace' | 'merge'
 
 interface ExportedFile {
   id: string
@@ -92,28 +113,72 @@ function isSessionExport(data: unknown): data is SessionExport {
   return typeof d.localStorage === 'object' && d.localStorage !== null && Array.isArray(d.files)
 }
 
-/**
- * Fully replaces the app's current data with the contents of a backup
- * file — every existing travel_ setting and every vault file is cleared
- * first, then repopulated from the import. Deliberately a replace, not a
- * merge: a partial merge of two independent sets of flights/hotels/etc.
- * has no obviously "correct" resolution, while a clean replace always
- * lands in exactly the state the backup was taken in. The caller is
- * expected to have already confirmed this with the person — this
- * function doesn't ask again.
- */
-export async function importSessionFile(file: File): Promise<{ settingsCount: number; filesCount: number }> {
-  const text = await file.text()
-  let data: unknown
+export interface ReplaceSummary {
+  mode: 'replace'
+  settingsCount: number
+  filesCount: number
+}
+
+export interface MergeSummary {
+  mode: 'merge'
+  added: { flights: number; hotels: number; bookings: number; 'dive certs': number; files: number }
+}
+
+export type ImportSummary = ReplaceSummary | MergeSummary
+
+function parseJsonArray<T>(raw: string | undefined | null): T[] {
+  if (!raw) return []
   try {
-    data = JSON.parse(text)
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as T[]) : []
   } catch {
-    throw new Error("That file isn't valid JSON — was it exported from this app?")
+    return []
   }
-  if (!isSessionExport(data)) {
-    throw new Error("That doesn't look like a Travel Toolkit backup file.")
+}
+
+async function mergeSession(data: SessionExport): Promise<MergeSummary> {
+  const added: MergeSummary['added'] = { flights: 0, hotels: 0, bookings: 0, 'dive certs': 0, files: 0 }
+
+  for (const { key, label } of MERGEABLE_LIST_KEYS) {
+    const current = parseJsonArray<{ id: string }>(localStorage.getItem(key))
+    const imported = parseJsonArray<{ id: string }>(data.localStorage[key])
+    const currentIds = new Set(current.map((item) => item.id))
+    const merged = [...current]
+    for (const item of imported) {
+      if (currentIds.has(item.id)) continue
+      merged.push(item)
+      added[label]++
+    }
+    writeSettingExternally(key, merged)
   }
 
+  // Union, not counted individually — a dismissed-reminder id on its own
+  // isn't meaningful feedback to show, it's just bookkeeping that should
+  // travel along with the flights/hotels/bookings it refers to.
+  const currentDismissed = parseJsonArray<string>(localStorage.getItem(DISMISSED_REMINDERS_KEY))
+  const importedDismissed = parseJsonArray<string>(data.localStorage[DISMISSED_REMINDERS_KEY])
+  writeSettingExternally(DISMISSED_REMINDERS_KEY, [...new Set([...currentDismissed, ...importedDismissed])])
+
+  const existingFiles = await listFiles()
+  const existingIds = new Set(existingFiles.map((f) => f.id))
+  for (const f of data.files) {
+    if (existingIds.has(f.id)) continue
+    await putFile({
+      id: f.id,
+      blob: base64ToBlob(f.dataBase64, f.mimeType),
+      mimeType: f.mimeType,
+      label: f.label,
+      category: f.category,
+      linkedId: f.linkedId,
+      savedAt: f.savedAt,
+    })
+    added.files++
+  }
+
+  return { mode: 'merge', added }
+}
+
+async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
   // File vault restore happens first: if this fails partway (e.g. an
   // IndexedDB quota error), the existing localStorage settings are still
   // untouched below, rather than this import having already wiped them
@@ -138,5 +203,37 @@ export async function importSessionFile(file: File): Promise<{ settingsCount: nu
     if (key.startsWith(KEY_PREFIX)) localStorage.setItem(key, value)
   }
 
-  return { settingsCount: Object.keys(data.localStorage).length, filesCount: data.files.length }
+  return { mode: 'replace', settingsCount: Object.keys(data.localStorage).length, filesCount: data.files.length }
+}
+
+/**
+ * 'replace' fully replaces the app's current data with the backup's —
+ * every existing travel_ setting and every vault file is cleared first,
+ * then repopulated from the import. Lands in exactly the state the backup
+ * was taken in, full stop.
+ *
+ * 'merge' only ever adds: any flight/hotel/booking/dive-cert/file in the
+ * backup that isn't already present (by id) gets added alongside what's
+ * already here. Nothing is removed and every other setting (currency,
+ * theme, API key, shopping notes, section order, etc.) is left as the
+ * current device has it. Meant for "I added a few things on my phone and
+ * a few things on my laptop, bring them together" rather than a full
+ * restore.
+ *
+ * Either way, the caller is expected to have already confirmed this with
+ * the person — this function doesn't ask again.
+ */
+export async function importSessionFile(file: File, mode: ImportMode): Promise<ImportSummary> {
+  const text = await file.text()
+  let data: unknown
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new Error("That file isn't valid JSON — was it exported from this app?")
+  }
+  if (!isSessionExport(data)) {
+    throw new Error("That doesn't look like a Travel Toolkit backup file.")
+  }
+
+  return mode === 'merge' ? mergeSession(data) : replaceSession(data)
 }

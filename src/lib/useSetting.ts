@@ -35,6 +35,18 @@ function notify(key: string) {
   listeners.get(key)?.forEach((l) => l())
 }
 
+/** Writes a setting's value from outside any component — e.g. session
+ * import's merge mode, which touches several localStorage keys at once
+ * without being any single useSetting call's own setter. Goes through the
+ * same store+notify path setValue below uses, so every component
+ * currently reading that key re-renders immediately, same as if the
+ * change had come from its own hook. */
+export function writeSettingExternally<T>(key: string, value: T) {
+  store.set(key, value)
+  localStorage.setItem(key, JSON.stringify(value))
+  notify(key)
+}
+
 export function useSetting<T>(key: string, defaultValue: T) {
   const subscribe = useCallback(
     (callback: Listener) => {
