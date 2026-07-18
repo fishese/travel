@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight } from '../lib/flights'
+import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight, type SavedFlight } from '../lib/flights'
 import { localDateStr } from '../lib/dateUtils'
 import { isPastDate } from '../lib/archive'
 import { hapticTick, hapticConfirm } from '../lib/haptics'
@@ -76,6 +76,10 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
 
   function removeFlight(id: string) {
     setFlights((prev) => prev.filter((f) => f.id !== id))
+  }
+
+  function updateFlight(id: string, updated: SavedFlight) {
+    setFlights((prev) => prev.map((f) => (f.id === id ? updated : f)))
   }
 
   const sorted = [...flights].sort((a, b) => a.date.localeCompare(b.date))
@@ -248,6 +252,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
                 quotaCount={quota.count}
                 quotaLimit={quota.limit}
                 onDelete={removeFlight}
+                onUpdate={updateFlight}
               />
             ))}
           </div>
@@ -261,6 +266,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
                 quotaCount={quota.count}
                 quotaLimit={quota.limit}
                 onDelete={removeFlight}
+                onUpdate={updateFlight}
               />
             ))}
           </PastEntries>

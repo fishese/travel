@@ -10,12 +10,15 @@ import {
   isStatusCheckable,
   isFinalStatus,
   minutesToDeparture,
+  applyFlightEdit,
 } from '../lib/flights'
 import { localDateStr, localTomorrowStr } from '../lib/dateUtils'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { RawTextDisclosure } from './RawTextDisclosure'
 import { LinkedFiles } from './LinkedFiles'
+import { ExpandableCard } from './ExpandableCard'
+import { FlightEditForm } from './FlightEditForm'
 
 interface Props {
   flight: SavedFlight
@@ -24,6 +27,7 @@ interface Props {
   quotaCount: number
   quotaLimit: number
   onDelete: (id: string) => void
+  onUpdate: (id: string, updated: SavedFlight) => void
 }
 
 function fmtTime(iso: string) {
@@ -96,7 +100,7 @@ function useFlightStatusPolling(
   return { status, loading, error, refresh: doFetch, checkable, quotaExhausted }
 }
 
-export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit, onDelete }: Props) {
+export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit, onDelete, onUpdate }: Props) {
   const { status, loading, error, refresh, checkable, quotaExhausted } = useFlightStatusPolling(
     flight,
     apiKey,
@@ -104,31 +108,136 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
     quotaCount,
     quotaLimit,
   )
+  const [editing, setEditing] = useState(false)
 
   const today = localDateStr()
   const tomorrow = localTomorrowStr()
   const isToday = flight.date === today
   const isTomorrow = flight.date === tomorrow
 
+  const header = (
+    <div>
+      <p className="font-semibold tabular">{flight.flightIata}</p>
+      <p className="text-xs text-[var(--color-muted)]">
+        {flight.date}
+        {isToday && ' · Today'}
+        {isTomorrow && ' · Tomorrow'}
+      </p>
+      {(flight.origin || flight.departureTime) && (
+        <p className="text-xs text-[var(--color-muted)] tabular">
+          {flight.origin ?? '?'} {flight.departureTime ?? ''}
+        </p>
+      )}
+    </div>
+  )
+
   return (
     <SwipeToDelete id={flight.id} label={flight.flightIata || 'flight'} onDelete={() => onDelete(flight.id)}>
       <div className="border border-[var(--color-border)] rounded-lg p-3">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="font-semibold tabular">{flight.flightIata}</p>
-            <p className="text-xs text-[var(--color-muted)]">
-              {flight.date}
-              {isToday && ' · Today'}
-              {isTomorrow && ' · Tomorrow'}
-            </p>
-            {(flight.origin || flight.destination || flight.departureTime || flight.arrivalTime) && (
-              <p className="text-xs text-[var(--color-muted)] tabular">
-                {flight.origin ?? '?'} {flight.departureTime ?? ''} → {flight.destination ?? '?'} {flight.arrivalTime ?? ''}
-              </p>
-            )}
-            {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
-            {flight.rawText && <RawTextDisclosure text={flight.rawText} />}
-            <LinkedFiles category="flight" linkedId={flight.id} />
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <ExpandableCard header={header}>
+              {editing ? (
+                <FlightEditForm
+                  initial={{
+                    flightIata: flight.flightIata,
+                    date: flight.date,
+                    origin: flight.origin,
+                    destination: flight.destination,
+                    departureTime: flight.departureTime,
+                    arrivalTime: flight.arrivalTime,
+                    notes: flight.notes,
+                  }}
+                  onSave={(fields) => {
+                    onUpdate(flight.id, applyFlightEdit(flight, fields))
+                    setEditing(false)
+                  }}
+                  onCancel={() => setEditing(false)}
+                />
+              ) : (
+                <>
+                  {(flight.destination || flight.arrivalTime) && (
+                    <p className="text-xs text-[var(--color-muted)] tabular">
+                      → {flight.destination ?? '?'} {flight.arrivalTime ?? ''}
+                    </p>
+                  )}
+                  {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
+                  {flight.rawText && <RawTextDisclosure text={flight.rawText} />}
+                  <LinkedFiles category="flight" linkedId={flight.id} />
+
+                  {!checkable && (
+                    <p className="text-xs text-[var(--color-muted)] mt-2">
+                      Status available on departure day — the free API tier doesn't cover future lookups.
+                    </p>
+                  )}
+
+                  {checkable && !apiKey && (
+                    <p className="text-xs text-[var(--color-muted)] mt-2">
+                      Add an Aviationstack API key above to see live status.
+                    </p>
+                  )}
+
+                  {checkable && apiKey && (
+                    <div className="mt-2">
+                      {loading && !status && <p className="text-xs text-[var(--color-muted)]">Checking status…</p>}
+                      {error && <p className="text-xs text-[var(--color-amber)]">{error}</p>}
+
+                      {status && (
+                        <div className="text-sm space-y-0.5">
+                          <p className="font-medium capitalize">
+                            {status.flightStatus}
+                            {status.departure.delayMinutes ? ` · +${status.departure.delayMinutes}min` : ''}
+                          </p>
+                          <p className="tabular text-xs text-[var(--color-muted)]">
+                            {status.departure.iata} → {status.arrival.iata}
+                            {status.departure.terminal && ` · Terminal ${status.departure.terminal}`}
+                            {status.departure.gate && ` · Gate ${status.departure.gate}`}
+                          </p>
+                          {status.departure.scheduled && (
+                            <p className="tabular text-xs text-[var(--color-muted)]">
+                              Departs {fmtTime(status.departure.scheduled)}
+                              {status.departure.estimated &&
+                                status.departure.estimated !== status.departure.scheduled &&
+                                ` (est. ${fmtTime(status.departure.estimated)})`}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mt-1">
+                            <span>Last checked {fmtTime(status.fetchedAt)}</span>
+                            <button
+                              type="button"
+                              onClick={refresh}
+                              disabled={loading || quotaExhausted}
+                              className="text-[var(--color-pine)] underline disabled:opacity-40"
+                            >
+                              Refresh
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!status && !loading && !error && (
+                        <button
+                          type="button"
+                          onClick={refresh}
+                          disabled={quotaExhausted}
+                          className="text-xs text-[var(--color-pine)] underline disabled:opacity-40"
+                        >
+                          Check status
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    className="text-xs text-[var(--color-pine)] underline mt-2"
+                  >
+                    Edit
+                  </button>
+                </>
+              )}
+            </ExpandableCard>
           </div>
           <button
             type="button"
@@ -138,67 +247,6 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
             Remove
           </button>
         </div>
-
-        {!checkable && (
-          <p className="text-xs text-[var(--color-muted)] mt-2">
-            Status available on departure day — the free API tier doesn't cover future lookups.
-          </p>
-        )}
-
-        {checkable && !apiKey && (
-          <p className="text-xs text-[var(--color-muted)] mt-2">Add an Aviationstack API key above to see live status.</p>
-        )}
-
-        {checkable && apiKey && (
-          <div className="mt-2">
-            {loading && !status && <p className="text-xs text-[var(--color-muted)]">Checking status…</p>}
-            {error && <p className="text-xs text-[var(--color-amber)]">{error}</p>}
-
-            {status && (
-              <div className="text-sm space-y-0.5">
-                <p className="font-medium capitalize">
-                  {status.flightStatus}
-                  {status.departure.delayMinutes ? ` · +${status.departure.delayMinutes}min` : ''}
-                </p>
-                <p className="tabular text-xs text-[var(--color-muted)]">
-                  {status.departure.iata} → {status.arrival.iata}
-                  {status.departure.terminal && ` · Terminal ${status.departure.terminal}`}
-                  {status.departure.gate && ` · Gate ${status.departure.gate}`}
-                </p>
-                {status.departure.scheduled && (
-                  <p className="tabular text-xs text-[var(--color-muted)]">
-                    Departs {fmtTime(status.departure.scheduled)}
-                    {status.departure.estimated &&
-                      status.departure.estimated !== status.departure.scheduled &&
-                      ` (est. ${fmtTime(status.departure.estimated)})`}
-                  </p>
-                )}
-                <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mt-1">
-                  <span>Last checked {fmtTime(status.fetchedAt)}</span>
-                  <button
-                    type="button"
-                    onClick={refresh}
-                    disabled={loading || quotaExhausted}
-                    className="text-[var(--color-pine)] underline disabled:opacity-40"
-                  >
-                    Refresh
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {!status && !loading && !error && (
-              <button
-                type="button"
-                onClick={refresh}
-                disabled={quotaExhausted}
-                className="text-xs text-[var(--color-pine)] underline disabled:opacity-40"
-              >
-                Check status
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </SwipeToDelete>
   )

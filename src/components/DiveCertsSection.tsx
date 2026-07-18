@@ -1,36 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useSavedDiveCerts, newDiveCert, type DiveCert } from '../lib/diveCerts'
-import { saveFile, getFile, deleteFile, fileObjectUrl, type VaultFile } from '../lib/fileVault'
+import { saveFile, deleteFile } from '../lib/fileVault'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
-import { SwipeToDelete } from './SwipeToDelete'
-import { requestOpen } from '../lib/swipeCoordinator'
-
-function CertPhoto({ fileId }: { fileId: string }) {
-  const [file, setFile] = useState<VaultFile | undefined>(undefined)
-  const [url, setUrl] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    getFile(fileId).then((f) => {
-      if (cancelled || !f) return
-      setFile(f)
-      setUrl(fileObjectUrl(f))
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [fileId])
-
-  useEffect(() => {
-    return () => {
-      if (url) URL.revokeObjectURL(url)
-    }
-  }, [url])
-
-  if (!url || !file) return null
-  return <img src={url} alt="Certification card" className="w-full rounded-lg mt-2 max-h-40 object-cover" />
-}
+import { DiveCertCard } from './DiveCertCard'
 
 interface Props {
   onMoveUp?: () => void
@@ -75,6 +48,10 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   async function removeCert(cert: DiveCert) {
     if (cert.photoFileId) await deleteFile(cert.photoFileId)
     setCerts((prev) => prev.filter((c) => c.id !== cert.id))
+  }
+
+  function updateCert(updated: DiveCert) {
+    setCerts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
   }
 
   return (
@@ -146,29 +123,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
       ) : (
         <div className="space-y-2">
           {certs.map((c) => (
-            <SwipeToDelete key={c.id} id={c.id} label={`${c.agency} ${c.level}`} onDelete={() => removeCert(c)}>
-              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate">
-                      {c.agency} · {c.level}
-                    </p>
-                    <p className="text-xs text-[var(--color-muted)] truncate">
-                      {[c.certNumber, c.issueDate, c.instructorName].filter(Boolean).join(' · ')}
-                    </p>
-                    {c.notes && <p className="text-xs text-[var(--color-muted)] truncate">{c.notes}</p>}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => requestOpen(c.id)}
-                    className="text-xs text-[var(--color-amber)] shrink-0"
-                  >
-                    Remove
-                  </button>
-                </div>
-                {c.photoFileId && <CertPhoto fileId={c.photoFileId} />}
-              </div>
-            </SwipeToDelete>
+            <DiveCertCard key={c.id} cert={c} onDelete={removeCert} onUpdate={updateCert} />
           ))}
         </div>
       )}

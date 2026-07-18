@@ -36,7 +36,7 @@ function makeId() {
   return Math.random().toString(36).slice(2, 9)
 }
 
-export function newFlight(fields: {
+export interface FlightFieldInput {
   flightIata: string
   date: string
   origin?: string
@@ -44,11 +44,10 @@ export function newFlight(fields: {
   departureTime?: string
   arrivalTime?: string
   notes?: string
-  source?: SavedFlight['source']
-  rawText?: string
-}): SavedFlight {
+}
+
+function normalizeFlightFields(fields: FlightFieldInput) {
   return {
-    id: makeId(),
     flightIata: fields.flightIata.toUpperCase().replace(/\s+/g, ''),
     date: fields.date,
     origin: fields.origin?.trim().toUpperCase() || undefined,
@@ -56,10 +55,28 @@ export function newFlight(fields: {
     departureTime: fields.departureTime || undefined,
     arrivalTime: fields.arrivalTime || undefined,
     notes: fields.notes?.trim() || undefined,
+  }
+}
+
+export function newFlight(
+  fields: FlightFieldInput & { source?: SavedFlight['source']; rawText?: string },
+): SavedFlight {
+  return {
+    id: makeId(),
+    ...normalizeFlightFields(fields),
     savedAt: new Date().toISOString(),
     source: fields.source ?? 'manual',
     rawText: fields.rawText,
   }
+}
+
+/** Applies an edit to an existing flight — same field normalization as
+ * newFlight, but keeps id/savedAt/source/rawText untouched. The original
+ * pasted text (if any) stays attached even after a manual edit, since
+ * it's still useful as "here's what this looked like before I changed
+ * it" if the edit itself turns out wrong. */
+export function applyFlightEdit(flight: SavedFlight, fields: FlightFieldInput): SavedFlight {
+  return { ...flight, ...normalizeFlightFields(fields) }
 }
 
 // ---- API key + quota (shared across all flights) ----

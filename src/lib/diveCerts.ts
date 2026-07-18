@@ -24,24 +24,40 @@ function makeId() {
   return Math.random().toString(36).slice(2, 9)
 }
 
-export function newDiveCert(fields: {
+export interface DiveCertFieldInput {
   agency: string
   level: string
   certNumber: string
   issueDate?: string
   instructorName?: string
-  photoFileId?: string
   notes?: string
-}): DiveCert {
+}
+
+function normalizeDiveCertFields(fields: DiveCertFieldInput) {
   return {
-    id: makeId(),
     agency: fields.agency.trim(),
     level: fields.level.trim(),
     certNumber: fields.certNumber.trim(),
     issueDate: fields.issueDate || undefined,
     instructorName: fields.instructorName?.trim() || undefined,
-    photoFileId: fields.photoFileId,
     notes: fields.notes?.trim() || undefined,
+  }
+}
+
+export function newDiveCert(fields: DiveCertFieldInput & { photoFileId?: string }): DiveCert {
+  return {
+    id: makeId(),
+    ...normalizeDiveCertFields(fields),
+    photoFileId: fields.photoFileId,
     savedAt: new Date().toISOString(),
   }
+}
+
+/** Applies an edit to an existing cert — same field normalization as
+ * newDiveCert, keeping id/savedAt untouched. photoFileId is passed
+ * separately (rather than read off `fields`) since the caller resolves
+ * the actual file upload/delete first and hands over the final id —
+ * this function only ever touches the plain-data fields. */
+export function applyDiveCertEdit(cert: DiveCert, fields: DiveCertFieldInput, photoFileId: string | undefined): DiveCert {
+  return { ...cert, ...normalizeDiveCertFields(fields), photoFileId }
 }
