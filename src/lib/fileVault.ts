@@ -73,6 +73,23 @@ export async function deleteFile(id: string): Promise<void> {
   await db.delete('files', id)
 }
 
+/** Writes a VaultFile record as-is, preserving its id — unlike saveFile,
+ * which always mints a fresh id/timestamp for a genuinely new upload.
+ * Used by session import to restore files with the exact same ids they
+ * had at export time, since other saved data (a dive cert's photoFileId,
+ * for instance) references those ids directly. */
+export async function putFile(record: VaultFile): Promise<void> {
+  const db = await getDB()
+  await db.put('files', record)
+}
+
+/** Wipes the entire vault — used by session import's "replace everything"
+ * restore, right before repopulating it from the backup. */
+export async function clearAllFiles(): Promise<void> {
+  const db = await getDB()
+  await db.clear('files')
+}
+
 /** Caller must URL.revokeObjectURL() this when done with it (e.g. a
  * useEffect cleanup) — otherwise the blob stays pinned in memory. */
 export function fileObjectUrl(file: VaultFile): string {

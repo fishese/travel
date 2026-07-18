@@ -13,6 +13,7 @@ import { ThemeToggle } from './components/ThemeToggle'
 import { TabBar } from './components/TabBar'
 import { FloatingShortcut } from './components/FloatingShortcut'
 import { PullToRefresh } from './components/PullToRefresh'
+import { SessionBackup } from './components/SessionBackup'
 import { useActiveTab } from './lib/tabs'
 import { useSectionOrder } from './lib/sectionOrder'
 
@@ -54,6 +55,7 @@ function App() {
             <ReminderFeed />
             <WeatherCard ref={weatherRef} />
             <CountrySelector />
+            <SessionBackup />
           </PullToRefresh>
         )}
 
