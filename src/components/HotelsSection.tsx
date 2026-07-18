@@ -7,6 +7,7 @@ import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
+import { LinkedFiles } from './LinkedFiles'
 
 interface Props {
   onMoveUp?: () => void
@@ -122,6 +123,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
               </a>
             )}
           </div>
+          <LinkedFiles category="hotel" linkedId={h.id} />
         </div>
       </SwipeToDelete>
     )

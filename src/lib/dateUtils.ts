@@ -25,3 +25,24 @@ export function localTomorrowStr(date: Date = new Date()): string {
 export function localMonthStr(date: Date = new Date()): string {
   return localDateStr(date).slice(0, 7)
 }
+
+/**
+ * Formats a YYYY-MM-DD string for display, e.g. "Tue, Aug 25". Parsed via
+ * the Date(year, month, day) constructor — which reads its components as
+ * LOCAL time — rather than `new Date(dateStr)`, which parses an ISO date
+ * string as UTC and is exactly the kind of off-by-one-day bug this file's
+ * other functions already exist to avoid. The year is only included when
+ * it isn't the current one, since "Tue, Aug 25, 2026" is more than a
+ * booking three weeks out needs, but matters for one a year away.
+ */
+export function formatFriendlyDate(dateStr: string, today: string = localDateStr()): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  const sameYear = dateStr.slice(0, 4) === today.slice(0, 4)
+  return date.toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: sameYear ? undefined : 'numeric',
+  })
+}

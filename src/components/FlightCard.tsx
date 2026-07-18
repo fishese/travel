@@ -15,6 +15,7 @@ import { localDateStr, localTomorrowStr } from '../lib/dateUtils'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { RawTextDisclosure } from './RawTextDisclosure'
+import { LinkedFiles } from './LinkedFiles'
 
 interface Props {
   flight: SavedFlight
@@ -127,6 +128,7 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
             )}
             {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
             {flight.rawText && <RawTextDisclosure text={flight.rawText} />}
+            <LinkedFiles category="flight" linkedId={flight.id} />
           </div>
           <button
             type="button"

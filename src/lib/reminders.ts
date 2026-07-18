@@ -22,17 +22,26 @@ function tomorrowStr(): string {
   return localTomorrowStr()
 }
 
+export interface NextUpcoming {
+  date: string
+  items: ReminderItem[]
+}
+
 export function buildReminders(
   flights: SavedFlight[],
   hotels: SavedHotel[],
   bookings: Booking[],
-): { today: ReminderItem[]; tomorrow: ReminderItem[] } {
+): { today: ReminderItem[]; tomorrow: ReminderItem[]; next: NextUpcoming | null } {
   const today = todayStr()
   const tomorrow = tomorrowStr()
   const items: ReminderItem[] = []
 
+  // Built for anything from today onward, not just today/tomorrow — the
+  // dashboard's "Coming up" fallback (see ReminderFeed) needs to know
+  // about everything further out too, so it can point at the single
+  // nearest date when nothing is imminent yet.
   for (const f of flights) {
-    if (f.date === today || f.date === tomorrow) {
+    if (f.date >= today) {
       items.push({
         id: `flight:${f.id}|${f.date}`,
         date: f.date,
@@ -46,10 +55,10 @@ export function buildReminders(
   }
 
   for (const h of hotels) {
-    if (h.checkIn === today || h.checkIn === tomorrow) {
+    if (h.checkIn && h.checkIn >= today) {
       items.push({
         id: `hotel:${h.id}|${h.checkIn}`,
-        date: h.checkIn!,
+        date: h.checkIn,
         emoji: '🏨',
         title: h.name,
         subtitle: ['Check-in', h.address].filter(Boolean).join(' · '),
@@ -59,7 +68,7 @@ export function buildReminders(
   }
 
   for (const b of bookings) {
-    if (b.date === today || b.date === tomorrow) {
+    if (b.date >= today) {
       items.push({
         id: `booking:${b.id}|${b.date}`,
         date: b.date,
@@ -75,7 +84,11 @@ export function buildReminders(
   const forDate = (date: string) =>
     items.filter((i) => i.date === date).sort((a, b) => (a.time ?? '99:99').localeCompare(b.time ?? '99:99'))
 
-  return { today: forDate(today), tomorrow: forDate(tomorrow) }
+  const futureDates = [...new Set(items.map((i) => i.date))].filter((d) => d > tomorrow).sort()
+  const nextDate = futureDates[0]
+  const next = nextDate ? { date: nextDate, items: forDate(nextDate) } : null
+
+  return { today: forDate(today), tomorrow: forDate(tomorrow), next }
 }
 
 /** Dismissed reminders persist (so reopening the app the same day doesn't

@@ -96,6 +96,15 @@ export function fileObjectUrl(file: VaultFile): string {
   return URL.createObjectURL(file.blob)
 }
 
+/** Opens a vault file in a new tab. Deliberately not revoking the object
+ * URL immediately — the new tab needs it to stay valid, and it'll be
+ * cleaned up when that tab is closed/navigated away from. A minor,
+ * bounded leak rather than a broken "open" action. */
+export function openVaultFile(file: VaultFile): void {
+  const url = fileObjectUrl(file)
+  window.open(url, '_blank')
+}
+
 /** IndexedDB isn't reactive the way the localStorage-backed useSetting is —
  * this just re-fetches on demand. Call `refresh()` after any save/delete
  * that should be reflected. Fine for this app's scale (a handful of files

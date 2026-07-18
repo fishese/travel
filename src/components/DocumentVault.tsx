@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { saveFile, deleteFile, fileObjectUrl, useVaultFiles, type VaultCategory, type VaultFile } from '../lib/fileVault'
+import {
+  saveFile,
+  deleteFile,
+  fileObjectUrl,
+  openVaultFile,
+  useVaultFiles,
+  type VaultCategory,
+  type VaultFile,
+} from '../lib/fileVault'
 import { useSavedFlights, type SavedFlight } from '../lib/flights'
 import { useSavedHotels, type SavedHotel } from '../lib/hotels'
 import { useSavedBookings, type Booking } from '../lib/bookings'
@@ -118,13 +126,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
     refresh()
   }
 
-  function openFile(file: VaultFile) {
-    const url = fileObjectUrl(file)
-    window.open(url, '_blank')
-    // Deliberately not revoking immediately — the new tab needs the URL to
-    // stay valid. It'll be cleaned up when that tab is closed/navigated;
-    // a minor, bounded leak rather than a broken "open" action.
-  }
+
 
   const sorted = [...generalFiles].sort((a, b) => {
     const dateA = getLinkedDate(a, flights, hotels, bookings)
@@ -226,7 +228,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
             return (
               <SwipeToDelete key={f.id} id={f.id} label={f.label} onDelete={() => handleDelete(f.id)}>
                 <div className="flex items-center gap-2 bg-[var(--color-surface)] p-1">
-                  <button type="button" onClick={() => openFile(f)} className="shrink-0">
+                  <button type="button" onClick={() => openVaultFile(f)} className="shrink-0">
                     <VaultThumb file={f} />
                   </button>
                   <div className="min-w-0 flex-1">

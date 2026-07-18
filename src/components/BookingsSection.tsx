@@ -16,6 +16,7 @@ import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { PasteParseBox } from './PasteParseBox'
 import { RawTextDisclosure } from './RawTextDisclosure'
+import { LinkedFiles } from './LinkedFiles'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -87,6 +88,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
             </p>
             {b.notes && <p className="text-xs text-[var(--color-muted)] truncate">{b.notes}</p>}
             {b.rawText && <RawTextDisclosure text={b.rawText} />}
+            <LinkedFiles category="booking" linkedId={b.id} />
           </div>
           <button
             type="button"

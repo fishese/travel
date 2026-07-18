@@ -2,6 +2,7 @@ import { useSavedFlights } from '../lib/flights'
 import { useSavedHotels } from '../lib/hotels'
 import { useSavedBookings } from '../lib/bookings'
 import { buildReminders, useDismissedReminders, type ReminderItem } from '../lib/reminders'
+import { formatFriendlyDate } from '../lib/dateUtils'
 
 function ReminderRow({ item, onDismiss }: { item: ReminderItem; onDismiss: () => void }) {
   return (
@@ -34,11 +35,18 @@ export function ReminderFeed() {
   const [bookings] = useSavedBookings()
   const { isDismissed, dismiss } = useDismissedReminders()
 
-  const { today, tomorrow } = buildReminders(flights, hotels, bookings)
+  const { today, tomorrow, next } = buildReminders(flights, hotels, bookings)
   const visibleToday = today.filter((i) => !isDismissed(i.id))
   const visibleTomorrow = tomorrow.filter((i) => !isDismissed(i.id))
+  const hasImmediate = visibleToday.length > 0 || visibleTomorrow.length > 0
 
-  if (visibleToday.length === 0 && visibleTomorrow.length === 0) return null
+  // Nothing today or tomorrow — rather than sitting empty for however many
+  // weeks until the next trip, point at whatever's soonest instead. Still
+  // dismissible same as any other reminder; a stale "coming up" the person
+  // has already clocked shouldn't linger either.
+  const visibleNext = !hasImmediate && next ? next.items.filter((i) => !isDismissed(i.id)) : []
+
+  if (!hasImmediate && visibleNext.length === 0) return null
 
   return (
     // Sticky against the viewport, not just its own scroll area — stays
@@ -60,6 +68,16 @@ export function ReminderFeed() {
           <div>
             <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">Tomorrow</h2>
             {visibleTomorrow.map((item) => (
+              <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
+            ))}
+          </div>
+        )}
+        {visibleNext.length > 0 && next && (
+          <div>
+            <h2 className="text-xs font-semibold text-[var(--color-muted)] mb-1">
+              Coming up · {formatFriendlyDate(next.date)}
+            </h2>
+            {visibleNext.map((item) => (
               <ReminderRow key={item.id} item={item} onDismiss={() => dismiss(item.id)} />
             ))}
           </div>
