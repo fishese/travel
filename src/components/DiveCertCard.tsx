@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { type DiveCert } from '../lib/diveCerts'
-import { getFile, fileObjectUrl, type VaultFile } from '../lib/fileVault'
+import { getFile, fileObjectUrl, openVaultFile, type VaultFile } from '../lib/fileVault'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { ExpandableCard } from './ExpandableCard'
@@ -29,7 +29,18 @@ function CertPhoto({ fileId }: { fileId: string }) {
   }, [url])
 
   if (!url || !file) return null
-  return <img src={url} alt="Certification card" className="w-full rounded-lg mt-2 max-h-40 object-cover" />
+  return (
+    // object-contain (not -cover) so nothing is cropped out of the inline
+    // preview, and tapping it opens the original file in a new tab at
+    // full resolution — same click-to-open pattern as a Documents row.
+    <button type="button" onClick={() => openVaultFile(file)} className="block w-full mt-2">
+      <img
+        src={url}
+        alt="Certification card — tap to view full size"
+        className="w-full rounded-lg max-h-64 object-contain bg-[var(--color-paper)]"
+      />
+    </button>
+  )
 }
 
 interface Props {
@@ -45,8 +56,10 @@ export function DiveCertCard({ cert, onDelete, onUpdate }: Props) {
     <div className="min-w-0">
       <p className="text-sm font-semibold truncate">
         {cert.agency} · {cert.level}
+        {cert.certNumber && (
+          <span className="text-xs font-normal text-[var(--color-muted)]"> — {cert.certNumber}</span>
+        )}
       </p>
-      <p className="text-xs text-[var(--color-muted)] truncate">{cert.certNumber || 'No cert number on file'}</p>
     </div>
   )
 

@@ -116,17 +116,17 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
   const isTomorrow = flight.date === tomorrow
 
   const header = (
-    <div>
-      <p className="font-semibold tabular">{flight.flightIata}</p>
-      <p className="text-xs text-[var(--color-muted)]">
+    <div className="flex flex-wrap items-baseline gap-x-2 min-w-0">
+      <span className="font-semibold tabular shrink-0">{flight.flightIata}</span>
+      <span className="text-xs text-[var(--color-muted)] tabular shrink-0">
         {flight.date}
         {isToday && ' · Today'}
         {isTomorrow && ' · Tomorrow'}
-      </p>
-      {(flight.origin || flight.departureTime) && (
-        <p className="text-xs text-[var(--color-muted)] tabular">
-          {flight.origin ?? '?'} {flight.departureTime ?? ''}
-        </p>
+      </span>
+      {(flight.origin || flight.destination) && (
+        <span className="text-xs text-[var(--color-muted)] tabular truncate">
+          {flight.origin ?? '?'}→{flight.destination ?? '?'}
+        </span>
       )}
     </div>
   )
@@ -156,9 +156,10 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
                 />
               ) : (
                 <>
-                  {(flight.destination || flight.arrivalTime) && (
+                  {(flight.departureTime || flight.arrivalTime) && (
                     <p className="text-xs text-[var(--color-muted)] tabular">
-                      → {flight.destination ?? '?'} {flight.arrivalTime ?? ''}
+                      {flight.origin ?? '?'} {flight.departureTime ?? '—'} → {flight.destination ?? '?'}{' '}
+                      {flight.arrivalTime ?? '—'}
                     </p>
                   )}
                   {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
