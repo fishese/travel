@@ -22,13 +22,18 @@ export function ItineraryViewer({ html, title, onClose }: Props) {
         srcDoc={html}
         title={title}
         className="flex-1 w-full border-0"
-        // No allow-scripts and no allow-same-origin: this document never
-        // needs to run JS (confirmed — it's pure static HTML/CSS), and an
-        // opaque, script-free sandbox is the safer default for rendering
-        // arbitrary uploaded HTML regardless. allow-popups (+ letting the
-        // popup itself escape the sandbox) is only there so the itinerary's
-        // own target="_blank" map links still open normally.
-        sandbox="allow-popups allow-popups-to-escape-sandbox"
+        // allow-same-origin is what makes the sticky nav's #anchor links
+        // actually scroll instead of opening blank — without it, a srcDoc
+        // iframe's document address (about:srcdoc) has no real origin to
+        // resolve an in-page fragment jump against, and some browsers fall
+        // back to treating the click as a full navigation attempt, which
+        // (combined with allow-popups below, needed for the itinerary's own
+        // target="_blank" map links) can pop it open in a new tab pointed
+        // at a URL that means nothing outside this iframe — a blank page.
+        // Still safe without allow-scripts: this document has no <script>
+        // tags (confirmed), so there's no code that could actually exploit
+        // the origin access allow-same-origin grants.
+        sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
       />
     </div>
   )
