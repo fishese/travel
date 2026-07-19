@@ -8,6 +8,7 @@ import { HotelsSection } from './components/HotelsSection'
 import { BookingsSection } from './components/BookingsSection'
 import { DiveCertsSection } from './components/DiveCertsSection'
 import { DocumentVault } from './components/DocumentVault'
+import { ItinerarySection } from './components/ItinerarySection'
 import { ReminderFeed } from './components/ReminderFeed'
 import { ThemeToggle } from './components/ThemeToggle'
 import { TabBar } from './components/TabBar'
@@ -31,6 +32,7 @@ const SECTION_COMPONENTS: Record<string, ComponentType<SectionProps>> = {
   bookings: BookingsSection,
   'dive-certs': DiveCertsSection,
   documents: DocumentVault,
+  itinerary: ItinerarySection,
 }
 
 function App() {
