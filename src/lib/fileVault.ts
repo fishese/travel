@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 
-export type VaultCategory = 'flight' | 'hotel' | 'booking' | 'dive-cert' | 'other'
+export type VaultCategory = 'flight' | 'hotel' | 'booking' | 'dive-cert' | 'itinerary' | 'other'
 
 export interface VaultFile {
   id: string

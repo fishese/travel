@@ -1,10 +1,4 @@
-import { useSetting } from './useSetting'
-
-export interface ItineraryMeta {
-  title: string
-  fileName: string
-  uploadedAt: string // ISO
-}
+import { saveFile, useVaultFiles, type VaultFile } from './fileVault'
 
 function extractTitle(html: string): string | null {
   const match = html.match(/<title[^>]*>([^<]*)<\/title>/i)
@@ -12,32 +6,22 @@ function extractTitle(html: string): string | null {
 }
 
 /**
- * Deliberately a single slot, not a list — this is "the current trip's
- * itinerary," uploaded once per trip and replaced (not archived) once the
- * next one starts. Stored as plain localStorage via useSetting rather than
- * the IndexedDB file vault (lib/fileVault.ts): it's one string, comfortably
- * inside typical localStorage limits even for a hand-built HTML file, and
- * being a normal travel_-prefixed setting means it's automatically covered
- * by session export/import (lib/sessionTransfer.ts) for free, with no
- * separate wiring needed there.
+ * A handful of saved itinerary pages (one per trip, kept around rather
+ * than replaced) — reuses the same IndexedDB file vault Documents and dive
+ * cert photos already use, filtered to the 'itinerary' category. Piggybacks
+ * on that vault's existing generic export/import support in
+ * lib/sessionTransfer.ts for free — no extra backup/restore wiring needed
+ * here, same as Documents needed none for its own files.
  */
-export function useItinerary() {
-  const [html, setHtml] = useSetting<string>('travel_itinerary_html', '')
-  const [meta, setMeta] = useSetting<ItineraryMeta | null>('travel_itinerary_meta', null)
+export function useSavedItineraries() {
+  return useVaultFiles('itinerary')
+}
 
-  function upload(fileName: string, content: string) {
-    setHtml(content)
-    setMeta({
-      title: extractTitle(content) || fileName.replace(/\.html?$/i, ''),
-      fileName,
-      uploadedAt: new Date().toISOString(),
-    })
-  }
-
-  function clear() {
-    setHtml('')
-    setMeta(null)
-  }
-
-  return { html, meta, upload, clear }
+/** Reads the file once up front to pull a nicer label from its <title>
+ * tag than the raw filename would give — falls back to the filename
+ * (minus extension) if there's no title to find. */
+export async function saveItinerary(file: File): Promise<VaultFile> {
+  const text = await file.text()
+  const title = extractTitle(text) || file.name.replace(/\.html?$/i, '')
+  return saveFile(file, title, 'itinerary')
 }
