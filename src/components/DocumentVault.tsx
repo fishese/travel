@@ -97,7 +97,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   const [flights] = useSavedFlights()
   const [hotels] = useSavedHotels()
   const [bookings] = useSavedBookings()
-  const generalFiles = files.filter((f) => f.category !== 'dive-cert')
+  const generalFiles = files.filter((f) => f.category !== 'dive-cert' && f.category !== 'itinerary')
 
   const [label, setLabel] = useState('')
   const [category, setCategory] = useState<VaultCategory>('other')

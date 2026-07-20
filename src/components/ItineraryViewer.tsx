@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react'
+import { fileObjectUrl, type VaultFile } from '../lib/fileVault'
 
 interface Props {
-  html: string
-  title: string
+  file: VaultFile
   onClose: () => void
 }
 
-export function ItineraryViewer({ html, title, onClose }: Props) {
+export function ItineraryViewer({ file, onClose }: Props) {
   const [url, setUrl] = useState<string | null>(null)
 
-  // A real blob: URL rather than the iframe's srcDoc attribute — srcDoc
-  // documents live at the special about:srcdoc address, which turned out
-  // to be unreliable for in-page #anchor navigation across browsers (the
-  // sticky nav links were opening blank instead of scrolling). A blob URL
-  // is a normal, resolvable address, so the browser can resolve a fragment
-  // link against it the same way it would for any other page. Same
-  // create/revoke pattern already used for vault files (lib/fileVault.ts).
+  // A real blob: URL (same helper Documents/dive-cert photos already use)
+  // rather than the iframe's srcDoc attribute — srcDoc documents live at
+  // the special about:srcdoc address, which turned out to be unreliable
+  // for in-page #anchor navigation (a sticky nav's jump links opened
+  // blank instead of scrolling). A blob URL is a normal, resolvable
+  // address, so the browser resolves a fragment link against it the same
+  // way it would for any other page.
   useEffect(() => {
-    const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
-    setUrl(blobUrl)
-    return () => URL.revokeObjectURL(blobUrl)
-  }, [html])
+    const objectUrl = fileObjectUrl(file)
+    setUrl(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [file])
 
   return (
     <div className="fixed inset-0 z-50 bg-[var(--color-paper)] flex flex-col">
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border)] shrink-0">
-        <span className="text-sm font-semibold truncate">{title}</span>
+        <span className="text-sm font-semibold truncate">{file.label}</span>
         <button
           type="button"
           onClick={onClose}
@@ -35,13 +35,11 @@ export function ItineraryViewer({ html, title, onClose }: Props) {
           ✕
         </button>
       </div>
-      {/* No sandbox attribute — two rounds of trying to keep this
-       * restricted (no allow-same-origin, then adding it back) both broke
-       * the sticky nav's in-page links in ways that weren't worth a third
-       * guess. This is meant for the person's own hand-built itinerary
-       * pages, confirmed script-free, so full trust is the pragmatic
-       * call here over continuing to chase sandbox flag interactions. */}
-      {url && <iframe src={url} title={title} className="flex-1 w-full border-0" />}
+      {/* No sandbox attribute — meant for the person's own hand-built
+       * itinerary pages (confirmed script-free), and full trust avoided
+       * two separate rounds of sandbox flag combinations each breaking
+       * the sticky nav's in-page links in different ways. */}
+      {url && <iframe src={url} title={file.label} className="flex-1 w-full border-0" />}
     </div>
   )
 }

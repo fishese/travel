@@ -1,7 +1,10 @@
 import { useRef, useState } from 'react'
-import { useItinerary } from '../lib/itinerary'
-import { hapticTick, hapticConfirm } from '../lib/haptics'
+import { deleteFile, type VaultFile } from '../lib/fileVault'
+import { useSavedItineraries, saveItinerary } from '../lib/itinerary'
 import { Collapsible } from './Collapsible'
+import { AddFormToggle } from './AddFormToggle'
+import { SwipeToDelete } from './SwipeToDelete'
+import { requestOpen } from '../lib/swipeCoordinator'
 import { ItineraryViewer } from './ItineraryViewer'
 
 interface Props {
@@ -10,113 +13,77 @@ interface Props {
 }
 
 export function ItinerarySection({ onMoveUp, onMoveDown }: Props) {
-  const { html, meta, upload, clear } = useItinerary()
-  const [viewing, setViewing] = useState(false)
-  const [pendingFile, setPendingFile] = useState<File | null>(null)
-  const [confirmingClear, setConfirmingClear] = useState(false)
+  const { files, refresh } = useSavedItineraries()
+  const [viewing, setViewing] = useState<VaultFile | null>(null)
+  const [showAddForm, setShowAddForm] = useState(() => files.length === 0)
+  const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  async function applyFile(file: File) {
-    const content = await file.text()
-    upload(file.name, content)
-    setPendingFile(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
-
-  function handleFilePicked(file: File | undefined) {
+  async function handleFilePicked(file: File | undefined) {
     if (!file) return
-    if (html) {
-      setPendingFile(file)
-    } else {
-      void applyFile(file)
-    }
+    setUploading(true)
+    await saveItinerary(file)
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    setShowAddForm(false)
+    refresh()
   }
 
-  function handleClearClick() {
-    if (!confirmingClear) {
-      setConfirmingClear(true)
-      hapticTick()
-      setTimeout(() => setConfirmingClear(false), 3000)
-      return
-    }
-    hapticConfirm()
-    clear()
-    setConfirmingClear(false)
+  async function handleDelete(file: VaultFile) {
+    await deleteFile(file.id)
+    refresh()
   }
+
+  // Most recently saved first — whatever was just uploaded is presumably
+  // for the next upcoming trip, so it's the one worth surfacing first.
+  const sorted = [...files].sort((a, b) => b.savedAt.localeCompare(a.savedAt))
 
   return (
     <Collapsible id="itinerary" title="Itinerary" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
-        A single HTML file for the current trip — one of your own hand-built itinerary pages, viewable full-screen
-        and offline once saved. Uploading a new one replaces whatever's here.
+        Your own hand-built itinerary pages (HTML) — save a few, viewable full-screen and offline once saved. Only
+        one opens at a time.
       </p>
 
-      {meta && (
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 mb-2">
-          <p className="text-sm font-semibold truncate">{meta.title}</p>
-          <p className="text-xs text-[var(--color-muted)]">
-            Saved {new Date(meta.uploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-          </p>
-          <div className="flex gap-3 mt-2">
-            <button
-              type="button"
-              onClick={() => setViewing(true)}
-              className="text-xs text-[var(--color-pine)] underline"
-            >
-              View itinerary
-            </button>
-            <button
-              type="button"
-              onClick={handleClearClick}
-              className={
-                'text-xs underline ' +
-                (confirmingClear ? 'text-[var(--color-danger)] font-medium' : 'text-[var(--color-amber)]')
-              }
-            >
-              {confirmingClear ? 'Confirm remove?' : 'Remove'}
-            </button>
-          </div>
+      <AddFormToggle label="Add itinerary" open={showAddForm} onOpenChange={setShowAddForm}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".html,.htm,text/html"
+          onChange={(e) => handleFilePicked(e.target.files?.[0])}
+          disabled={uploading}
+          className="w-full text-xs disabled:opacity-50"
+        />
+        {uploading && <p className="text-xs text-[var(--color-muted)] mt-1">Saving…</p>}
+      </AddFormToggle>
+
+      {sorted.length === 0 ? (
+        <p className="text-sm text-[var(--color-muted)]">No itineraries saved yet.</p>
+      ) : (
+        <div className="space-y-2">
+          {sorted.map((f) => (
+            <SwipeToDelete key={f.id} id={f.id} label={f.label} onDelete={() => handleDelete(f)}>
+              <div className="flex items-center justify-between gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+                <button type="button" onClick={() => setViewing(f)} className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-semibold truncate">{f.label}</p>
+                  <p className="text-xs text-[var(--color-muted)]">
+                    Saved {new Date(f.savedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => requestOpen(f.id)}
+                  className="text-xs text-[var(--color-amber)] shrink-0"
+                >
+                  Remove
+                </button>
+              </div>
+            </SwipeToDelete>
+          ))}
         </div>
       )}
 
-      {pendingFile && (
-        <div className="rounded-lg border border-[var(--color-border)] p-2 mb-2">
-          <p className="text-xs mb-2">
-            Replace the saved itinerary with <span className="font-medium">{pendingFile.name}</span>?
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => applyFile(pendingFile)}
-              className="flex-1 rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-xs"
-            >
-              Replace
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setPendingFile(null)
-                if (fileInputRef.current) fileInputRef.current.value = ''
-              }}
-              className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-xs"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".html,.htm,text/html"
-        onChange={(e) => handleFilePicked(e.target.files?.[0])}
-        className="w-full text-xs"
-      />
-
-      {viewing && html && meta && (
-        <ItineraryViewer html={html} title={meta.title} onClose={() => setViewing(false)} />
-      )}
+      {viewing && <ItineraryViewer file={viewing} onClose={() => setViewing(null)} />}
     </Collapsible>
   )
 }
