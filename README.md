@@ -7,11 +7,13 @@ locally with a visible staleness indicator.
 
 ## Deploying (GitHub Pages, no local install needed)
 
-1. Create a new GitHub repo (this project is configured for a repo named
-   `travel` — if you rename it, update `base` in `vite.config.ts` and
-   `start_url`/`scope` in the PWA manifest block to match, or you'll get a
-   blank page: Vite bakes the repo name into every asset URL at build time,
-   so a mismatch there means the JS/CSS 404 silently and React never mounts).
+1. Create a new GitHub repo. This project is configured for a **custom domain
+   at the site root** (`traveltools.fishese.cc`). `base` in `vite.config.ts`
+   and `start_url`/`scope` in the PWA manifest must match the URL the site is
+   actually served from. A project-pages path like `/travel/` is wrong once a
+   custom domain is attached: Vite bakes that prefix into every asset URL, the
+   JS/CSS 404, and the page stays blank. `https://fishese.github.io/travel/`
+   redirects to the custom domain, so it is not a separate deploy.
 2. Push this folder's contents to the repo's `main` branch — the GitHub web
    UI's "upload files" flow works fine for this, no terminal required.
 3. In the repo, go to **Settings → Pages** and set Source to **GitHub

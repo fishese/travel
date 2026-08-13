@@ -5,8 +5,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages serves project sites from /<repo-name>/ — this repo is named "travel".
-  base: '/travel/',
+  // Custom domain (traveltools.fishese.cc) is served at the site root, not
+  // /travel/. github.io/travel redirects there. A /travel/ base 404s every
+  // JS/CSS file on the custom domain and the page stays blank.
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -20,8 +22,8 @@ export default defineConfig({
         theme_color: '#1e3a34',
         background_color: '#f6f4ee',
         display: 'standalone',
-        start_url: '/travel/',
-        scope: '/travel/',
+        start_url: '/',
+        scope: '/',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -35,19 +37,19 @@ export default defineConfig({
           {
             name: 'Currency converter',
             short_name: 'Money',
-            url: '/travel/?tab=money',
+            url: '/?tab=money',
             icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
           {
             name: 'Planner',
             short_name: 'Planner',
-            url: '/travel/?tab=planner',
+            url: '/?tab=planner',
             icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
           {
             name: 'Cheatsheet',
             short_name: 'Cheatsheet',
-            url: '/travel/?tab=cheatsheet',
+            url: '/?tab=cheatsheet',
             icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
         ],
