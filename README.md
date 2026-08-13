@@ -74,7 +74,8 @@ available to its document context. If active scripts are unnecessary, prefer a
 PDF or static HTML file.
 
 Trips can be created and selected from the Dashboard. Records are assigned to
-the active trip when created, and existing ungrouped flights, hotels, bookings
-and dive certificates can be assigned in one tap. The travel-day dashboard
+the active trip when created, and existing ungrouped flights, hotels and
+bookings can be assigned in one tap. Dive certificates remain visible across
+trips. The travel-day dashboard
 summarises today's flights, hotel changes and bookings, plus the next-flight
 countdown for the active trip.

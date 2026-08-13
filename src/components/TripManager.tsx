@@ -45,7 +45,7 @@ export function TripManager() {
 
   function deleteActive() {
     if (!activeTrip || !window.confirm(`Delete trip “${activeTrip.name}”? Its records will become unassigned.`)) return
-    for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings', 'travel_dive_certs']) unassignTrip(key, activeTrip.id)
+    for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings']) unassignTrip(key, activeTrip.id)
     setTrips((prev) => prev.filter((trip) => trip.id !== activeTrip.id))
     selectTrip('')
   }
@@ -79,7 +79,7 @@ export function TripManager() {
 
       {activeTrip && (
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
-          <button type="button" onClick={() => { for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings', 'travel_dive_certs']) assignUnassigned(key, activeTrip.id) }} className="text-[var(--color-pine)] underline">Assign all currently unassigned records here</button>
+          <button type="button" onClick={() => { for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings']) assignUnassigned(key, activeTrip.id) }} className="text-[var(--color-pine)] underline">Assign all currently unassigned records here</button>
           <button type="button" onClick={deleteActive} className="text-[var(--color-danger)] underline">Delete trip</button>
         </div>
       )}

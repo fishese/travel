@@ -4,8 +4,6 @@ import { saveFile, deleteFile } from '../lib/fileVault'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { DiveCertCard } from './DiveCertCard'
-import { useActiveTrip } from '../lib/trips'
-import { TripAssignment } from './TripAssignment'
 
 interface Props {
   onMoveUp?: () => void
@@ -14,7 +12,6 @@ interface Props {
 
 export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   const [certs, setCerts] = useSavedDiveCerts()
-  const { activeTripId } = useActiveTrip()
   const scopedCerts = certs
 
   const [agency, setAgency] = useState('')
@@ -36,7 +33,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
     }
     setCerts((prev) => [
       ...prev,
-      newDiveCert({ tripId: activeTripId || undefined, agency, level, certNumber, issueDate, instructorName, notes, photoFileId }),
+      newDiveCert({ agency, level, certNumber, issueDate, instructorName, notes, photoFileId }),
     ])
     setAgency('')
     setLevel('')
@@ -129,10 +126,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
       ) : (
         <div className="space-y-2">
           {scopedCerts.map((c) => (
-            <div key={c.id} className="space-y-1">
-              <TripAssignment tripId={c.tripId} onChange={(tripId) => updateCert({ ...c, tripId })} />
-              <DiveCertCard cert={c} onDelete={removeCert} onUpdate={updateCert} />
-            </div>
+            <DiveCertCard key={c.id} cert={c} onDelete={removeCert} onUpdate={updateCert} />
           ))}
         </div>
       )}
