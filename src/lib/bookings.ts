@@ -50,6 +50,24 @@ function makeId() {
   return Math.random().toString(36).slice(2, 9)
 }
 
+export interface BookingFieldInput {
+  date: string
+  time?: string
+  category: BookingCategory
+  label: string
+  notes?: string
+}
+
+function normalizeBookingFields(fields: BookingFieldInput) {
+  return {
+    date: fields.date,
+    time: fields.time?.trim() || undefined,
+    category: fields.category,
+    label: fields.label.trim(),
+    notes: fields.notes?.trim() || undefined,
+  }
+}
+
 /**
  * Pure construction function, deliberately separate from any form UI —
  * a future paste/upload parser calls this with extracted fields exactly
@@ -57,24 +75,23 @@ function makeId() {
  * later doesn't require touching this shape or any of the list/reminder
  * logic built on top of it.
  */
-export function newBooking(fields: {
-  date: string
-  time?: string
-  category: BookingCategory
-  label: string
-  notes?: string
-  source?: Booking['source']
-  rawText?: string
-}): Booking {
+export function newBooking(
+  fields: BookingFieldInput & { source?: Booking['source']; rawText?: string },
+): Booking {
   return {
     id: makeId(),
-    date: fields.date,
-    time: fields.time?.trim() || undefined,
-    category: fields.category,
-    label: fields.label.trim(),
-    notes: fields.notes?.trim() || undefined,
+    ...normalizeBookingFields(fields),
     savedAt: new Date().toISOString(),
     source: fields.source ?? 'manual',
     rawText: fields.rawText,
   }
+}
+
+/** Applies an edit to an existing booking — same field normalization as
+ * newBooking, but keeps id/savedAt/source/rawText untouched. The original
+ * pasted text (if any) stays attached even after a manual edit, since
+ * it's still useful as "here's what this looked like before I changed
+ * it" if the edit itself turns out wrong. */
+export function applyBookingEdit(booking: Booking, fields: BookingFieldInput): Booking {
+  return { ...booking, ...normalizeBookingFields(fields) }
 }
