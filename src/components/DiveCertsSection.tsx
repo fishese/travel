@@ -4,7 +4,7 @@ import { saveFile, deleteFile } from '../lib/fileVault'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { DiveCertCard } from './DiveCertCard'
-import { useActiveTrip, tripMatches } from '../lib/trips'
+import { useActiveTrip } from '../lib/trips'
 import { TripAssignment } from './TripAssignment'
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   const [certs, setCerts] = useSavedDiveCerts()
   const { activeTripId } = useActiveTrip()
-  const scopedCerts = certs.filter((cert) => tripMatches(cert, activeTripId))
+  const scopedCerts = certs
 
   const [agency, setAgency] = useState('')
   const [level, setLevel] = useState('')
@@ -124,7 +124,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
         </button>
       </AddFormToggle>
 
-      {certs.length === 0 ? (
+      {scopedCerts.length === 0 ? (
         <p className="text-sm text-[var(--color-muted)]">No certs saved yet.</p>
       ) : (
         <div className="space-y-2">

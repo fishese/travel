@@ -31,6 +31,9 @@ const CATEGORIES: { value: VaultCategory; label: string }[] = [
   { value: 'other', label: 'Other' },
 ]
 
+const PROTECTED_CATEGORIES: VaultCategory[] = ['flight', 'hotel', 'identity', 'insurance', 'other']
+const DOCUMENT_CATEGORIES: VaultCategory[] = ['booking']
+
 function VaultThumb({ file }: { file: VaultFile }) {
   const [url, setUrl] = useState<string | null>(null)
   const isImage = file.mimeType.startsWith('image/')
@@ -101,9 +104,10 @@ function dateRank(date: string | undefined, today: string, tomorrow: string): nu
 interface Props {
   onMoveUp?: () => void
   onMoveDown?: () => void
+  protectedOnly?: boolean
 }
 
-export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
+export function DocumentVault({ onMoveUp, onMoveDown, protectedOnly = false }: Props) {
   const { files, loading, locked, refresh } = useVaultFiles()
   const vault = useVaultLock()
   const [flights] = useSavedFlights()
@@ -113,10 +117,11 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   const scopedFlights = flights.filter((item) => tripMatches(item, activeTripId))
   const scopedHotels = hotels.filter((item) => tripMatches(item, activeTripId))
   const scopedBookings = bookings.filter((item) => tripMatches(item, activeTripId))
-  const generalFiles = files.filter((f) => f.category !== 'dive-cert' && f.category !== 'itinerary' && tripMatches(f, activeTripId))
+  const allowedCategories = protectedOnly ? PROTECTED_CATEGORIES : DOCUMENT_CATEGORIES
+  const generalFiles = files.filter((f) => allowedCategories.includes(f.category) && tripMatches(f, activeTripId))
 
   const [label, setLabel] = useState('')
-  const [category, setCategory] = useState<VaultCategory>('other')
+  const [category, setCategory] = useState<VaultCategory>(protectedOnly ? 'identity' : 'booking')
   const [linkedId, setLinkedId] = useState('')
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -162,25 +167,27 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
     return d
   }
 
-  if (vault.status === 'loading') {
+  if (protectedOnly && (vault.status !== 'unlocked' || locked)) {
     return (
-      <Collapsible id="documents" title="Documents" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
+      <Collapsible id={protectedOnly ? 'protected-vault' : 'documents'} title={protectedOnly ? 'Protected Vault' : 'Documents'} onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
         <VaultLockPanel />
       </Collapsible>
     )
   }
 
+  const visibleFiles = generalFiles
+  const categories = CATEGORIES.filter((item) => allowedCategories.includes(item.value))
+
   return (
-    <Collapsible id="documents" title="Documents" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
-      <VaultLockPanel />
-      {locked && <p className="text-xs text-[var(--color-amber)] mb-2">Protected files are hidden until you unlock the vault. Booking documents remain available.</p>}
+    <Collapsible id={protectedOnly ? 'protected-vault' : 'documents'} title={protectedOnly ? 'Protected Vault' : 'Documents'} onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
+      {protectedOnly && <VaultLockPanel />}
       <p className="text-xs text-[var(--color-muted)] mb-2">
-        E-tickets, passport copies, insurance cards, visas, booking confirmations and reservations are encrypted and
-        stored on this device only. Link a document to a flight/hotel/booking to surface it automatically on the
-        relevant day.
+        {protectedOnly
+          ? 'Passport copies, insurance cards, visas, e-tickets and other sensitive files are encrypted on this device. Unlock the vault to view them.'
+          : 'Booking confirmations and reservations are stored on this device. Link a document to a booking to surface it automatically on the relevant day.'}
       </p>
 
-      <AddFormToggle label="Add document" open={showAddForm} onOpenChange={setShowAddForm}>
+      <AddFormToggle label={protectedOnly ? 'Add protected document' : 'Add booking document'} open={showAddForm} onOpenChange={setShowAddForm}>
         <input
           ref={fileInputRef}
           type="file"
@@ -195,7 +202,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
         <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <button
               key={c.value}
               type="button"
@@ -235,7 +242,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
         <button
           type="button"
           onClick={handleUpload}
-          disabled={!pendingFile || (locked && category !== 'booking')}
+          disabled={!pendingFile || (protectedOnly && locked)}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Save to vault
@@ -244,7 +251,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
 
       {loading ? (
         <p className="text-sm text-[var(--color-muted)]">Loading…</p>
-      ) : sorted.length === 0 ? (
+      ) : visibleFiles.length === 0 ? (
         <p className="text-sm text-[var(--color-muted)]">No documents saved yet.</p>
       ) : (
         <div className="space-y-2">

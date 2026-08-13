@@ -54,8 +54,9 @@ passport copies, identity documents and insurance/visa files while leaving
 currency, bookings and the planner usable. Dive
 certificate details and attached card photos, itinerary files, and booking
 documents intentionally remain available with the device key, even while the
-protected document vault is locked. Lock
-or unlock the vault from any protected section; removing the password restores
+protected document vault is locked. Lock or unlock it from the dedicated
+Protected Vault section; ordinary booking documents and itinerary files stay
+outside that lock. Removing the password restores
 device-only automatic unlock. Clearing browser/site data also clears the key,
 so those files cannot be recovered without a backup. The app requests
 persistent storage where supported, but browsers may still evict site data;

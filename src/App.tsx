@@ -39,6 +39,15 @@ const SECTION_COMPONENTS: Record<string, ComponentType<SectionProps>> = {
   itinerary: ItinerarySection,
 }
 
+function ProtectedVaultSection(props: SectionProps) {
+  return <DocumentVault {...props} protectedOnly />
+}
+
+const SECTION_COMPONENTS_WITH_VAULT: Record<string, ComponentType<SectionProps>> = {
+  ...SECTION_COMPONENTS,
+  'protected-vault': ProtectedVaultSection,
+}
+
 function App() {
   const [activeTab] = useActiveTab()
   const { order, moveUp, moveDown } = useSectionOrder()
@@ -83,7 +92,7 @@ function App() {
 
         {activeTab === 'planner' &&
           order.map((id, idx) => {
-            const Section = SECTION_COMPONENTS[id]
+            const Section = SECTION_COMPONENTS_WITH_VAULT[id]
             if (!Section) return null
             return (
               <Section

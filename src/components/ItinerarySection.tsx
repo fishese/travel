@@ -7,8 +7,6 @@ import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { ItineraryViewer } from './ItineraryViewer'
 import { useActiveTrip } from '../lib/trips'
-import { VaultLockPanel } from './VaultLockPanel'
-import { useVaultLock } from '../lib/vaultCrypto'
 import { TripAssignment } from './TripAssignment'
 
 interface Props {
@@ -19,19 +17,10 @@ interface Props {
 export function ItinerarySection({ onMoveUp, onMoveDown }: Props) {
   const { activeTripId } = useActiveTrip()
   const { files, refresh } = useSavedItineraries(activeTripId || undefined)
-  const vault = useVaultLock()
   const [viewing, setViewing] = useState<VaultFile | null>(null)
   const [showAddForm, setShowAddForm] = useState(() => files.length === 0)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  if (vault.status === 'loading') {
-    return (
-      <Collapsible id="itinerary" title="Itinerary" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
-        <VaultLockPanel />
-      </Collapsible>
-    )
-  }
 
   async function handleFilePicked(file: File | undefined) {
     if (!file) return
@@ -54,8 +43,6 @@ export function ItinerarySection({ onMoveUp, onMoveDown }: Props) {
 
   return (
     <Collapsible id="itinerary" title="Itinerary" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
-      <VaultLockPanel />
-      {vault.locked && <p className="text-xs text-[var(--color-amber)] mb-2">Protected files are hidden until you unlock the vault. Itinerary files remain available.</p>}
       <p className="text-xs text-[var(--color-muted)] mb-2">
         Your own hand-built itinerary pages (HTML) — save a few, viewable full-screen and offline once saved. Only
         one opens at a time.
