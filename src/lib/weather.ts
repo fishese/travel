@@ -102,8 +102,17 @@ export interface UmbrellaSignal {
 /** Looks at the next 2 hours from now; recommends an umbrella if any of
  * them has a >60% precipitation chance. */
 export function computeUmbrellaSignal(cache: WeatherCache): UmbrellaSignal {
-  const nowMs = Date.now()
-  const startIdx = cache.hourly.time.findIndex((t) => new Date(t).getTime() >= nowMs)
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: cache.timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date())
+  const current = Object.fromEntries(parts.map((p) => [p.type, p.value]))
+  const localHourKey = `${current.year}-${current.month}-${current.day}T${current.hour}:00`
+  const startIdx = cache.hourly.time.findIndex((t) => t >= localHourKey)
   if (startIdx === -1) return { bringUmbrella: false }
 
   const endIdx = Math.min(startIdx + 2, cache.hourly.time.length)

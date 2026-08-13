@@ -1,5 +1,6 @@
-import { listFiles, putFile, clearAllFiles, type VaultFile } from './fileVault'
+import { listFiles, putFile, replaceAllFiles, type VaultFile } from './fileVault'
 import { writeSettingExternally } from './useSetting'
+import { decryptBackupEnvelope, encryptBackupText, isEncryptedBackup, type EncryptedBackupEnvelope } from './backupCrypto'
 
 // Every setting this app writes uses this prefix (confirmed by grepping
 // every localStorage.getItem/setItem call site) — scanning by prefix
@@ -92,9 +93,10 @@ async function buildSessionExport(): Promise<SessionExport> {
 /** Builds the backup and triggers a browser download — a plain JSON file
  * with images/documents embedded as base64, which is plenty for this
  * app's scale (a handful of files per trip, not a data-heavy archive). */
-export async function downloadSessionExport(): Promise<{ settingsCount: number; filesCount: number }> {
+export async function downloadSessionExport(password = ''): Promise<{ settingsCount: number; filesCount: number }> {
   const data = await buildSessionExport()
-  const json = JSON.stringify(data)
+  const plainJson = JSON.stringify(data)
+  const json = password ? JSON.stringify(await encryptBackupText(plainJson, password)) : plainJson
   const blob = new Blob([json], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -179,13 +181,7 @@ async function mergeSession(data: SessionExport): Promise<MergeSummary> {
 }
 
 async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
-  // File vault restore happens first: if this fails partway (e.g. an
-  // IndexedDB quota error), the existing localStorage settings are still
-  // untouched below, rather than this import having already wiped them
-  // out before hitting the failure.
-  await clearAllFiles()
-  for (const f of data.files) {
-    await putFile({
+  const preparedFiles: VaultFile[] = data.files.map((f) => ({
       id: f.id,
       blob: base64ToBlob(f.dataBase64, f.mimeType),
       mimeType: f.mimeType,
@@ -193,8 +189,8 @@ async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
       category: f.category,
       linkedId: f.linkedId,
       savedAt: f.savedAt,
-    })
-  }
+  }))
+  await replaceAllFiles(preparedFiles)
 
   for (const key of Object.keys(localStorage)) {
     if (key.startsWith(KEY_PREFIX)) localStorage.removeItem(key)
@@ -223,13 +219,21 @@ async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
  * Either way, the caller is expected to have already confirmed this with
  * the person — this function doesn't ask again.
  */
-export async function importSessionFile(file: File, mode: ImportMode): Promise<ImportSummary> {
+export async function importSessionFile(file: File, mode: ImportMode, password = ''): Promise<ImportSummary> {
   const text = await file.text()
   let data: unknown
   try {
     data = JSON.parse(text)
   } catch {
     throw new Error("That file isn't valid JSON — was it exported from this app?")
+  }
+  if (isEncryptedBackup(data)) {
+    const plain = await decryptBackupEnvelope(data as EncryptedBackupEnvelope, password)
+    try {
+      data = JSON.parse(plain)
+    } catch {
+      throw new Error("That backup's decrypted contents are invalid.")
+    }
   }
   if (!isSessionExport(data)) {
     throw new Error("That doesn't look like a Travel Toolkit backup file.")

@@ -1,7 +1,7 @@
 // Currency rates: fetched when online, cached for offline use.
 // Source of truth for the "hero" converter (spec §1).
 
-const CACHE_KEY = 'travel_fx_cache_v1'
+const CACHE_KEY = 'travel_fx_cache_v2'
 const STALE_AFTER_MS = 24 * 60 * 60 * 1000 // 24h, per spec
 
 export interface RateCache {
@@ -38,18 +38,19 @@ export function currencyLabel(code: string): { en: string; zh?: string } {
   }
 }
 
-function readCache(): RateCache | null {
-  const raw = localStorage.getItem(CACHE_KEY)
+function readCache(base: string): RateCache | null {
+  const raw = localStorage.getItem(`${CACHE_KEY}_${base}`)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as RateCache
+    const parsed = JSON.parse(raw) as RateCache
+    return parsed.base === base ? parsed : null
   } catch {
     return null
   }
 }
 
 function writeCache(cache: RateCache) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify(cache))
+  localStorage.setItem(`${CACHE_KEY}_${cache.base}`, JSON.stringify(cache))
 }
 
 export function isStale(cache: RateCache | null): boolean {
@@ -64,8 +65,7 @@ export function isStale(cache: RateCache | null): boolean {
  * converter should never go blank just because the connection dropped.
  */
 export async function getRates(base: string): Promise<{ cache: RateCache; stale: boolean; offline: boolean }> {
-  const cached = readCache()
-  const cacheMatchesBase = cached?.base === base
+  const cached = readCache(base)
 
   try {
     const res = await fetch(`https://api.frankfurter.app/latest?from=${base}`)
@@ -93,7 +93,7 @@ export async function getRates(base: string): Promise<{ cache: RateCache; stale:
       return { cache: fresh, stale: false, offline: false }
     } catch {
       // both sources unreachable — serve cache if we have one for this base
-      if (cached && cacheMatchesBase) {
+      if (cached) {
         return { cache: cached, stale: isStale(cached), offline: true }
       }
       throw new Error('No network and no cached rates for this currency pair.')

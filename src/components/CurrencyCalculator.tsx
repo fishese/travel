@@ -57,6 +57,8 @@ export function CurrencyCalculator() {
 
   useEffect(() => {
     let cancelled = false
+    setCache(null)
+    setOffline(false)
     setLoading(true)
     setError(null)
     getRates(from)

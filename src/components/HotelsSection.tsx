@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSavedHotels, newHotel, lookupHotel, type HotelLookupResult } from '../lib/hotels'
+import { useSavedHotels, newHotel, applyHotelEdit, lookupHotel, type HotelLookupResult } from '../lib/hotels'
 import { isPastDate } from '../lib/archive'
 import { Collapsible } from './Collapsible'
 import { ShowToDriver } from './ShowToDriver'
@@ -34,6 +34,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
 
   const [driverView, setDriverView] = useState<{ name: string; address: string; mapsUrl?: string } | null>(null)
   const [showAddForm, setShowAddForm] = useState(() => hotels.length === 0)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   async function handleLookup() {
     setLooking(true)
@@ -58,10 +59,11 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
 
   function addHotel() {
     if (!name.trim()) return
-    setHotels((prev) => [
-      ...prev,
-      newHotel({ name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }),
-    ])
+    setHotels((prev) =>
+      editingId
+        ? prev.map((h) => (h.id === editingId ? applyHotelEdit(h, { name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }) : h))
+        : [...prev, newHotel({ name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
+    )
     setName('')
     setCity('')
     setAddress('')
@@ -73,7 +75,23 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setLon(undefined)
     setOsmPlaceId(undefined)
     setResults([])
+    setEditingId(null)
     setShowAddForm(false)
+  }
+
+  function editHotel(h: (typeof hotels)[number]) {
+    setEditingId(h.id)
+    setName(h.name)
+    setCity(h.city)
+    setAddress(h.address)
+    setPhone(h.phone)
+    setCheckIn(h.checkIn ?? '')
+    setCheckOut(h.checkOut ?? '')
+    setNotes(h.notes)
+    setLat(h.lat)
+    setLon(h.lon)
+    setOsmPlaceId(h.osmPlaceId)
+    setShowAddForm(true)
   }
 
   function removeHotel(id: string) {
@@ -122,6 +140,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
                 Open in Maps
               </a>
             )}
+            {h.phone && <a href={`tel:${h.phone.replace(/[^\d+]/g, '')}`} className="text-[var(--color-pine)] underline">Call</a>}
+            <button type="button" onClick={() => editHotel(h)} className="text-[var(--color-pine)] underline">Edit</button>
           </div>
           <LinkedFiles category="hotel" linkedId={h.id} />
         </div>
@@ -131,7 +151,14 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
 
   return (
     <Collapsible id="hotels" title="Hotels" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
-      <AddFormToggle label="Add hotel" open={showAddForm} onOpenChange={setShowAddForm}>
+      <AddFormToggle
+        label={editingId ? 'Edit hotel' : 'Add hotel'}
+        open={showAddForm}
+        onOpenChange={(open) => {
+          setShowAddForm(open)
+          if (!open) setEditingId(null)
+        }}
+      >
         <div className="flex flex-wrap gap-2">
           <input
             value={name}
@@ -155,6 +182,9 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
         >
           {looking ? 'Looking up…' : 'Look up address on the map'}
         </button>
+        <p className="text-[11px] text-[var(--color-muted)]">
+          Address results by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline">OpenStreetMap</a>.
+        </p>
         {lookupError && <p className="text-xs text-[var(--color-amber)]">{lookupError}</p>}
         {results.length > 0 && (
           <ul className="rounded-lg border border-[var(--color-border)] divide-y divide-[var(--color-border)]">
@@ -219,7 +249,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
           disabled={!name.trim()}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
-          Save hotel
+          {editingId ? 'Save changes' : 'Save hotel'}
         </button>
       </AddFormToggle>
 

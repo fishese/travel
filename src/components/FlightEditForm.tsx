@@ -14,6 +14,7 @@ export function FlightEditForm({ initial, onSave, onCancel }: Props) {
   const [destination, setDestination] = useState(initial.destination ?? '')
   const [departureTime, setDepartureTime] = useState(initial.departureTime ?? '')
   const [arrivalTime, setArrivalTime] = useState(initial.arrivalTime ?? '')
+  const [arrivalDate, setArrivalDate] = useState(initial.arrivalDate ?? '')
   const [notes, setNotes] = useState(initial.notes ?? '')
 
   return (
@@ -28,6 +29,7 @@ export function FlightEditForm({ initial, onSave, onCancel }: Props) {
         <input
           type="date"
           value={date}
+          aria-label="Departure date"
           onChange={(e) => setDate(e.target.value)}
           className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
@@ -61,6 +63,13 @@ export function FlightEditForm({ initial, onSave, onCancel }: Props) {
           aria-label="Arrival time, local to destination"
           className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
+        <input
+          type="date"
+          value={arrivalDate}
+          onChange={(e) => setArrivalDate(e.target.value)}
+          aria-label="Arrival date, local to destination"
+          className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+        />
       </div>
       <input
         value={notes}
@@ -71,7 +80,7 @@ export function FlightEditForm({ initial, onSave, onCancel }: Props) {
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={() => onSave({ flightIata, date, origin, destination, departureTime, arrivalTime, notes })}
+          onClick={() => onSave({ flightIata, date, origin, destination, departureTime, arrivalTime, arrivalDate, notes })}
           disabled={!flightIata.trim()}
           className="flex-1 rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >

@@ -72,6 +72,7 @@ export function DiveCertEditForm({ cert, onSave, onCancel }: Props) {
         <input
           type="date"
           value={issueDate}
+          aria-label="Certificate issue date"
           onChange={(e) => setIssueDate(e.target.value)}
           className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />

@@ -1,4 +1,4 @@
-import { useRef, type ComponentType } from 'react'
+import { useEffect, useRef, type ComponentType } from 'react'
 import { CurrencyCalculator } from './components/CurrencyCalculator'
 import { CountrySelector } from './components/CountrySelector'
 import { WeatherCard, type WeatherCardHandle } from './components/WeatherCard'
@@ -15,6 +15,8 @@ import { TabBar } from './components/TabBar'
 import { FloatingShortcut } from './components/FloatingShortcut'
 import { PullToRefresh } from './components/PullToRefresh'
 import { SessionBackup } from './components/SessionBackup'
+import { TripPrep } from './components/TripPrep'
+import { ExpenseLog } from './components/ExpenseLog'
 import { useActiveTab } from './lib/tabs'
 import { useSectionOrder } from './lib/sectionOrder'
 
@@ -40,6 +42,12 @@ function App() {
   const { order, moveUp, moveDown } = useSectionOrder()
   const weatherRef = useRef<WeatherCardHandle>(null)
 
+  useEffect(() => {
+    // Ask the browser not to evict this app's offline data under storage
+    // pressure. This is best-effort and only available in some browsers.
+    void navigator.storage?.persist?.()
+  }, [])
+
   async function refreshDashboard() {
     await weatherRef.current?.refresh()
   }
@@ -57,11 +65,17 @@ function App() {
             <ReminderFeed />
             <WeatherCard ref={weatherRef} />
             <CountrySelector />
+            <TripPrep />
             <SessionBackup />
           </PullToRefresh>
         )}
 
-        {activeTab === 'money' && <CurrencyCalculator />}
+        {activeTab === 'money' && (
+          <>
+            <CurrencyCalculator />
+            <ExpenseLog />
+          </>
+        )}
 
         {activeTab === 'planner' &&
           order.map((id, idx) => {

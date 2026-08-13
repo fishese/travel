@@ -30,6 +30,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   const [destinationInput, setDestinationInput] = useState('')
   const [departureTimeInput, setDepartureTimeInput] = useState('')
   const [arrivalTimeInput, setArrivalTimeInput] = useState('')
+  const [arrivalDateInput, setArrivalDateInput] = useState('')
   const [notesInput, setNotesInput] = useState('')
   const [showAddForm, setShowAddForm] = useState(() => flights.length === 0)
   const [pastedText, setPastedText] = useState<string | undefined>(undefined)
@@ -58,6 +59,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
         destination: destinationInput,
         departureTime: departureTimeInput,
         arrivalTime: arrivalTimeInput,
+        arrivalDate: arrivalDateInput,
         notes: notesInput,
         source: pastedText ? 'pasted' : 'manual',
         rawText: pastedText,
@@ -68,6 +70,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setDestinationInput('')
     setDepartureTimeInput('')
     setArrivalTimeInput('')
+    setArrivalDateInput('')
     setNotesInput('')
     setPastedText(undefined)
     setYearWasInferred(false)
@@ -181,6 +184,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
           <input
             type="date"
             value={dateInput}
+            aria-label="Departure date"
             onChange={(e) => setDateInput(e.target.value)}
             className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
@@ -213,6 +217,13 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
             value={arrivalTimeInput}
             onChange={(e) => setArrivalTimeInput(e.target.value)}
             aria-label="Arrival time, local to destination"
+            className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+          />
+          <input
+            type="date"
+            value={arrivalDateInput}
+            onChange={(e) => setArrivalDateInput(e.target.value)}
+            aria-label="Arrival date, local to destination"
             className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
         </div>

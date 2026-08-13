@@ -78,6 +78,35 @@ export function newHotel(fields: {
   }
 }
 
+export function applyHotelEdit(hotel: SavedHotel, fields: {
+  name: string
+  city: string
+  address?: string
+  phone?: string
+  checkIn?: string
+  checkOut?: string
+  notes?: string
+  lat?: number
+  lon?: number
+  osmPlaceId?: string
+}): SavedHotel {
+  const address = fields.address?.trim() ?? ''
+  return {
+    ...hotel,
+    name: fields.name.trim(),
+    city: fields.city.trim(),
+    address,
+    phone: fields.phone?.trim() ?? '',
+    checkIn: fields.checkIn || undefined,
+    checkOut: fields.checkOut || undefined,
+    notes: fields.notes?.trim() ?? '',
+    lat: fields.lat,
+    lon: fields.lon,
+    mapsUrl: address || (fields.lat !== undefined && fields.lon !== undefined) ? buildMapsUrl(address, fields.lat, fields.lon) : undefined,
+    osmPlaceId: fields.osmPlaceId,
+  }
+}
+
 export interface HotelLookupResult {
   label: string
   address: string

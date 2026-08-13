@@ -1,68 +1,69 @@
 # Travel Toolkit
 
-Offline-first travel PWA. No backend — everything lives in the browser
-(localStorage/IndexedDB); the only network calls are read-only requests to
-free third-party APIs (currency rates, weather, flight status), each cached
-locally with a visible staleness indicator.
+Offline-first travel PWA. No backend: trip data lives in the browser
+(localStorage/IndexedDB). Network calls are read-only requests to free
+third-party APIs for rates, weather, location, hotel lookup and optional flight
+status; results are cached locally with visible staleness indicators.
 
-## Deploying (GitHub Pages, no local install needed)
+## Deploying (GitHub Pages)
 
-1. Create a new GitHub repo. This project is configured for a **custom domain
-   at the site root** (`traveltools.fishese.cc`). `base` in `vite.config.ts`
-   and `start_url`/`scope` in the PWA manifest must match the URL the site is
-   actually served from. A project-pages path like `/travel/` is wrong once a
-   custom domain is attached: Vite bakes that prefix into every asset URL, the
-   JS/CSS 404, and the page stays blank. `https://fishese.github.io/travel/`
-   redirects to the custom domain, so it is not a separate deploy.
-2. Push this folder's contents to the repo's `main` branch — the GitHub web
-   UI's "upload files" flow works fine for this, no terminal required.
-3. In the repo, go to **Settings → Pages** and set Source to **GitHub
-   Actions**.
-4. Push (or re-run the workflow from the **Actions** tab) — `.github/workflows/deploy.yml`
-   builds and deploys automatically on every push to `main`.
+This project is configured for the custom domain `traveltools.fishese.cc` at
+the site root. Keep `base` in `vite.config.ts` and the PWA `start_url`/`scope`
+at `/` when using that domain. A project-pages prefix such as `/travel/` will
+make the asset URLs wrong after the custom domain is attached.
 
-Once deployed, "Add to Home Screen" from your phone's browser installs it as
-a standalone app with offline support.
+1. Push this folder to the repository's `main` branch.
+2. In GitHub, choose Settings -> Pages -> GitHub Actions.
+3. Push again or re-run the deploy workflow.
 
-## Local development (optional, needs Node 20+)
+Once deployed, use Add to Home Screen to install the standalone app. Production
+hosting should use HTTPS so Web Crypto and persistent storage are available.
 
-```
+## Local development
+
+```text
 npm install
-npm run dev      # dev server
-npm run build    # production build → dist/
-npm run preview  # serve the production build locally
+npm run dev
+npm run build
+npm run lint
+npm run preview
 ```
 
-## Status
+## Features
 
-See the design spec doc for the full feature roadmap and phase order.
-Currently implemented: **currency calculator** (core converter — amount,
-from/to picker, swap, named markup profiles with inline add/edit e.g. Cash vs
-a specific card, offline rate cache with stale badge, local/home time line),
-**shopping notes with inline napkin math** (freeform textarea; lines
-containing simple arithmetic — contiguous like `32 x 5` or gap-separated like
-`30 per bottle /5` — are auto-calculated and listed below with a running
-total and a "use in converter" link; plain notes are left alone),
-**gratuity calculator** and **sales tax/VAT calculator** (both now
-country-aware — pick a country from the selector at the top and they pull
-real tip presets, tax rate, `price_display` mode, and tax-refund info from
-`src/data/countries.json`; fall back to generic manual-entry defaults for
-anywhere not in the DB yet), and a **cheatsheet** panel (emergency numbers,
-HK embassy/consulate contact, dive emergency contacts where relevant, power,
-food links, visa summary, pre-arrival forms — all sourced from the same
-country DB).
+Currency conversion with per-base offline caches, markup profiles, shopping
+math, gratuity and VAT/tax tools, weather and location lookup, flight records
+and optional live status, hotel records with map lookup and driver view,
+generic bookings, dive certificates, encrypted local document storage,
+personally-authored itinerary HTML, reminders, country cheatsheets, airport
+transfer guidance, an offline-readiness checklist, a grouped-currency expense
+log, PWA offline caching, and backup/restore.
 
-**Country DB status:** 18 of 19 planned destinations loaded (all except
-AE/TR — batch 5, pending Gemini quota reset). Two recurring cleanup steps
-needed on every batch handoff so far, both handled automatically now rather
-than relied on via prompt wording: the merge process breaks the JSON
-structure at each batch boundary (fixed with a brace-matching recovery pass
-that doesn't depend on knowing where the breaks are), and Gemini wraps a
-chunk of URLs in markdown link syntax regardless of being told not to
-(stripped automatically). Batch 5, when it lands, will get the same
-treatment.
+The bundled country database contains 26 destinations and 28 airport records.
+Visa, tax, arrival-form and emergency information is reference material: every
+country shows a last-verified date and official-source links. Re-check it before
+relying on it for a real trip.
 
-Not yet built: flights, hotels, bookings feed, dive certs, document vault,
-settings screen, PWA icons (currently referenced in the manifest but not
-generated — add `public/icon-192.png` and `public/icon-512.png` before
-shipping, or the install prompt's icon will be blank).
+## Privacy, storage and backups
+
+Vault files are encrypted at rest with a random AES-GCM key held in a separate
+device-local database. Clearing browser/site data also clears that key, so
+those files cannot be recovered without a backup. The app requests persistent
+storage where supported, but browsers may still evict site data; export before
+each trip and test a restore.
+
+Backups include all app settings and attached files, including the Aviationstack
+key. Export with an optional password to encrypt the complete backup using
+PBKDF2-SHA-256 and AES-GCM. Leave the password blank for an ordinary JSON
+backup. Keep a password-protected backup and its password separately.
+
+Itinerary HTML is intentionally opened with full browser trust so navigation
+scripts and other features in personally-authored files continue to work. Only
+open itinerary files you built or trust: arbitrary HTML can read or change data
+available to its document context. If active scripts are unnecessary, prefer a
+PDF or static HTML file.
+
+## Planned additions
+
+Trip grouping/archiving, a richer travel-day action dashboard, and a dedicated
+insurance/medical card with its own protected storage are still future work.

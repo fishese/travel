@@ -78,6 +78,9 @@ export const WeatherCard = forwardRef<WeatherCardHandle>(function WeatherCard(_p
   useEffect(() => {
     if (!location) return
     let cancelled = false
+    setCache(null)
+    setStale(false)
+    setOffline(false)
     setLoading(true)
     setError(null)
     getWeather(location.lat, location.lon)
@@ -264,6 +267,10 @@ export const WeatherCard = forwardRef<WeatherCardHandle>(function WeatherCard(_p
               {searching ? '…' : 'Search'}
             </button>
           </div>
+
+          <p className="text-[11px] text-[var(--color-muted)]">
+            City search by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline">OpenStreetMap</a>.
+          </p>
 
           {results.length > 0 && (
             <ul className="rounded-lg border border-[var(--color-border)] divide-y divide-[var(--color-border)]">

@@ -9,7 +9,8 @@ export interface SavedFlight {
   origin?: string // IATA code, e.g. "HKG" — for labeling which timezone departureTime is in
   destination?: string // IATA code, e.g. "NRT" — for labeling which timezone arrivalTime is in
   departureTime?: string // HH:mm, local to origin
-  arrivalTime?: string // HH:mm, local to destination — overnight arrivals (next calendar day) aren't tracked separately, a known v1 limitation
+  arrivalTime?: string // HH:mm, local to destination
+  arrivalDate?: string // YYYY-MM-DD, local to destination
   notes?: string
   savedAt: string
 
@@ -43,6 +44,7 @@ export interface FlightFieldInput {
   destination?: string
   departureTime?: string
   arrivalTime?: string
+  arrivalDate?: string
   notes?: string
 }
 
@@ -54,6 +56,7 @@ function normalizeFlightFields(fields: FlightFieldInput) {
     destination: fields.destination?.trim().toUpperCase() || undefined,
     departureTime: fields.departureTime || undefined,
     arrivalTime: fields.arrivalTime || undefined,
+    arrivalDate: fields.arrivalDate || undefined,
     notes: fields.notes?.trim() || undefined,
   }
 }

@@ -130,12 +130,14 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
           <input
             type="date"
             value={date}
+            aria-label="Booking date"
             onChange={(e) => setDate(e.target.value)}
             className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input
             type="time"
             value={time}
+            aria-label="Booking time, local"
             onChange={(e) => setTime(e.target.value)}
             placeholder="optional"
             className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"

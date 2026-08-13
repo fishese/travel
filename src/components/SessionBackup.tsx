@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react'
 import { downloadSessionExport, importSessionFile, type ImportMode } from '../lib/sessionTransfer'
 import { hapticConfirm } from '../lib/haptics'
+import { isEncryptedBackup } from '../lib/backupCrypto'
 
 type Status =
   | { kind: 'idle' }
-  | { kind: 'confirming'; file: File }
+  | { kind: 'confirming'; file: File; encrypted: boolean }
   | { kind: 'working' }
   | { kind: 'exported'; settingsCount: number; filesCount: number }
   | { kind: 'imported'; message: string }
@@ -13,27 +14,35 @@ type Status =
 export function SessionBackup() {
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
+  const [backupPassword, setBackupPassword] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleExport() {
     setStatus({ kind: 'working' })
     try {
-      const { settingsCount, filesCount } = await downloadSessionExport()
+      const { settingsCount, filesCount } = await downloadSessionExport(backupPassword)
       setStatus({ kind: 'exported', settingsCount, filesCount })
     } catch (e) {
       setStatus({ kind: 'error', message: (e as Error).message })
     }
   }
 
-  function handleFilePicked(file: File | undefined) {
+  async function handleFilePicked(file: File | undefined) {
     if (!file) return
-    setStatus({ kind: 'confirming', file })
+    try {
+      const parsed = JSON.parse(await file.text()) as unknown
+      setStatus({ kind: 'confirming', file, encrypted: isEncryptedBackup(parsed) })
+      setBackupPassword('')
+    } catch {
+      setStatus({ kind: 'error', message: 'That file is not valid JSON.' })
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   async function handleConfirmImport(file: File, mode: ImportMode) {
     setStatus({ kind: 'working' })
     try {
-      const summary = await importSessionFile(file, mode)
+      const summary = await importSessionFile(file, mode, backupPassword)
       hapticConfirm()
       const message =
         summary.mode === 'replace'
@@ -86,6 +95,18 @@ export function SessionBackup() {
         can keep somewhere safe or move to another device.
       </p>
 
+      <label className="block text-xs mb-2">
+        <span className="block text-[var(--color-muted)] mb-1">Backup password (optional)</span>
+        <input
+          type="password"
+          value={backupPassword}
+          onChange={(e) => setBackupPassword(e.target.value)}
+          placeholder="Leave blank for no password"
+          disabled={status.kind === 'working'}
+          className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+        />
+      </label>
+
       <button
         type="button"
         onClick={handleExport}
@@ -111,6 +132,16 @@ export function SessionBackup() {
           <p className="text-xs">
             Importing <span className="font-medium">{status.file.name}</span>. Choose how:
           </p>
+
+          {status.encrypted && (
+            <input
+              type="password"
+              value={backupPassword}
+              onChange={(e) => setBackupPassword(e.target.value)}
+              placeholder="Backup password"
+              className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+            />
+          )}
 
           <div>
             <button

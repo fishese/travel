@@ -146,6 +146,7 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
                     destination: flight.destination,
                     departureTime: flight.departureTime,
                     arrivalTime: flight.arrivalTime,
+                    arrivalDate: flight.arrivalDate,
                     notes: flight.notes,
                   }}
                   onSave={(fields) => {
@@ -159,7 +160,7 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
                   {(flight.departureTime || flight.arrivalTime) && (
                     <p className="text-xs text-[var(--color-muted)] tabular">
                       {flight.origin ?? '?'} {flight.departureTime ?? '—'} → {flight.destination ?? '?'}{' '}
-                      {flight.arrivalTime ?? '—'}
+                      {flight.arrivalTime ?? '—'}{flight.arrivalDate && ` · arrives ${flight.arrivalDate}`}
                     </p>
                   )}
                   {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
