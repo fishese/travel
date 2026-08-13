@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { deleteFile, type VaultFile } from '../lib/fileVault'
+import { deleteFile, updateFileTrip, type VaultFile } from '../lib/fileVault'
 import { useSavedItineraries, saveItinerary } from '../lib/itinerary'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
@@ -9,6 +9,7 @@ import { ItineraryViewer } from './ItineraryViewer'
 import { useActiveTrip } from '../lib/trips'
 import { VaultLockPanel } from './VaultLockPanel'
 import { useVaultLock } from '../lib/vaultCrypto'
+import { TripAssignment } from './TripAssignment'
 
 interface Props {
   onMoveUp?: () => void
@@ -85,6 +86,7 @@ export function ItinerarySection({ onMoveUp, onMoveDown }: Props) {
                     Saved {new Date(f.savedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </p>
                 </button>
+                <TripAssignment tripId={f.tripId} onChange={(tripId) => { void updateFileTrip(f.id, tripId).then(refresh) }} />
                 <button
                   type="button"
                   onClick={() => requestOpen(f.id)}

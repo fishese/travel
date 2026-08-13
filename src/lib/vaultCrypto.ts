@@ -151,7 +151,7 @@ export async function setVaultPassword(password: string): Promise<void> {
 export async function removeVaultPassword(): Promise<void> {
   const current = await getVaultKey()
   const publicKey = await getPublicEncryptionKey()
-  await migrateDeviceScopedFiles(publicKey, current)
+  await migrateDeviceScopedFiles(current, publicKey)
   await storeDeviceEncryptionKey(current)
   await (await getDB()).delete('config', 'config')
   activeKey = current

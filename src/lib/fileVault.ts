@@ -111,6 +111,16 @@ export async function deleteFile(id: string): Promise<void> {
   await db.delete('files', id)
 }
 
+/** Changes non-content metadata without decrypting or re-encrypting the file.
+ * This keeps assignment possible for a device-only booking/itinerary file
+ * even while the password-protected vault is locked. */
+export async function updateFileTrip(id: string, tripId: string | undefined): Promise<void> {
+  const db = await getDB()
+  const record = await db.get('files', id)
+  if (!record) return
+  await db.put('files', { ...record, tripId })
+}
+
 /** Writes a VaultFile record as-is, preserving its id — unlike saveFile,
  * which always mints a fresh id/timestamp for a genuinely new upload.
  * Used by session import to restore files with the exact same ids they

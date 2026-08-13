@@ -43,7 +43,8 @@ export function PullToRefresh({ onRefresh, children }: Props) {
     }
 
     function onTouchStart(e: TouchEvent) {
-      if (window.scrollY > 0 || refreshingRef.current) {
+      const scrollTop = Math.max(window.scrollY, document.scrollingElement?.scrollTop ?? 0, document.documentElement.scrollTop, document.body.scrollTop)
+      if (scrollTop > 0 || refreshingRef.current) {
         startRef.current = null
         return
       }

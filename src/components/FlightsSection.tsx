@@ -10,6 +10,7 @@ import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
 import { useActiveTrip, tripMatches } from '../lib/trips'
+import { TripAssignment } from './TripAssignment'
 
 interface Props {
   onMoveUp?: () => void
@@ -87,6 +88,23 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
 
   function updateFlight(id: string, updated: SavedFlight) {
     setFlights((prev) => prev.map((f) => (f.id === id ? updated : f)))
+  }
+
+  function renderFlight(f: SavedFlight) {
+    return (
+      <div key={f.id} className="space-y-1">
+        <TripAssignment tripId={f.tripId} onChange={(tripId) => updateFlight(f.id, { ...f, tripId })} />
+        <FlightCard
+          flight={f}
+          apiKey={apiKey}
+          recordCall={quota.recordCall}
+          quotaCount={quota.count}
+          quotaLimit={quota.limit}
+          onDelete={removeFlight}
+          onUpdate={updateFlight}
+        />
+      </div>
+    )
   }
 
   const sorted = [...scopedFlights].sort((a, b) => a.date.localeCompare(b.date))
@@ -258,32 +276,10 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
         <>
           {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming flights.</p>}
           <div className="space-y-2">
-            {upcoming.map((f) => (
-              <FlightCard
-                key={f.id}
-                flight={f}
-                apiKey={apiKey}
-                recordCall={quota.recordCall}
-                quotaCount={quota.count}
-                quotaLimit={quota.limit}
-                onDelete={removeFlight}
-                onUpdate={updateFlight}
-              />
-            ))}
+            {upcoming.map(renderFlight)}
           </div>
           <PastEntries count={past.length}>
-            {past.map((f) => (
-              <FlightCard
-                key={f.id}
-                flight={f}
-                apiKey={apiKey}
-                recordCall={quota.recordCall}
-                quotaCount={quota.count}
-                quotaLimit={quota.limit}
-                onDelete={removeFlight}
-                onUpdate={updateFlight}
-              />
-            ))}
+            {past.map(renderFlight)}
           </PastEntries>
         </>
       )}

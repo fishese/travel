@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSavedFlights } from '../lib/flights'
 import { useSavedHotels } from '../lib/hotels'
 import { useSavedBookings } from '../lib/bookings'
@@ -29,6 +29,17 @@ export function TravelDayDashboard() {
   const [bookings] = useSavedBookings()
   const { activeTrip } = useActiveTrip()
   const today = localDateStr()
+  const [showBackToTop, setShowBackToTop] = useState(false)
+
+  useEffect(() => {
+    const update = () => {
+      const scrollTop = Math.max(window.scrollY, document.scrollingElement?.scrollTop ?? 0, document.documentElement.scrollTop, document.body.scrollTop)
+      setShowBackToTop(scrollTop > 160)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    return () => window.removeEventListener('scroll', update)
+  }, [])
 
   const scopedFlights = flights.filter((item) => tripMatches(item, activeTrip?.id ?? ''))
   const scopedHotels = hotels.filter((item) => tripMatches(item, activeTrip?.id ?? ''))
@@ -44,7 +55,18 @@ export function TravelDayDashboard() {
   if (!activeTrip) return null
 
   return (
-    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 mt-2">
+    <>
+      {showBackToTop && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Back to top of dashboard"
+          className="fixed bottom-20 right-3 z-30 rounded-full bg-[var(--color-pine)] text-white px-3 py-2 text-xs shadow-lg"
+        >
+          ↑ Dashboard top
+        </button>
+      )}
+      <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3 mt-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold truncate">Today in {activeTrip.destination || activeTrip.name}</h2>
@@ -69,7 +91,7 @@ export function TravelDayDashboard() {
         <div><p className="text-xs text-[var(--color-muted)]">Bookings</p><p className="font-semibold tabular">{scopedBookings.length}</p></div>
         <div><p className="text-xs text-[var(--color-muted)]">Hotels</p><p className="font-semibold tabular">{scopedHotels.length}</p></div>
       </div>
-    </section>
+      </section>
+    </>
   )
 }
-

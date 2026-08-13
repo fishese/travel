@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   saveFile,
   deleteFile,
+  updateFileTrip,
   fileObjectUrl,
   openVaultFile,
   useVaultFiles,
@@ -19,6 +20,7 @@ import { requestOpen } from '../lib/swipeCoordinator'
 import { useActiveTrip, tripMatches } from '../lib/trips'
 import { VaultLockPanel } from './VaultLockPanel'
 import { useVaultLock } from '../lib/vaultCrypto'
+import { TripAssignment } from './TripAssignment'
 
 const CATEGORIES: { value: VaultCategory; label: string }[] = [
   { value: 'flight', label: 'Flight' },
@@ -264,6 +266,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
                       )}
                     </p>
                   </div>
+                  <TripAssignment tripId={f.tripId} onChange={(tripId) => { void updateFileTrip(f.id, tripId).then(refresh) }} />
                   <button
                     type="button"
                     onClick={() => requestOpen(f.id)}

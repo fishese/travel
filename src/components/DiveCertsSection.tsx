@@ -5,6 +5,7 @@ import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { DiveCertCard } from './DiveCertCard'
 import { useActiveTrip, tripMatches } from '../lib/trips'
+import { TripAssignment } from './TripAssignment'
 
 interface Props {
   onMoveUp?: () => void
@@ -128,7 +129,10 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
       ) : (
         <div className="space-y-2">
           {scopedCerts.map((c) => (
-            <DiveCertCard key={c.id} cert={c} onDelete={removeCert} onUpdate={updateCert} />
+            <div key={c.id} className="space-y-1">
+              <TripAssignment tripId={c.tripId} onChange={(tripId) => updateCert({ ...c, tripId })} />
+              <DiveCertCard cert={c} onDelete={removeCert} onUpdate={updateCert} />
+            </div>
           ))}
         </div>
       )}

@@ -79,7 +79,7 @@ export function TripManager() {
 
       {activeTrip && (
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
-          <button type="button" onClick={() => { for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings', 'travel_dive_certs']) assignUnassigned(key, activeTrip.id) }} className="text-[var(--color-pine)] underline">Assign ungrouped records here</button>
+          <button type="button" onClick={() => { for (const key of ['travel_flights', 'travel_hotels', 'travel_bookings', 'travel_dive_certs']) assignUnassigned(key, activeTrip.id) }} className="text-[var(--color-pine)] underline">Assign all currently unassigned records here</button>
           <button type="button" onClick={deleteActive} className="text-[var(--color-danger)] underline">Delete trip</button>
         </div>
       )}

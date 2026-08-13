@@ -16,6 +16,7 @@ import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
 import { BookingCard } from './BookingCard'
 import { useActiveTrip, tripMatches } from '../lib/trips'
+import { TripAssignment } from './TripAssignment'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -84,7 +85,12 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   const past = sorted.filter((b) => isPastDate(b.date))
 
   function renderBooking(b: Booking) {
-    return <BookingCard key={b.id} booking={b} onDelete={removeBooking} onUpdate={updateBooking} />
+    return (
+      <div key={b.id} className="space-y-1">
+        <TripAssignment tripId={b.tripId} onChange={(tripId) => updateBooking({ ...b, tripId })} />
+        <BookingCard booking={b} onDelete={removeBooking} onUpdate={updateBooking} />
+      </div>
+    )
   }
 
   return (
