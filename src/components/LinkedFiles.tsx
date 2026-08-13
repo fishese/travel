@@ -1,4 +1,5 @@
 import { useVaultFiles, openVaultFile, type VaultCategory } from '../lib/fileVault'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 interface Props {
   category: VaultCategory
@@ -16,7 +17,8 @@ interface Props {
  */
 export function LinkedFiles({ category, linkedId }: Props) {
   const { files } = useVaultFiles(category)
-  const linked = files.filter((f) => f.linkedId === linkedId)
+  const { activeTripId } = useActiveTrip()
+  const linked = files.filter((f) => f.linkedId === linkedId && tripMatches(f, activeTripId))
 
   if (linked.length === 0) return null
 

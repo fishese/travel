@@ -23,6 +23,7 @@ const MERGEABLE_LIST_KEYS = [
   { key: 'travel_hotels', label: 'hotels' as const },
   { key: 'travel_bookings', label: 'bookings' as const },
   { key: 'travel_dive_certs', label: 'dive certs' as const },
+  { key: 'travel_trips', label: 'trips' as const },
 ]
 const DISMISSED_REMINDERS_KEY = 'travel_dismissed_reminders'
 
@@ -33,6 +34,7 @@ interface ExportedFile {
   mimeType: string
   label: string
   category: VaultFile['category']
+  tripId?: string
   linkedId?: string
   savedAt: string
   dataBase64: string
@@ -40,7 +42,7 @@ interface ExportedFile {
 
 export interface SessionExport {
   exportedAt: string
-  appVersion: 1
+  appVersion: 2
   localStorage: Record<string, string>
   files: ExportedFile[]
 }
@@ -81,13 +83,14 @@ async function buildSessionExport(): Promise<SessionExport> {
       mimeType: f.mimeType,
       label: f.label,
       category: f.category,
+      tripId: f.tripId,
       linkedId: f.linkedId,
       savedAt: f.savedAt,
       dataBase64: await blobToBase64(f.blob),
     })),
   )
 
-  return { exportedAt: new Date().toISOString(), appVersion: 1, localStorage: localStorageData, files }
+  return { exportedAt: new Date().toISOString(), appVersion: 2, localStorage: localStorageData, files }
 }
 
 /** Builds the backup and triggers a browser download — a plain JSON file
@@ -123,7 +126,7 @@ export interface ReplaceSummary {
 
 export interface MergeSummary {
   mode: 'merge'
-  added: { flights: number; hotels: number; bookings: number; 'dive certs': number; files: number }
+  added: { flights: number; hotels: number; bookings: number; 'dive certs': number; trips: number; files: number }
 }
 
 export type ImportSummary = ReplaceSummary | MergeSummary
@@ -139,7 +142,7 @@ function parseJsonArray<T>(raw: string | undefined | null): T[] {
 }
 
 async function mergeSession(data: SessionExport): Promise<MergeSummary> {
-  const added: MergeSummary['added'] = { flights: 0, hotels: 0, bookings: 0, 'dive certs': 0, files: 0 }
+  const added: MergeSummary['added'] = { flights: 0, hotels: 0, bookings: 0, 'dive certs': 0, trips: 0, files: 0 }
 
   for (const { key, label } of MERGEABLE_LIST_KEYS) {
     const current = parseJsonArray<{ id: string }>(localStorage.getItem(key))
@@ -171,6 +174,7 @@ async function mergeSession(data: SessionExport): Promise<MergeSummary> {
       mimeType: f.mimeType,
       label: f.label,
       category: f.category,
+      tripId: f.tripId,
       linkedId: f.linkedId,
       savedAt: f.savedAt,
     })
@@ -187,6 +191,7 @@ async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
       mimeType: f.mimeType,
       label: f.label,
       category: f.category,
+      tripId: f.tripId,
       linkedId: f.linkedId,
       savedAt: f.savedAt,
   }))

@@ -34,10 +34,10 @@ npm run preview
 Currency conversion with per-base offline caches, markup profiles, shopping
 math, gratuity and VAT/tax tools, weather and location lookup, flight records
 and optional live status, hotel records with map lookup and driver view,
-generic bookings, dive certificates, encrypted local document storage,
-personally-authored itinerary HTML, reminders, country cheatsheets, airport
-transfer guidance, an offline-readiness checklist, a grouped-currency expense
-log, PWA offline caching, and backup/restore.
+generic bookings, dive certificates, trip grouping, a travel-day dashboard,
+encrypted local document storage, personally-authored itinerary HTML, reminders,
+country cheatsheets, airport transfer guidance, an offline-readiness checklist,
+a grouped-currency expense log, PWA offline caching, and backup/restore.
 
 The bundled country database contains 26 destinations and 28 airport records.
 Visa, tax, arrival-form and emergency information is reference material: every
@@ -47,10 +47,19 @@ relying on it for a real trip.
 ## Privacy, storage and backups
 
 Vault files are encrypted at rest with a random AES-GCM key held in a separate
-device-local database. Clearing browser/site data also clears that key, so
-those files cannot be recovered without a backup. The app requests persistent
-storage where supported, but browsers may still evict site data; export before
-each trip and test a restore.
+device-local database. By default that key is device-local, so the rest of the
+app opens normally without a password. You can optionally set a vault password:
+it wraps the encryption key, removes the automatic device unlock, and protects
+passport copies, identity documents and insurance/visa files while leaving
+currency, bookings and the planner usable. Dive
+certificate details and attached card photos, itinerary files, and booking
+documents intentionally remain available with the device key, even while the
+protected document vault is locked. Lock
+or unlock the vault from any protected section; removing the password restores
+device-only automatic unlock. Clearing browser/site data also clears the key,
+so those files cannot be recovered without a backup. The app requests
+persistent storage where supported, but browsers may still evict site data;
+export before each trip and test a restore.
 
 Backups include all app settings and attached files, including the Aviationstack
 key. Export with an optional password to encrypt the complete backup using
@@ -63,7 +72,8 @@ open itinerary files you built or trust: arbitrary HTML can read or change data
 available to its document context. If active scripts are unnecessary, prefer a
 PDF or static HTML file.
 
-## Planned additions
-
-Trip grouping/archiving, a richer travel-day action dashboard, and a dedicated
-insurance/medical card with its own protected storage are still future work.
+Trips can be created and selected from the Dashboard. Records are assigned to
+the active trip when created, and existing ungrouped flights, hotels, bookings
+and dive certificates can be assigned in one tap. The travel-day dashboard
+summarises today's flights, hotel changes and bookings, plus the next-flight
+countdown for the active trip.

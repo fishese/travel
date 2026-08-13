@@ -13,15 +13,15 @@ function extractTitle(html: string): string | null {
  * lib/sessionTransfer.ts for free — no extra backup/restore wiring needed
  * here, same as Documents needed none for its own files.
  */
-export function useSavedItineraries() {
-  return useVaultFiles('itinerary')
+export function useSavedItineraries(tripId?: string) {
+  return useVaultFiles('itinerary', tripId)
 }
 
 /** Reads the file once up front to pull a nicer label from its <title>
  * tag than the raw filename would give — falls back to the filename
  * (minus extension) if there's no title to find. */
-export async function saveItinerary(file: File): Promise<VaultFile> {
+export async function saveItinerary(file: File, tripId?: string): Promise<VaultFile> {
   const text = await file.text()
   const title = extractTitle(text) || file.name.replace(/\.html?$/i, '')
-  return saveFile(file, title, 'itinerary')
+  return saveFile(file, title, 'itinerary', undefined, tripId)
 }

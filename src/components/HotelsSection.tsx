@@ -8,6 +8,7 @@ import { PastEntries } from './PastEntries'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { LinkedFiles } from './LinkedFiles'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 interface Props {
   onMoveUp?: () => void
@@ -35,6 +36,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   const [driverView, setDriverView] = useState<{ name: string; address: string; mapsUrl?: string } | null>(null)
   const [showAddForm, setShowAddForm] = useState(() => hotels.length === 0)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const { activeTripId } = useActiveTrip()
+  const scopedHotels = hotels.filter((hotel) => tripMatches(hotel, activeTripId))
 
   async function handleLookup() {
     setLooking(true)
@@ -62,7 +65,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setHotels((prev) =>
       editingId
         ? prev.map((h) => (h.id === editingId ? applyHotelEdit(h, { name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }) : h))
-        : [...prev, newHotel({ name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
+        : [...prev, newHotel({ tripId: activeTripId || undefined, name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
     )
     setName('')
     setCity('')
@@ -98,7 +101,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setHotels((prev) => prev.filter((h) => h.id !== id))
   }
 
-  const sorted = [...hotels].sort((a, b) => (a.checkIn ?? '9999').localeCompare(b.checkIn ?? '9999'))
+  const sorted = [...scopedHotels].sort((a, b) => (a.checkIn ?? '9999').localeCompare(b.checkIn ?? '9999'))
   // A hotel is only really "past" once you've checked out — fall back to
   // check-in if no check-out date was given, since that's the best signal
   // available at that point.

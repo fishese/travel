@@ -4,6 +4,7 @@ import { localDateStr, localMonthStr } from './dateUtils'
 
 export interface SavedFlight {
   id: string
+  tripId?: string
   flightIata: string // e.g. "CX500"
   date: string // YYYY-MM-DD, local to however the person entered it
   origin?: string // IATA code, e.g. "HKG" — for labeling which timezone departureTime is in
@@ -38,6 +39,7 @@ function makeId() {
 }
 
 export interface FlightFieldInput {
+  tripId?: string
   flightIata: string
   date: string
   origin?: string
@@ -51,6 +53,7 @@ export interface FlightFieldInput {
 function normalizeFlightFields(fields: FlightFieldInput) {
   return {
     flightIata: fields.flightIata.toUpperCase().replace(/\s+/g, ''),
+    tripId: fields.tripId || undefined,
     date: fields.date,
     origin: fields.origin?.trim().toUpperCase() || undefined,
     destination: fields.destination?.trim().toUpperCase() || undefined,

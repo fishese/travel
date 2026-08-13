@@ -2,6 +2,7 @@ import { useSetting } from './useSetting'
 
 export interface SavedHotel {
   id: string
+  tripId?: string
   name: string
   city: string
   address: string
@@ -45,6 +46,7 @@ function buildMapsUrl(address: string, lat?: number, lon?: number): string {
  * reason as newBooking() in lib/bookings.ts — a future parser populates
  * this the same way the manual form does. */
 export function newHotel(fields: {
+  tripId?: string
   name: string
   city: string
   address?: string
@@ -61,6 +63,7 @@ export function newHotel(fields: {
   const address = fields.address?.trim() ?? ''
   return {
     id: makeId(),
+    tripId: fields.tripId || undefined,
     name: fields.name.trim(),
     city: fields.city.trim(),
     address,
@@ -79,6 +82,7 @@ export function newHotel(fields: {
 }
 
 export function applyHotelEdit(hotel: SavedHotel, fields: {
+  tripId?: string
   name: string
   city: string
   address?: string
@@ -93,6 +97,7 @@ export function applyHotelEdit(hotel: SavedHotel, fields: {
   const address = fields.address?.trim() ?? ''
   return {
     ...hotel,
+    tripId: fields.tripId || hotel.tripId,
     name: fields.name.trim(),
     city: fields.city.trim(),
     address,

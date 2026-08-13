@@ -16,11 +16,16 @@ import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
+import { useActiveTrip, tripMatches } from '../lib/trips'
+import { VaultLockPanel } from './VaultLockPanel'
+import { useVaultLock } from '../lib/vaultCrypto'
 
 const CATEGORIES: { value: VaultCategory; label: string }[] = [
   { value: 'flight', label: 'Flight' },
   { value: 'hotel', label: 'Hotel' },
   { value: 'booking', label: 'Booking' },
+  { value: 'identity', label: 'Passport / ID' },
+  { value: 'insurance', label: 'Insurance / visa' },
   { value: 'other', label: 'Other' },
 ]
 
@@ -63,6 +68,10 @@ function linkOptionsFor(
   return []
 }
 
+function categoryLabel(category: VaultCategory): string {
+  return CATEGORIES.find((item) => item.value === category)?.label ?? 'Other'
+}
+
 /** The date of whatever this document is linked to, if anything — used to
  * surface documents for today/tomorrow first, same spirit as the unified
  * reminder feed but scoped to the vault's own list. */
@@ -93,11 +102,16 @@ interface Props {
 }
 
 export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
-  const { files, loading, refresh } = useVaultFiles()
+  const { files, loading, locked, refresh } = useVaultFiles()
+  const vault = useVaultLock()
   const [flights] = useSavedFlights()
   const [hotels] = useSavedHotels()
   const [bookings] = useSavedBookings()
-  const generalFiles = files.filter((f) => f.category !== 'dive-cert' && f.category !== 'itinerary')
+  const { activeTripId } = useActiveTrip()
+  const scopedFlights = flights.filter((item) => tripMatches(item, activeTripId))
+  const scopedHotels = hotels.filter((item) => tripMatches(item, activeTripId))
+  const scopedBookings = bookings.filter((item) => tripMatches(item, activeTripId))
+  const generalFiles = files.filter((f) => f.category !== 'dive-cert' && f.category !== 'itinerary' && tripMatches(f, activeTripId))
 
   const [label, setLabel] = useState('')
   const [category, setCategory] = useState<VaultCategory>('other')
@@ -106,13 +120,13 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showAddForm, setShowAddForm] = useState(() => generalFiles.length === 0)
 
-  const linkOptions = linkOptionsFor(category, flights, hotels, bookings)
+  const linkOptions = linkOptionsFor(category, scopedFlights, scopedHotels, scopedBookings)
   const today = localDateStr()
   const tomorrow = localTomorrowStr()
 
   async function handleUpload() {
     if (!pendingFile) return
-    await saveFile(pendingFile, label.trim() || pendingFile.name, category, linkedId || undefined)
+    await saveFile(pendingFile, label.trim() || pendingFile.name, category, linkedId || undefined, activeTripId || undefined)
     setLabel('')
     setPendingFile(null)
     setLinkedId('')
@@ -129,8 +143,8 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
 
 
   const sorted = [...generalFiles].sort((a, b) => {
-    const dateA = getLinkedDate(a, flights, hotels, bookings)
-    const dateB = getLinkedDate(b, flights, hotels, bookings)
+    const dateA = getLinkedDate(a, scopedFlights, scopedHotels, scopedBookings)
+    const dateB = getLinkedDate(b, scopedFlights, scopedHotels, scopedBookings)
     const rankA = dateRank(dateA, today, tomorrow)
     const rankB = dateRank(dateB, today, tomorrow)
     if (rankA !== rankB) return rankA - rankB
@@ -139,18 +153,28 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
   })
 
   function dateBadge(file: VaultFile): string | null {
-    const d = getLinkedDate(file, flights, hotels, bookings)
+    const d = getLinkedDate(file, scopedFlights, scopedHotels, scopedBookings)
     if (!d) return null
     if (d === today) return 'Today'
     if (d === tomorrow) return 'Tomorrow'
     return d
   }
 
+  if (vault.status === 'loading') {
+    return (
+      <Collapsible id="documents" title="Documents" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
+        <VaultLockPanel />
+      </Collapsible>
+    )
+  }
+
   return (
     <Collapsible id="documents" title="Documents" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
+      <VaultLockPanel />
+      {locked && <p className="text-xs text-[var(--color-amber)] mb-2">Protected files are hidden until you unlock the vault. Booking documents remain available.</p>}
       <p className="text-xs text-[var(--color-muted)] mb-2">
-        E-tickets, booking confirmations, park/show reservations — stored on this device only. Not meant for ID
-        documents (no PIN lock yet). Link a document to a flight/hotel/booking to surface it automatically on the
+        E-tickets, passport copies, insurance cards, visas, booking confirmations and reservations are encrypted and
+        stored on this device only. Link a document to a flight/hotel/booking to surface it automatically on the
         relevant day.
       </p>
 
@@ -209,7 +233,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
         <button
           type="button"
           onClick={handleUpload}
-          disabled={!pendingFile}
+          disabled={!pendingFile || (locked && category !== 'booking')}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Save to vault
@@ -234,7 +258,7 @@ export function DocumentVault({ onMoveUp, onMoveDown }: Props) {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm truncate">{f.label}</p>
                     <p className="text-xs text-[var(--color-muted)] capitalize">
-                      {f.category}
+                      {categoryLabel(f.category)}
                       {badge && (
                         <span className={isUrgent ? 'text-[var(--color-pine)] font-semibold' : ''}> · {badge}</span>
                       )}

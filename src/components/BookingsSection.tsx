@@ -15,6 +15,7 @@ import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
 import { BookingCard } from './BookingCard'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -25,6 +26,8 @@ interface Props {
 
 export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   const [bookings, setBookings] = useSavedBookings()
+  const { activeTripId } = useActiveTrip()
+  const scopedBookings = bookings.filter((booking) => tripMatches(booking, activeTripId))
 
   const [category, setCategory] = useState<BookingCategory>('other')
   const [date, setDate] = useState(() => localDateStr())
@@ -50,6 +53,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     setBookings((prev) => [
       ...prev,
       newBooking({
+        tripId: activeTripId || undefined,
         date,
         time,
         category,
@@ -75,7 +79,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     setBookings((prev) => prev.map((b) => (b.id === updated.id ? updated : b)))
   }
 
-  const sorted = [...bookings].sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? '').localeCompare(b.time ?? ''))
+  const sorted = [...scopedBookings].sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? '').localeCompare(b.time ?? ''))
   const upcoming = sorted.filter((b) => !isPastDate(b.date))
   const past = sorted.filter((b) => isPastDate(b.date))
 

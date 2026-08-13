@@ -22,6 +22,7 @@ export const CATEGORY_LABELS: Record<BookingCategory, string> = {
 
 export interface Booking {
   id: string
+  tripId?: string
   date: string // YYYY-MM-DD
   time?: string // HH:mm, optional — used for sorting within a day
   category: BookingCategory
@@ -51,6 +52,7 @@ function makeId() {
 }
 
 export interface BookingFieldInput {
+  tripId?: string
   date: string
   time?: string
   category: BookingCategory
@@ -61,6 +63,7 @@ export interface BookingFieldInput {
 function normalizeBookingFields(fields: BookingFieldInput) {
   return {
     date: fields.date,
+    tripId: fields.tripId || undefined,
     time: fields.time?.trim() || undefined,
     category: fields.category,
     label: fields.label.trim(),

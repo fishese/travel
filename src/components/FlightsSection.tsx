@@ -9,6 +9,7 @@ import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 interface Props {
   onMoveUp?: () => void
@@ -19,6 +20,8 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   const [flights, setFlights] = useSavedFlights()
   const [apiKey, setApiKey] = useAviationstackKey()
   const quota = useFlightApiQuota()
+  const { activeTripId } = useActiveTrip()
+  const scopedFlights = flights.filter((flight) => tripMatches(flight, activeTripId))
 
   const [keyInput, setKeyInput] = useState(apiKey)
   const [showKeyInput, setShowKeyInput] = useState(!apiKey)
@@ -53,6 +56,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setFlights((prev) => [
       ...prev,
       newFlight({
+        tripId: activeTripId || undefined,
         flightIata: flightIataInput,
         date: dateInput,
         origin: originInput,
@@ -85,7 +89,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setFlights((prev) => prev.map((f) => (f.id === id ? updated : f)))
   }
 
-  const sorted = [...flights].sort((a, b) => a.date.localeCompare(b.date))
+  const sorted = [...scopedFlights].sort((a, b) => a.date.localeCompare(b.date))
   const upcoming = sorted.filter((f) => !isPastDate(f.date))
   const past = sorted.filter((f) => isPastDate(f.date))
 

@@ -2,6 +2,7 @@ import { useSetting } from './useSetting'
 
 export interface DiveCert {
   id: string
+  tripId?: string
   agency: string // PADI, SSI, NAUI, etc.
   level: string // Open Water, Advanced, Rescue, Nitrox, etc.
   certNumber: string
@@ -25,6 +26,7 @@ function makeId() {
 }
 
 export interface DiveCertFieldInput {
+  tripId?: string
   agency: string
   level: string
   certNumber: string
@@ -36,6 +38,7 @@ export interface DiveCertFieldInput {
 function normalizeDiveCertFields(fields: DiveCertFieldInput) {
   return {
     agency: fields.agency.trim(),
+    tripId: fields.tripId || undefined,
     level: fields.level.trim(),
     certNumber: fields.certNumber.trim(),
     issueDate: fields.issueDate || undefined,

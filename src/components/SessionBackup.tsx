@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { downloadSessionExport, importSessionFile, type ImportMode } from '../lib/sessionTransfer'
 import { hapticConfirm } from '../lib/haptics'
 import { isEncryptedBackup } from '../lib/backupCrypto'
+import { useVaultLock } from '../lib/vaultCrypto'
 
 type Status =
   | { kind: 'idle' }
@@ -15,6 +16,7 @@ export function SessionBackup() {
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [backupPassword, setBackupPassword] = useState('')
+  const vault = useVaultLock()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleExport() {
@@ -47,7 +49,7 @@ export function SessionBackup() {
       const message =
         summary.mode === 'replace'
           ? `Restored ${summary.settingsCount} settings and ${summary.filesCount} file${summary.filesCount === 1 ? '' : 's'}.`
-          : `Added ${summary.added.flights} flight${summary.added.flights === 1 ? '' : 's'}, ${summary.added.hotels} hotel${summary.added.hotels === 1 ? '' : 's'}, ${summary.added.bookings} booking${summary.added.bookings === 1 ? '' : 's'}, ${summary.added['dive certs']} dive cert${summary.added['dive certs'] === 1 ? '' : 's'}, and ${summary.added.files} file${summary.added.files === 1 ? '' : 's'}. Everything else on this device was left as-is.`
+          : `Added ${summary.added.trips} trip${summary.added.trips === 1 ? '' : 's'}, ${summary.added.flights} flight${summary.added.flights === 1 ? '' : 's'}, ${summary.added.hotels} hotel${summary.added.hotels === 1 ? '' : 's'}, ${summary.added.bookings} booking${summary.added.bookings === 1 ? '' : 's'}, ${summary.added['dive certs']} dive cert${summary.added['dive certs'] === 1 ? '' : 's'}, and ${summary.added.files} file${summary.added.files === 1 ? '' : 's'}. Everything else on this device was left as-is.`
       setStatus({ kind: 'imported', message })
       // A full reload keeps this simple and reliably consistent — merge
       // already updates settings live (see writeSettingExternally), but
@@ -94,6 +96,11 @@ export function SessionBackup() {
         Everything saved in this app — flights, hotels, bookings, dive certs, documents, settings — as one file you
         can keep somewhere safe or move to another device.
       </p>
+      {vault.status === 'locked' && (
+        <p className="text-xs text-[var(--color-amber)] mb-2">
+          Unlock the protected vault in Planner before exporting or restoring a backup that contains files.
+        </p>
+      )}
 
       <label className="block text-xs mb-2">
         <span className="block text-[var(--color-muted)] mb-1">Backup password (optional)</span>
@@ -110,7 +117,7 @@ export function SessionBackup() {
       <button
         type="button"
         onClick={handleExport}
-        disabled={status.kind === 'working'}
+        disabled={status.kind === 'working' || vault.status !== 'unlocked'}
         className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
       >
         Export backup
@@ -147,6 +154,7 @@ export function SessionBackup() {
             <button
               type="button"
               onClick={() => handleConfirmImport(status.file, 'merge')}
+              disabled={vault.status !== 'unlocked'}
               className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-xs"
             >
               Merge — add what's new
@@ -161,6 +169,7 @@ export function SessionBackup() {
             <button
               type="button"
               onClick={() => handleConfirmImport(status.file, 'replace')}
+              disabled={vault.status !== 'unlocked'}
               className="w-full rounded-lg bg-[var(--color-danger)] text-white px-3 py-2 text-xs"
             >
               Replace everything

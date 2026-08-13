@@ -17,6 +17,8 @@ import { PullToRefresh } from './components/PullToRefresh'
 import { SessionBackup } from './components/SessionBackup'
 import { TripPrep } from './components/TripPrep'
 import { ExpenseLog } from './components/ExpenseLog'
+import { TripManager } from './components/TripManager'
+import { TravelDayDashboard } from './components/TravelDayDashboard'
 import { useActiveTab } from './lib/tabs'
 import { useSectionOrder } from './lib/sectionOrder'
 
@@ -63,6 +65,8 @@ function App() {
         {activeTab === 'dashboard' && (
           <PullToRefresh onRefresh={refreshDashboard}>
             <ReminderFeed />
+            <TripManager />
+            <TravelDayDashboard />
             <WeatherCard ref={weatherRef} />
             <CountrySelector />
             <TripPrep />

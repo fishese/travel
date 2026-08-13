@@ -3,6 +3,7 @@ import { useSavedHotels } from '../lib/hotels'
 import { useSavedBookings } from '../lib/bookings'
 import { buildReminders, useDismissedReminders } from '../lib/reminders'
 import { useActiveTab } from '../lib/tabs'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 /**
  * Reads the weather cache directly rather than through a reactive hook —
@@ -29,11 +30,12 @@ export function FloatingShortcut() {
   const [flights] = useSavedFlights()
   const [hotels] = useSavedHotels()
   const [bookings] = useSavedBookings()
+  const { activeTripId } = useActiveTrip()
   const { isDismissed } = useDismissedReminders()
 
   if (activeTab === 'dashboard') return null // already looking at it
 
-  const { today, tomorrow } = buildReminders(flights, hotels, bookings)
+  const { today, tomorrow } = buildReminders(flights.filter((item) => tripMatches(item, activeTripId)), hotels.filter((item) => tripMatches(item, activeTripId)), bookings.filter((item) => tripMatches(item, activeTripId)))
   const reminderCount = [...today, ...tomorrow].filter((i) => !isDismissed(i.id)).length
   const weatherGlance = readWeatherGlance()
 

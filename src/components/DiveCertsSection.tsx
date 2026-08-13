@@ -4,6 +4,7 @@ import { saveFile, deleteFile } from '../lib/fileVault'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { DiveCertCard } from './DiveCertCard'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 interface Props {
   onMoveUp?: () => void
@@ -12,6 +13,8 @@ interface Props {
 
 export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   const [certs, setCerts] = useSavedDiveCerts()
+  const { activeTripId } = useActiveTrip()
+  const scopedCerts = certs.filter((cert) => tripMatches(cert, activeTripId))
 
   const [agency, setAgency] = useState('')
   const [level, setLevel] = useState('')
@@ -32,7 +35,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
     }
     setCerts((prev) => [
       ...prev,
-      newDiveCert({ agency, level, certNumber, issueDate, instructorName, notes, photoFileId }),
+      newDiveCert({ tripId: activeTripId || undefined, agency, level, certNumber, issueDate, instructorName, notes, photoFileId }),
     ])
     setAgency('')
     setLevel('')
@@ -57,7 +60,9 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
   return (
     <Collapsible id="dive-certs" title="Dive certs" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
-        Offline-accessible proof of certification for dive shops/liveaboards — useful with no signal.
+        Offline-accessible proof of certification for dive shops/liveaboards — useful with no signal. Certification
+        details stay available even when the protected document vault is locked; attached card photos still use the
+        vault's device encryption.
       </p>
 
       <AddFormToggle label="Add dive cert" open={showAddForm} onOpenChange={setShowAddForm}>
@@ -122,7 +127,7 @@ export function DiveCertsSection({ onMoveUp, onMoveDown }: Props) {
         <p className="text-sm text-[var(--color-muted)]">No certs saved yet.</p>
       ) : (
         <div className="space-y-2">
-          {certs.map((c) => (
+          {scopedCerts.map((c) => (
             <DiveCertCard key={c.id} cert={c} onDelete={removeCert} onUpdate={updateCert} />
           ))}
         </div>

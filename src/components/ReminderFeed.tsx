@@ -3,6 +3,7 @@ import { useSavedHotels } from '../lib/hotels'
 import { useSavedBookings } from '../lib/bookings'
 import { buildReminders, useDismissedReminders, type ReminderItem } from '../lib/reminders'
 import { formatFriendlyDate } from '../lib/dateUtils'
+import { useActiveTrip, tripMatches } from '../lib/trips'
 
 function ReminderRow({ item, onDismiss }: { item: ReminderItem; onDismiss: () => void }) {
   return (
@@ -33,9 +34,10 @@ export function ReminderFeed() {
   const [flights] = useSavedFlights()
   const [hotels] = useSavedHotels()
   const [bookings] = useSavedBookings()
+  const { activeTripId } = useActiveTrip()
   const { isDismissed, dismiss } = useDismissedReminders()
 
-  const { today, tomorrow, next } = buildReminders(flights, hotels, bookings)
+  const { today, tomorrow, next } = buildReminders(flights.filter((item) => tripMatches(item, activeTripId)), hotels.filter((item) => tripMatches(item, activeTripId)), bookings.filter((item) => tripMatches(item, activeTripId)))
   const visibleToday = today.filter((i) => !isDismissed(i.id))
   const visibleTomorrow = tomorrow.filter((i) => !isDismissed(i.id))
   const hasImmediate = visibleToday.length > 0 || visibleTomorrow.length > 0

@@ -37,6 +37,28 @@ export async function getDeviceEncryptionKey(): Promise<CryptoKey> {
   return deviceKeyPromise
 }
 
+export async function getPublicEncryptionKey(): Promise<CryptoKey> {
+  if (!deviceEncryptionAvailable()) throw new Error('This browser does not support encrypted local documents.')
+  const db = await getKeyDb()
+  const stored = await db.get('keys', 'public')
+  if (stored) return stored.key
+  const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt'])
+  await db.put('keys', { id: 'public', key })
+  return key
+}
+
+export async function storeDeviceEncryptionKey(key: CryptoKey): Promise<void> {
+  const db = await getKeyDb()
+  await db.put('keys', { id: 'device', key })
+  deviceKeyPromise = Promise.resolve(key)
+}
+
+export async function clearDeviceEncryptionKey(): Promise<void> {
+  const db = await getKeyDb()
+  await db.delete('keys', 'device')
+  deviceKeyPromise = null
+}
+
 export async function encryptBlob(blob: Blob): Promise<{ blob: Blob; iv: Uint8Array }> {
   const key = await getDeviceEncryptionKey()
   const iv = crypto.getRandomValues(new Uint8Array(12))
