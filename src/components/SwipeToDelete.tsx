@@ -10,7 +10,7 @@ import {
 import { hapticTick, hapticConfirm } from '../lib/haptics'
 
 const DELETE_WIDTH = 88 // px — width of the red delete zone once swiped open
-const TRIP_WIDTH = 148 // px — swipe-right trip picker
+const TRIP_WIDTH = 176 // px — swipe-right trip picker (wide enough for a select)
 const DRAG_SLOP = 8 // px of initial movement before we commit to horizontal vs. let vertical scroll win
 const CONFIRM_ARM_MS = 3000 // matches ShoppingNotes' tap-to-arm window, for consistency
 

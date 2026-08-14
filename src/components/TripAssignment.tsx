@@ -6,36 +6,33 @@ interface Props {
   onChange: (tripId: string | undefined) => void
 }
 
-/** Trip picker shown in a row's swipe-right panel. Choosing a trip (or
- * Unassigned) applies immediately and closes the swipe. */
+/** Trip picker shown in a row's swipe-right panel. A native select so the
+ * full trip list can open above the short row instead of being clipped. */
 export function TripAssignment({ tripId, onChange }: Props) {
   const [trips] = useSavedTrips()
 
-  function pick(next: string | undefined) {
-    onChange(next)
-    closeAll()
-  }
-
   return (
-    <div className="h-full overflow-y-auto bg-[var(--color-pine)] text-white text-xs flex flex-col">
-      <p className="px-2 pt-1.5 pb-1 font-medium opacity-80">Trip</p>
-      <button
-        type="button"
-        onClick={() => pick(undefined)}
-        className={'text-left px-2 py-1.5 ' + (!tripId ? 'bg-black/20 font-semibold' : '')}
-      >
-        Unassigned
-      </button>
-      {trips.map((trip) => (
-        <button
-          key={trip.id}
-          type="button"
-          onClick={() => pick(trip.id)}
-          className={'text-left px-2 py-1.5 truncate ' + (tripId === trip.id ? 'bg-black/20 font-semibold' : '')}
+    <div className="h-full flex items-center px-2 bg-[var(--color-pine)]">
+      <label className="w-full min-w-0">
+        <span className="block text-[10px] text-white/80 mb-0.5">Trip</span>
+        <select
+          value={tripId ?? ''}
+          onChange={(event) => {
+            onChange(event.target.value || undefined)
+            closeAll()
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+          aria-label="Assign record to trip"
+          className="w-full min-w-0 rounded border-0 bg-[var(--color-surface)] text-[var(--color-ink)] px-1.5 py-1 text-xs"
         >
-          {trip.name}
-        </button>
-      ))}
+          <option value="">Unassigned</option>
+          {trips.map((trip) => (
+            <option key={trip.id} value={trip.id}>
+              {trip.name}
+            </option>
+          ))}
+        </select>
+      </label>
     </div>
   )
 }
