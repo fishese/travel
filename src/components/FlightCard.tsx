@@ -19,6 +19,7 @@ import { RawTextDisclosure } from './RawTextDisclosure'
 import { LinkedFiles } from './LinkedFiles'
 import { ExpandableCard } from './ExpandableCard'
 import { FlightEditForm } from './FlightEditForm'
+import { TripAssignment } from './TripAssignment'
 
 interface Props {
   flight: SavedFlight
@@ -28,6 +29,7 @@ interface Props {
   quotaLimit: number
   onDelete: (id: string) => void
   onUpdate: (id: string, updated: SavedFlight) => void
+  onTripChange?: (tripId: string | undefined) => void
 }
 
 function fmtTime(iso: string) {
@@ -100,7 +102,7 @@ function useFlightStatusPolling(
   return { status, loading, error, refresh: doFetch, checkable, quotaExhausted }
 }
 
-export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit, onDelete, onUpdate }: Props) {
+export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit, onDelete, onUpdate, onTripChange }: Props) {
   const { status, loading, error, refresh, checkable, quotaExhausted } = useFlightStatusPolling(
     flight,
     apiKey,
@@ -132,7 +134,12 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
   )
 
   return (
-    <SwipeToDelete id={flight.id} label={flight.flightIata || 'flight'} onDelete={() => onDelete(flight.id)}>
+    <SwipeToDelete
+      id={flight.id}
+      label={flight.flightIata || 'flight'}
+      onDelete={() => onDelete(flight.id)}
+      rightPanel={onTripChange ? <TripAssignment tripId={flight.tripId} onChange={onTripChange} /> : undefined}
+    >
       <div className="border border-[var(--color-border)] rounded-lg p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">

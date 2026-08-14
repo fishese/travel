@@ -6,14 +6,16 @@ import { ExpandableCard } from './ExpandableCard'
 import { BookingEditForm } from './BookingEditForm'
 import { RawTextDisclosure } from './RawTextDisclosure'
 import { LinkedFiles } from './LinkedFiles'
+import { TripAssignment } from './TripAssignment'
 
 interface Props {
   booking: Booking
   onDelete: (id: string) => void
   onUpdate: (updated: Booking) => void
+  onTripChange?: (tripId: string | undefined) => void
 }
 
-export function BookingCard({ booking, onDelete, onUpdate }: Props) {
+export function BookingCard({ booking, onDelete, onUpdate, onTripChange }: Props) {
   const [editing, setEditing] = useState(false)
 
   const header = (
@@ -26,7 +28,12 @@ export function BookingCard({ booking, onDelete, onUpdate }: Props) {
   )
 
   return (
-    <SwipeToDelete id={booking.id} label={booking.label} onDelete={() => onDelete(booking.id)}>
+    <SwipeToDelete
+      id={booking.id}
+      label={booking.label}
+      onDelete={() => onDelete(booking.id)}
+      rightPanel={onTripChange ? <TripAssignment tripId={booking.tripId} onChange={onTripChange} /> : undefined}
+    >
       <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">

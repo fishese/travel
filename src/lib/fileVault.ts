@@ -68,6 +68,26 @@ export async function saveFile(
   return record
 }
 
+async function decryptWithScope(
+  blob: Blob,
+  iv: Uint8Array,
+  mimeType: string,
+  keyScope: VaultKeyScope,
+): Promise<Blob | 'locked' | 'wrong-key'> {
+  try {
+    const key = await getVaultKey(keyScope)
+    const plaintext = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: Uint8Array.from(iv).buffer as ArrayBuffer },
+      key,
+      await blob.arrayBuffer(),
+    )
+    return new Blob([plaintext], { type: mimeType })
+  } catch (error) {
+    if (error instanceof VaultLockedError) return 'locked'
+    return 'wrong-key'
+  }
+}
+
 async function readStoredFile(record: StoredVaultFile): Promise<VaultFile> {
   if (!record.encrypted || !record.iv) {
     // Files saved by pre-encryption versions are migrated lazily when first read.
@@ -76,8 +96,39 @@ async function readStoredFile(record: StoredVaultFile): Promise<VaultFile> {
     await db.put('files', { ...record, blob: encrypted.blob, encrypted: true, iv: encrypted.iv, keyScope: encrypted.keyScope })
     return { ...record, blob: record.blob }
   }
+
+  const storedScope = record.keyScope ?? 'vault'
+  const wantedScope = keyScopeForCategory(record.category)
+  const scopes: VaultKeyScope[] = storedScope === wantedScope ? [storedScope] : [storedScope, wantedScope]
+  if (isDeviceScopedCategory(record.category) && !scopes.includes('device')) scopes.push('device')
+
+  let plaintext: Blob | null = null
+  let usedScope: VaultKeyScope | null = null
+  let sawLocked = false
+  for (const scope of scopes) {
+    const result = await decryptWithScope(record.blob, record.iv, record.mimeType, scope)
+    if (result === 'locked') {
+      sawLocked = true
+      continue
+    }
+    if (result === 'wrong-key') continue
+    plaintext = result
+    usedScope = scope
+    break
+  }
+  if (!plaintext || !usedScope) {
+    if (sawLocked) throw new VaultLockedError()
+    throw new Error('Could not decrypt file.')
+  }
+
+  if (usedScope !== wantedScope) {
+    const encrypted = await encryptBlob(plaintext, record.category)
+    const db = await getDB()
+    await db.put('files', { ...record, blob: encrypted.blob, encrypted: true, iv: encrypted.iv, keyScope: encrypted.keyScope })
+  }
+
   const { encrypted: _encrypted, iv: _iv, keyScope: _keyScope, ...plainRecord } = record
-  return { ...plainRecord, blob: await decryptBlob(record.blob, record.iv, record.mimeType, record.keyScope ?? 'vault') }
+  return { ...plainRecord, blob: plaintext }
 }
 
 export async function getFile(id: string): Promise<VaultFile | undefined> {
@@ -119,6 +170,15 @@ export async function updateFileTrip(id: string, tripId: string | undefined): Pr
   const record = await db.get('files', id)
   if (!record) return
   await db.put('files', { ...record, tripId })
+}
+
+/** Changes a file's category (and therefore its encryption scope) without
+ * minting a new id. Used to move a booking confirmation out of the
+ * password-protected vault into the unlocked Documents list. */
+export async function recategorizeFile(id: string, category: VaultCategory): Promise<void> {
+  const file = await getFile(id)
+  if (!file) return
+  await putFile({ ...file, category, linkedId: category === file.category ? file.linkedId : undefined })
 }
 
 /** Writes a VaultFile record as-is, preserving its id — unlike saveFile,
@@ -197,12 +257,6 @@ async function encryptBlob(blob: Blob, category?: VaultCategory): Promise<{ blob
   const iv = crypto.getRandomValues(new Uint8Array(12))
   const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: Uint8Array.from(iv).buffer as ArrayBuffer }, key, await blob.arrayBuffer())
   return { blob: new Blob([ciphertext], { type: 'application/octet-stream' }), iv, keyScope }
-}
-
-async function decryptBlob(blob: Blob, iv: Uint8Array, mimeType: string, keyScope: VaultKeyScope): Promise<Blob> {
-  const key = await getVaultKey(keyScope)
-  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: Uint8Array.from(iv).buffer as ArrayBuffer }, key, await blob.arrayBuffer())
-  return new Blob([plaintext], { type: mimeType })
 }
 
 /** Wipes the entire vault — used by session import's "replace everything"

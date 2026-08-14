@@ -3,6 +3,7 @@ import {
   saveFile,
   deleteFile,
   updateFileTrip,
+  recategorizeFile,
   fileObjectUrl,
   openVaultFile,
   useVaultFiles,
@@ -17,7 +18,7 @@ import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
-import { useActiveTrip, tripMatches } from '../lib/trips'
+import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { VaultLockPanel } from './VaultLockPanel'
 import { useVaultLock } from '../lib/vaultCrypto'
 import { TripAssignment } from './TripAssignment'
@@ -133,7 +134,7 @@ export function DocumentVault({ onMoveUp, onMoveDown, protectedOnly = false }: P
 
   async function handleUpload() {
     if (!pendingFile) return
-    await saveFile(pendingFile, label.trim() || pendingFile.name, category, linkedId || undefined, activeTripId || undefined)
+    await saveFile(pendingFile, label.trim() || pendingFile.name, category, linkedId || undefined, tripIdForNewRecord(activeTripId))
     setLabel('')
     setPendingFile(null)
     setLinkedId('')
@@ -144,6 +145,11 @@ export function DocumentVault({ onMoveUp, onMoveDown, protectedOnly = false }: P
 
   async function handleDelete(id: string) {
     await deleteFile(id)
+    refresh()
+  }
+
+  async function handleMoveToDocuments(id: string) {
+    await recategorizeFile(id, 'booking')
     refresh()
   }
 
@@ -259,7 +265,13 @@ export function DocumentVault({ onMoveUp, onMoveDown, protectedOnly = false }: P
             const badge = dateBadge(f)
             const isUrgent = badge === 'Today' || badge === 'Tomorrow'
             return (
-              <SwipeToDelete key={f.id} id={f.id} label={f.label} onDelete={() => handleDelete(f.id)}>
+              <SwipeToDelete
+                key={f.id}
+                id={f.id}
+                label={f.label}
+                onDelete={() => handleDelete(f.id)}
+                rightPanel={<TripAssignment tripId={f.tripId} onChange={(tripId) => { void updateFileTrip(f.id, tripId).then(refresh) }} />}
+              >
                 <div className="flex items-center gap-2 bg-[var(--color-surface)] p-1">
                   <button type="button" onClick={() => openVaultFile(f)} className="shrink-0">
                     <VaultThumb file={f} />
@@ -272,8 +284,16 @@ export function DocumentVault({ onMoveUp, onMoveDown, protectedOnly = false }: P
                         <span className={isUrgent ? 'text-[var(--color-pine)] font-semibold' : ''}> · {badge}</span>
                       )}
                     </p>
+                    {protectedOnly && f.category !== 'identity' && f.category !== 'insurance' && (
+                      <button
+                        type="button"
+                        onClick={() => handleMoveToDocuments(f.id)}
+                        className="text-xs text-[var(--color-pine)] underline mt-0.5"
+                      >
+                        Move to Documents
+                      </button>
+                    )}
                   </div>
-                  <TripAssignment tripId={f.tripId} onChange={(tripId) => { void updateFileTrip(f.id, tripId).then(refresh) }} />
                   <button
                     type="button"
                     onClick={() => requestOpen(f.id)}

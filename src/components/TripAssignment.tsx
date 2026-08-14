@@ -1,32 +1,41 @@
 import { useSavedTrips } from '../lib/trips'
+import { closeAll } from '../lib/swipeCoordinator'
 
 interface Props {
   tripId?: string
   onChange: (tripId: string | undefined) => void
 }
 
-/** Small per-record control used wherever a flight, hotel, booking or cert is
- * rendered. Selecting a different trip immediately moves the record out of
- * the current filtered view; choosing Unassigned makes it visible there. */
+/** Trip picker shown in a row's swipe-right panel. Choosing a trip (or
+ * Unassigned) applies immediately and closes the swipe. */
 export function TripAssignment({ tripId, onChange }: Props) {
   const [trips] = useSavedTrips()
 
+  function pick(next: string | undefined) {
+    onChange(next)
+    closeAll()
+  }
+
   return (
-    <label className="flex items-center gap-1 text-[11px] text-[var(--color-muted)] min-w-0">
-      <span className="shrink-0">Trip</span>
-      <select
-        value={tripId ?? ''}
-        onChange={(event) => onChange(event.target.value || undefined)}
-        aria-label="Assign record to trip"
-        className="min-w-0 max-w-full rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-1.5 py-1 text-[11px]"
+    <div className="h-full overflow-y-auto bg-[var(--color-pine)] text-white text-xs flex flex-col">
+      <p className="px-2 pt-1.5 pb-1 font-medium opacity-80">Trip</p>
+      <button
+        type="button"
+        onClick={() => pick(undefined)}
+        className={'text-left px-2 py-1.5 ' + (!tripId ? 'bg-black/20 font-semibold' : '')}
       >
-        <option value="">Unassigned</option>
-        {trips.map((trip) => (
-          <option key={trip.id} value={trip.id}>
-            {trip.name}
-          </option>
-        ))}
-      </select>
-    </label>
+        Unassigned
+      </button>
+      {trips.map((trip) => (
+        <button
+          key={trip.id}
+          type="button"
+          onClick={() => pick(trip.id)}
+          className={'text-left px-2 py-1.5 truncate ' + (tripId === trip.id ? 'bg-black/20 font-semibold' : '')}
+        >
+          {trip.name}
+        </button>
+      ))}
+    </div>
   )
 }

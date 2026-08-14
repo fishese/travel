@@ -112,10 +112,21 @@ export async function unlockVault(password: string): Promise<void> {
       Uint8Array.from(fromBase64(meta.wrappedKeyBase64)).buffer as ArrayBuffer,
     )
     activeKey = await importRaw(new Uint8Array(raw))
-    notify()
   } catch {
     throw new Error('Could not unlock the vault. Check the password and try again.')
   }
+  const unlockedKey = activeKey
+  // Itineraries/booking docs/dive-cert photos used to be wrapped with the
+  // vault password. Re-encrypt them onto the device key now that we have
+  // the vault key, so they stay readable after the next lock.
+  if (unlockedKey) {
+    try {
+      await migrateDeviceScopedFiles(unlockedKey, await getPublicEncryptionKey())
+    } catch {
+      // Unlock still succeeded; lists will retry decrypt on the next refresh.
+    }
+  }
+  notify()
 }
 
 export function lockVault() {

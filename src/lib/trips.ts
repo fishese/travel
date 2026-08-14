@@ -17,8 +17,20 @@ export function useSavedTrips() {
   return useSetting<Trip[]>('travel_trips', EMPTY_TRIPS)
 }
 
+/** Sentinel stored in travel_active_trip — show every record, assigned or not. */
+export const ALL_TRIPS_FILTER = 'all'
+
+export function isConcreteTripId(id: string): boolean {
+  return Boolean(id) && id !== ALL_TRIPS_FILTER
+}
+
+/** New records inherit the selected trip, but not the All/Unassigned filters. */
+export function tripIdForNewRecord(activeTripId: string): string | undefined {
+  return isConcreteTripId(activeTripId) ? activeTripId : undefined
+}
+
 export function useActiveTrip() {
-  const [activeTripId, setActiveTripId] = useSetting('travel_active_trip', '')
+  const [activeTripId, setActiveTripId] = useSetting('travel_active_trip', ALL_TRIPS_FILTER)
   const [trips] = useSavedTrips()
   const activeTrip = trips.find((trip) => trip.id === activeTripId) ?? null
 
@@ -39,6 +51,7 @@ export function newTrip(fields: Pick<Trip, 'name' | 'destination' | 'startDate' 
 }
 
 export function tripMatches(item: { tripId?: string }, activeTripId: string): boolean {
+  if (activeTripId === ALL_TRIPS_FILTER) return true
   return activeTripId ? item.tripId === activeTripId : !item.tripId
 }
 

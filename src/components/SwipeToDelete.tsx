@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
-import { requestOpen, closeAll, subscribeSwipe, getOpenSwipeId } from '../lib/swipeCoordinator'
+import {
+  requestOpen,
+  closeAll,
+  subscribeSwipe,
+  getOpenSwipeId,
+  getOpenSwipeSide,
+  type SwipeSide,
+} from '../lib/swipeCoordinator'
 import { hapticTick, hapticConfirm } from '../lib/haptics'
 
-const REVEAL_WIDTH = 88 // px — width of the red delete zone once swiped open
-const OPEN_THRESHOLD = REVEAL_WIDTH / 2 // drag past halfway to snap open on release
+const DELETE_WIDTH = 88 // px — width of the red delete zone once swiped open
+const TRIP_WIDTH = 148 // px — swipe-right trip picker
 const DRAG_SLOP = 8 // px of initial movement before we commit to horizontal vs. let vertical scroll win
 const CONFIRM_ARM_MS = 3000 // matches ShoppingNotes' tap-to-arm window, for consistency
 
@@ -16,42 +23,49 @@ interface Props {
    * button instead of a bare "Delete" ("Delete CX500" vs "Delete"). */
   label: string
   onDelete: () => void | Promise<void>
+  /** Optional swipe-right panel (trip assignment). Omitted rows stay
+   * left-swipe-to-delete only. */
+  rightPanel?: ReactNode
   children: ReactNode
 }
 
 /**
- * Swipe left to reveal a delete action; tapping it arms a confirm state
- * (same tap-to-arm pattern as ShoppingNotes' Clear and Flights' Reset
- * count) rather than deleting on the first tap — the swipe alone never
- * deletes anything. Only one row can be open at a time across the whole
- * app (see lib/swipeCoordinator.ts); opening a new one, or tapping
- * anywhere outside, closes whatever was open before.
+ * Swipe left to reveal a delete action; swipe right (when rightPanel is
+ * passed) to reveal trip assignment. Tapping Delete arms a confirm state
+ * rather than deleting on the first tap — the swipe alone never deletes
+ * anything. Only one row can be open at a time across the whole app
+ * (see lib/swipeCoordinator.ts).
  */
-export function SwipeToDelete({ id, label, onDelete, children }: Props) {
+export function SwipeToDelete({ id, label, onDelete, rightPanel, children }: Props) {
   const openId = useSyncExternalStore(subscribeSwipe, getOpenSwipeId)
+  const openSide = useSyncExternalStore(subscribeSwipe, getOpenSwipeSide)
   const isOpen = openId === id
+  const side: SwipeSide = isOpen ? openSide : 'delete'
+  const rightWidth = rightPanel ? TRIP_WIDTH : 0
 
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [armed, setArmed] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const startRef = useRef<{ x: number; y: number; wasOpen: boolean } | null>(null)
+  const startRef = useRef<{ x: number; y: number; wasOpen: boolean; side: SwipeSide } | null>(null)
   const axisRef = useRef<'undecided' | 'horizontal' | 'vertical'>('undecided')
   const armTimerRef = useRef<number | null>(null)
 
-  // Follow the shared coordinator: closing here just means snapping this
-  // row's own visual state back, not touching global state again (that
-  // would loop).
+  function restX(open: boolean, openSide: SwipeSide) {
+    if (!open) return 0
+    return openSide === 'trip' ? rightWidth : -DELETE_WIDTH
+  }
+
   useEffect(() => {
     if (!isOpen) {
       setDragX(0)
       setArmed(false)
       if (armTimerRef.current) window.clearTimeout(armTimerRef.current)
     } else {
-      setDragX(-REVEAL_WIDTH)
+      setDragX(openSide === 'trip' ? rightWidth : -DELETE_WIDTH)
     }
-  }, [isOpen])
+  }, [isOpen, openSide, rightWidth])
 
   // Tapping outside an open row closes it — same expectation as any other
   // swipe-actions list (Mail, etc.).
@@ -66,7 +80,7 @@ export function SwipeToDelete({ id, label, onDelete, children }: Props) {
 
   function onPointerDown(e: React.PointerEvent) {
     if (!e.isPrimary) return
-    startRef.current = { x: e.clientX, y: e.clientY, wasOpen: isOpen }
+    startRef.current = { x: e.clientX, y: e.clientY, wasOpen: isOpen, side }
     axisRef.current = 'undecided'
     setDragging(true)
   }
@@ -89,8 +103,8 @@ export function SwipeToDelete({ id, label, onDelete, children }: Props) {
     }
     if (axisRef.current !== 'horizontal') return
 
-    const base = startRef.current.wasOpen ? -REVEAL_WIDTH : 0
-    const next = Math.min(0, Math.max(-REVEAL_WIDTH, base + dx))
+    const base = restX(startRef.current.wasOpen, startRef.current.side)
+    const next = Math.min(rightWidth, Math.max(-DELETE_WIDTH, base + dx))
     setDragX(next)
   }
 
@@ -98,9 +112,12 @@ export function SwipeToDelete({ id, label, onDelete, children }: Props) {
     if (!dragging) return
     setDragging(false)
     if (axisRef.current !== 'horizontal') return
-    if (dragX <= -OPEN_THRESHOLD) {
-      setDragX(-REVEAL_WIDTH)
-      requestOpen(id)
+    if (dragX <= -DELETE_WIDTH / 2) {
+      setDragX(-DELETE_WIDTH)
+      requestOpen(id, 'delete')
+    } else if (rightWidth > 0 && dragX >= rightWidth / 2) {
+      setDragX(rightWidth)
+      requestOpen(id, 'trip')
     } else {
       setDragX(0)
       if (isOpen) closeAll()
@@ -122,7 +139,12 @@ export function SwipeToDelete({ id, label, onDelete, children }: Props) {
 
   return (
     <div ref={containerRef} className="relative overflow-hidden rounded-lg">
-      <div className="absolute inset-y-0 right-0 flex" style={{ width: REVEAL_WIDTH }}>
+      {rightPanel && (
+        <div className="absolute inset-y-0 left-0" style={{ width: rightWidth }}>
+          {rightPanel}
+        </div>
+      )}
+      <div className="absolute inset-y-0 right-0 flex" style={{ width: DELETE_WIDTH }}>
         <button
           type="button"
           onClick={handleDeleteTap}

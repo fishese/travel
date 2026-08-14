@@ -15,8 +15,7 @@ import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
 import { BookingCard } from './BookingCard'
-import { useActiveTrip, tripMatches } from '../lib/trips'
-import { TripAssignment } from './TripAssignment'
+import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -54,7 +53,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     setBookings((prev) => [
       ...prev,
       newBooking({
-        tripId: activeTripId || undefined,
+        tripId: tripIdForNewRecord(activeTripId),
         date,
         time,
         category,
@@ -86,10 +85,13 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
 
   function renderBooking(b: Booking) {
     return (
-      <div key={b.id} className="space-y-1">
-        <TripAssignment tripId={b.tripId} onChange={(tripId) => updateBooking({ ...b, tripId })} />
-        <BookingCard booking={b} onDelete={removeBooking} onUpdate={updateBooking} />
-      </div>
+      <BookingCard
+        key={b.id}
+        booking={b}
+        onDelete={removeBooking}
+        onUpdate={updateBooking}
+        onTripChange={(tripId) => updateBooking({ ...b, tripId })}
+      />
     )
   }
 

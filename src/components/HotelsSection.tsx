@@ -8,7 +8,7 @@ import { PastEntries } from './PastEntries'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { LinkedFiles } from './LinkedFiles'
-import { useActiveTrip, tripMatches } from '../lib/trips'
+import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { TripAssignment } from './TripAssignment'
 
 interface Props {
@@ -66,7 +66,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setHotels((prev) =>
       editingId
         ? prev.map((h) => (h.id === editingId ? applyHotelEdit(h, { name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }) : h))
-        : [...prev, newHotel({ tripId: activeTripId || undefined, name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
+        : [...prev, newHotel({ tripId: tripIdForNewRecord(activeTripId), name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
     )
     setName('')
     setCity('')
@@ -111,10 +111,19 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
 
   function renderHotel(h: (typeof hotels)[number]) {
     return (
-      <SwipeToDelete key={h.id} id={h.id} label={h.name} onDelete={() => removeHotel(h.id)}>
-        <div className="space-y-1">
-          <TripAssignment tripId={h.tripId} onChange={(tripId) => setHotels((prev) => prev.map((hotel) => (hotel.id === h.id ? { ...hotel, tripId } : hotel)))} />
-          <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
+      <SwipeToDelete
+        key={h.id}
+        id={h.id}
+        label={h.name}
+        onDelete={() => removeHotel(h.id)}
+        rightPanel={
+          <TripAssignment
+            tripId={h.tripId}
+            onChange={(tripId) => setHotels((prev) => prev.map((hotel) => (hotel.id === h.id ? { ...hotel, tripId } : hotel)))}
+          />
+        }
+      >
+        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="text-sm font-semibold truncate">{h.name}</p>
@@ -150,7 +159,6 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
             <button type="button" onClick={() => editHotel(h)} className="text-[var(--color-pine)] underline">Edit</button>
           </div>
           <LinkedFiles category="hotel" linkedId={h.id} />
-          </div>
         </div>
       </SwipeToDelete>
     )

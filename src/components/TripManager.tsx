@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useActiveTrip, useSavedTrips, newTrip, tripDateLabel } from '../lib/trips'
+import { useActiveTrip, useSavedTrips, newTrip, tripDateLabel, ALL_TRIPS_FILTER } from '../lib/trips'
 import { writeSettingExternally } from '../lib/useSetting'
 
 function assignUnassigned(key: string, tripId: string) {
@@ -55,15 +55,23 @@ export function TripManager() {
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold">Active trip</h2>
-          <p className="text-xs text-[var(--color-muted)] truncate">{activeTrip ? `${activeTrip.name}${tripDateLabel(activeTrip) ? ` · ${tripDateLabel(activeTrip)}` : ''}` : 'Unassigned records'}</p>
+          <p className="text-xs text-[var(--color-muted)] truncate">
+            {activeTripId === ALL_TRIPS_FILTER
+              ? 'All trips'
+              : activeTrip
+                ? `${activeTrip.name}${tripDateLabel(activeTrip) ? ` · ${tripDateLabel(activeTrip)}` : ''}`
+                : 'Unassigned records'}
+          </p>
         </div>
         <button type="button" onClick={() => setAdding((open) => !open)} className="text-xs text-[var(--color-pine)] underline">{adding ? 'Cancel' : '+ New trip'}</button>
       </div>
 
       <select value={activeTripId} onChange={(e) => selectTrip(e.target.value)} aria-label="Active trip" className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm">
+        <option value={ALL_TRIPS_FILTER}>All trips</option>
         <option value="">Unassigned records</option>
         {trips.map((trip) => <option key={trip.id} value={trip.id}>{trip.name}{trip.destination ? ` · ${trip.destination}` : ''}</option>)}
       </select>
+      <p className="text-xs text-[var(--color-muted)] mt-1">Swipe a planner row right to assign it to a trip; swipe left to delete.</p>
 
       {adding && (
         <div className="mt-2 space-y-2">

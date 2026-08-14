@@ -27,7 +27,7 @@ export function TravelDayDashboard() {
   const [flights] = useSavedFlights()
   const [hotels] = useSavedHotels()
   const [bookings] = useSavedBookings()
-  const { activeTrip } = useActiveTrip()
+  const { activeTrip, activeTripId } = useActiveTrip()
   const today = localDateStr()
   const [showBackToTop, setShowBackToTop] = useState(false)
 
@@ -41,9 +41,9 @@ export function TravelDayDashboard() {
     return () => window.removeEventListener('scroll', update)
   }, [])
 
-  const scopedFlights = flights.filter((item) => tripMatches(item, activeTrip?.id ?? ''))
-  const scopedHotels = hotels.filter((item) => tripMatches(item, activeTrip?.id ?? ''))
-  const scopedBookings = bookings.filter((item) => tripMatches(item, activeTrip?.id ?? ''))
+  const scopedFlights = flights.filter((item) => tripMatches(item, activeTripId))
+  const scopedHotels = hotels.filter((item) => tripMatches(item, activeTripId))
+  const scopedBookings = bookings.filter((item) => tripMatches(item, activeTripId))
 
   const todayFlights = scopedFlights.filter((item) => item.date === today).sort((a, b) => (a.departureTime ?? '').localeCompare(b.departureTime ?? ''))
   const todayBookings = scopedBookings.filter((item) => item.date === today).sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''))

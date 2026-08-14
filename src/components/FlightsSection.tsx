@@ -9,8 +9,7 @@ import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
-import { useActiveTrip, tripMatches } from '../lib/trips'
-import { TripAssignment } from './TripAssignment'
+import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 
 interface Props {
   onMoveUp?: () => void
@@ -57,7 +56,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setFlights((prev) => [
       ...prev,
       newFlight({
-        tripId: activeTripId || undefined,
+        tripId: tripIdForNewRecord(activeTripId),
         flightIata: flightIataInput,
         date: dateInput,
         origin: originInput,
@@ -92,18 +91,17 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
 
   function renderFlight(f: SavedFlight) {
     return (
-      <div key={f.id} className="space-y-1">
-        <TripAssignment tripId={f.tripId} onChange={(tripId) => updateFlight(f.id, { ...f, tripId })} />
-        <FlightCard
-          flight={f}
-          apiKey={apiKey}
-          recordCall={quota.recordCall}
-          quotaCount={quota.count}
-          quotaLimit={quota.limit}
-          onDelete={removeFlight}
-          onUpdate={updateFlight}
-        />
-      </div>
+      <FlightCard
+        key={f.id}
+        flight={f}
+        apiKey={apiKey}
+        recordCall={quota.recordCall}
+        quotaCount={quota.count}
+        quotaLimit={quota.limit}
+        onDelete={removeFlight}
+        onUpdate={updateFlight}
+        onTripChange={(tripId) => updateFlight(f.id, { ...f, tripId })}
+      />
     )
   }
 
