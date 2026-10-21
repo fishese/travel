@@ -21,7 +21,7 @@ export interface SavedFlight {
   // Booking's required version) because real flights already exist in
   // storage from before this field was added; treat a missing source as
   // equivalent to 'manual' everywhere it's read.
-  source?: 'manual' | 'pasted'
+  source?: 'manual' | 'pasted' | 'uploaded'
   rawText?: string
 }
 

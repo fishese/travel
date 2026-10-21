@@ -1,0 +1,9 @@
+United Airlines
+Confirmation: HJK4L2
+Passenger: Jane Doe
+
+Flight UA 869
+San Francisco (SFO) to Singapore (SIN)
+August 25, 2026
+Departure 11:20 AM
+Arrival 7:45 PM

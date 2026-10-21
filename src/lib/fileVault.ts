@@ -12,6 +12,8 @@ export interface VaultFile {
   label: string
   category: VaultCategory
   linkedId?: string // e.g. a dive cert's id, if this file belongs to one
+  /** Every record this file belongs to. linkedId stays the first one so older backups still resolve a link. */
+  linkedIds?: string[]
   savedAt: string
 }
 
@@ -45,14 +47,28 @@ function makeId() {
   return Math.random().toString(36).slice(2, 9)
 }
 
+const vaultListeners = new Set<() => void>()
+
+/** Lets open lists refresh after a save without each screen having to know who wrote the file. */
+export function subscribeVaultChanges(listener: () => void): () => void {
+  vaultListeners.add(listener)
+  return () => vaultListeners.delete(listener)
+}
+
+function notifyVaultChanged() {
+  for (const listener of vaultListeners) listener()
+}
+
 export async function saveFile(
   file: File | Blob,
   label: string,
   category: VaultCategory,
   linkedId?: string,
   tripId?: string,
+  linkedIds?: string[],
 ): Promise<VaultFile> {
   const db = await getDB()
+  const links = linkedIds?.filter(Boolean)
   const record: VaultFile = {
     id: makeId(),
     tripId,
@@ -60,11 +76,13 @@ export async function saveFile(
     mimeType: file.type || 'application/octet-stream',
     label,
     category,
-    linkedId,
+    linkedId: linkedId ?? links?.[0],
+    linkedIds: links && links.length > 0 ? [...new Set(links)] : undefined,
     savedAt: new Date().toISOString(),
   }
   const encrypted = await encryptBlob(file, category)
   await db.put('files', { ...record, blob: encrypted.blob, encrypted: true, iv: encrypted.iv, keyScope: encrypted.keyScope })
+  notifyVaultChanged()
   return record
 }
 
@@ -160,6 +178,7 @@ export async function listFiles(category?: VaultCategory, tripId?: string): Prom
 export async function deleteFile(id: string): Promise<void> {
   const db = await getDB()
   await db.delete('files', id)
+  notifyVaultChanged()
 }
 
 /** Changes non-content metadata without decrypting or re-encrypting the file.
@@ -170,6 +189,7 @@ export async function updateFileTrip(id: string, tripId: string | undefined): Pr
   const record = await db.get('files', id)
   if (!record) return
   await db.put('files', { ...record, tripId })
+  notifyVaultChanged()
 }
 
 /** Changes a file's category (and therefore its encryption scope) without
@@ -178,7 +198,12 @@ export async function updateFileTrip(id: string, tripId: string | undefined): Pr
 export async function recategorizeFile(id: string, category: VaultCategory): Promise<void> {
   const file = await getFile(id)
   if (!file) return
-  await putFile({ ...file, category, linkedId: category === file.category ? file.linkedId : undefined })
+  await putFile({
+    ...file,
+    category,
+    linkedId: category === file.category ? file.linkedId : undefined,
+    linkedIds: category === file.category ? file.linkedIds : undefined,
+  })
 }
 
 /** Writes a VaultFile record as-is, preserving its id — unlike saveFile,
@@ -190,6 +215,7 @@ export async function putFile(record: VaultFile): Promise<void> {
   const db = await getDB()
   const encrypted = await encryptBlob(record.blob, record.category)
   await db.put('files', { ...record, blob: encrypted.blob, encrypted: true, iv: encrypted.iv, keyScope: encrypted.keyScope })
+  notifyVaultChanged()
 }
 
 /** Replaces the vault in one IndexedDB transaction. Encryption is completed
@@ -206,6 +232,7 @@ export async function replaceAllFiles(records: VaultFile[]): Promise<void> {
   await tx.store.clear()
   for (const record of encryptedRecords) await tx.store.put(record)
   await tx.done
+  notifyVaultChanged()
 }
 
 function keyScopeForCategory(category?: VaultCategory): VaultKeyScope {
@@ -264,6 +291,7 @@ async function encryptBlob(blob: Blob, category?: VaultCategory): Promise<{ blob
 export async function clearAllFiles(): Promise<void> {
   const db = await getDB()
   await db.clear('files')
+  notifyVaultChanged()
 }
 
 /** Caller must URL.revokeObjectURL() this when done with it (e.g. a
@@ -281,10 +309,9 @@ export function openVaultFile(file: VaultFile): void {
   window.open(url, '_blank')
 }
 
-/** IndexedDB isn't reactive the way the localStorage-backed useSetting is —
- * this just re-fetches on demand. Call `refresh()` after any save/delete
- * that should be reflected. Fine for this app's scale (a handful of files
- * per trip, not a data-heavy list). */
+/** IndexedDB isn't reactive the way the localStorage-backed useSetting is.
+ * Saves and deletes notify subscribers so an attachment shows up on the
+ * booking it was linked to without reopening the section. */
 export function useVaultFiles(category?: VaultCategory, tripId?: string) {
   const [files, setFiles] = useState<VaultFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -292,7 +319,6 @@ export function useVaultFiles(category?: VaultCategory, tripId?: string) {
   const vault = useVaultLock()
 
   const refresh = useCallback(async () => {
-    setLoading(true)
     try {
       setFiles(await listFiles(category, tripId))
       setLocked(vault.status === 'locked')
@@ -307,8 +333,10 @@ export function useVaultFiles(category?: VaultCategory, tripId?: string) {
   }, [category, tripId, vault.status])
 
   useEffect(() => {
-    refresh()
+    void refresh()
   }, [refresh])
+
+  useEffect(() => subscribeVaultChanges(() => { void refresh() }), [refresh])
 
   return { files, loading, locked, refresh }
 }

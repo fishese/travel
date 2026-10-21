@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://traveltools.fishese.cc/import-format.schema.json",
+  "title": "Travel Toolkit booking import",
+  "description": "Version 1 file an assistant can prepare for Travel Toolkit's offline Import booking screen. Unknown properties are ignored.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["format", "version"],
+  "properties": {
+    "format": { "const": "travel-toolkit-import" },
+    "version": { "const": 1 },
+    "flights": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/flight" }
+    },
+    "hotels": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/hotel" }
+    },
+    "bookings": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/booking" }
+    }
+  },
+  "definitions": {
+    "flight": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["flightNumber", "date"],
+      "properties": {
+        "flightNumber": { "type": "string", "description": "Airline code plus number, such as SQ638. A space is accepted and removed." },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "origin": { "type": "string", "pattern": "^[A-Za-z]{3}$" },
+        "destination": { "type": "string", "pattern": "^[A-Za-z]{3}$" },
+        "departureTime": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+        "arrivalTime": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+        "arrivalDate": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "confirmation": { "type": "string" },
+        "passengers": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "hotel": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "city": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "checkIn": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "checkOut": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "confirmation": { "type": "string" },
+        "guests": { "type": "string" },
+        "price": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "booking": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["category", "label", "date"],
+      "properties": {
+        "category": { "enum": ["flight", "train", "tour", "restaurant", "show", "car", "other"] },
+        "label": { "type": "string" },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+        "confirmation": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

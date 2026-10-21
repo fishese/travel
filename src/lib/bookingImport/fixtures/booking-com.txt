@@ -1,0 +1,14 @@
+Booking.com
+Your booking is confirmed
+
+Confirmation number: 1234567890
+
+Park Hyatt Tokyo
+3-7-1-2 Nishi Shinjuku, Shinjuku-Ku, Tokyo, Japan
+
+Check-in: Tuesday, 25 August 2026 (15:00)
+Check-out: Friday, 28 August 2026 (11:00)
+
+Guests: 2 adults
+Total price: JPY 186,000
+Phone: +81 3 5322 1234

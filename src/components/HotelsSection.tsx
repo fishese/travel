@@ -8,6 +8,9 @@ import { PastEntries } from './PastEntries'
 import { SwipeToDelete } from './SwipeToDelete'
 import { requestOpen } from '../lib/swipeCoordinator'
 import { LinkedFiles } from './LinkedFiles'
+import { RawTextDisclosure } from './RawTextDisclosure'
+import { PasteParseBox } from './PasteParseBox'
+import { parseBookingDocument } from '../lib/bookingImport/textParse'
 import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { TripAssignment } from './TripAssignment'
 
@@ -37,6 +40,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
   const [driverView, setDriverView] = useState<{ name: string; address: string; mapsUrl?: string } | null>(null)
   const [showAddForm, setShowAddForm] = useState(() => hotels.length === 0)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [pastedText, setPastedText] = useState<string | undefined>(undefined)
+  const [parseNote, setParseNote] = useState('')
   const { activeTripId } = useActiveTrip()
   const scopedHotels = hotels.filter((hotel) => tripMatches(hotel, activeTripId))
 
@@ -61,12 +66,31 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setResults([])
   }
 
+  function handleParse(text: string) {
+    const parsed = parseBookingDocument(text)
+    const hotel = parsed.hotels[0]
+    if (!hotel) {
+      setParseNote(parsed.warnings[0] ?? 'No hotel was found in that text.')
+      return
+    }
+    if (hotel.name) setName(hotel.name)
+    if (hotel.city) setCity(hotel.city)
+    if (hotel.address) setAddress(hotel.address)
+    if (hotel.phone) setPhone(hotel.phone)
+    if (hotel.checkIn) setCheckIn(hotel.checkIn)
+    if (hotel.checkOut) setCheckOut(hotel.checkOut)
+    if (hotel.notes) setNotes(hotel.notes)
+    if (!editingId) setPastedText(parsed.rawText)
+    const extra = parsed.hotels.length > 1 ? 'This text has more than one hotel. This form keeps the first. Use Import booking for all of them.' : ''
+    setParseNote([extra, ...hotel.warnings, ...parsed.warnings].filter(Boolean).join(' '))
+  }
+
   function addHotel() {
     if (!name.trim()) return
     setHotels((prev) =>
       editingId
         ? prev.map((h) => (h.id === editingId ? applyHotelEdit(h, { name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }) : h))
-        : [...prev, newHotel({ tripId: tripIdForNewRecord(activeTripId), name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId })],
+        : [...prev, newHotel({ tripId: tripIdForNewRecord(activeTripId), name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId, source: pastedText ? 'pasted' : 'manual', rawText: pastedText })],
     )
     setName('')
     setCity('')
@@ -80,6 +104,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setOsmPlaceId(undefined)
     setResults([])
     setEditingId(null)
+    setPastedText(undefined)
+    setParseNote('')
     setShowAddForm(false)
   }
 
@@ -158,7 +184,9 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
             {h.phone && <a href={`tel:${h.phone.replace(/[^\d+]/g, '')}`} className="text-[var(--color-pine)] underline">Call</a>}
             <button type="button" onClick={() => editHotel(h)} className="text-[var(--color-pine)] underline">Edit</button>
           </div>
-          <LinkedFiles category="hotel" linkedId={h.id} />
+          {h.notes && <p className="text-xs text-[var(--color-muted)] mt-1 whitespace-pre-wrap">{h.notes}</p>}
+          {h.rawText && <RawTextDisclosure text={h.rawText} />}
+          <LinkedFiles linkedId={h.id} />
         </div>
       </SwipeToDelete>
     )
@@ -174,6 +202,8 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
           if (!open) setEditingId(null)
         }}
       >
+        <PasteParseBox placeholder="Paste a hotel confirmation here…" onParse={handleParse} />
+        {parseNote && <p className="text-xs text-[var(--color-amber)]">{parseNote}</p>}
         <div className="flex flex-wrap gap-2">
           <input
             value={name}

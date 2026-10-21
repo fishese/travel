@@ -16,7 +16,7 @@ export function Collapsible({ id, title, children, onMoveUp, onMoveDown, default
   const [open, setOpen] = useSetting(`travel_section_open_${id}`, defaultOpen)
 
   return (
-    <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] mt-2">
+    <section id={id} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] mt-2">
       <div className="w-full flex items-center justify-between px-3 py-2">
         <button
           type="button"

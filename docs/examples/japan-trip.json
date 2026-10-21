@@ -1,0 +1,42 @@
+{
+  "format": "travel-toolkit-import",
+  "version": 1,
+  "flights": [
+    {
+      "flightNumber": "SQ638",
+      "date": "2026-08-25",
+      "origin": "HKG",
+      "destination": "NRT",
+      "departureTime": "08:45",
+      "arrivalTime": "14:10",
+      "arrivalDate": "2026-08-25",
+      "confirmation": "ABC123",
+      "passengers": ["Jane Doe"],
+      "notes": "Seat 14A"
+    }
+  ],
+  "hotels": [
+    {
+      "name": "Park Hyatt Tokyo",
+      "city": "Tokyo",
+      "address": "3-7-1-2 Nishi Shinjuku, Shinjuku-Ku, Tokyo",
+      "phone": "+81 3 5322 1234",
+      "checkIn": "2026-08-25",
+      "checkOut": "2026-08-28",
+      "confirmation": "BK-9981",
+      "guests": "2 adults",
+      "price": "JPY 186000",
+      "notes": "Check-in from 15:00"
+    }
+  ],
+  "bookings": [
+    {
+      "category": "train",
+      "label": "Nozomi 123 Tokyo → Shin-Osaka",
+      "date": "2026-08-25",
+      "time": "10:00",
+      "confirmation": "JR123",
+      "notes": "Car 5 seat 8A"
+    }
+  ]
+}

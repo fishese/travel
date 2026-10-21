@@ -170,9 +170,9 @@ export function FlightCard({ flight, apiKey, recordCall, quotaCount, quotaLimit,
                       {flight.arrivalTime ?? '—'}{flight.arrivalDate && ` · arrives ${flight.arrivalDate}`}
                     </p>
                   )}
-                  {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1">{flight.notes}</p>}
+                  {flight.notes && <p className="text-xs text-[var(--color-muted)] mt-1 whitespace-pre-wrap">{flight.notes}</p>}
                   {flight.rawText && <RawTextDisclosure text={flight.rawText} />}
-                  <LinkedFiles category="flight" linkedId={flight.id} />
+                  <LinkedFiles linkedId={flight.id} />
 
                   {!checkable && (
                     <p className="text-xs text-[var(--color-muted)] mt-2">

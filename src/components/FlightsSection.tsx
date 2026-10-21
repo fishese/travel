@@ -3,7 +3,7 @@ import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight, typ
 import { localDateStr } from '../lib/dateUtils'
 import { isPastDate } from '../lib/archive'
 import { hapticTick, hapticConfirm } from '../lib/haptics'
-import { parseFlightText } from '../lib/pasteParse'
+import { parseBookingDocument } from '../lib/bookingImport/textParse'
 import { FlightCard } from './FlightCard'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
@@ -38,17 +38,29 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   const [showAddForm, setShowAddForm] = useState(() => flights.length === 0)
   const [pastedText, setPastedText] = useState<string | undefined>(undefined)
   const [yearWasInferred, setYearWasInferred] = useState(false)
+  const [parseNote, setParseNote] = useState('')
 
   function handleParse(text: string) {
-    const parsed = parseFlightText(text)
-    if (parsed.flightIata) setFlightIataInput(parsed.flightIata)
-    if (parsed.date) setDateInput(parsed.date)
-    if (parsed.origin) setOriginInput(parsed.origin)
-    if (parsed.destination) setDestinationInput(parsed.destination)
-    if (parsed.departureTime) setDepartureTimeInput(parsed.departureTime)
-    if (parsed.arrivalTime) setArrivalTimeInput(parsed.arrivalTime)
-    setPastedText(text)
-    setYearWasInferred(parsed.yearInferred)
+    const parsed = parseBookingDocument(text)
+    const flight = parsed.flights[0]
+    if (!flight) {
+      setParseNote(parsed.warnings[0] ?? 'No flight was found in that text.')
+      return
+    }
+    if (flight.flightIata) setFlightIataInput(flight.flightIata)
+    if (flight.date) setDateInput(flight.date)
+    if (flight.origin) setOriginInput(flight.origin)
+    if (flight.destination) setDestinationInput(flight.destination)
+    if (flight.departureTime) setDepartureTimeInput(flight.departureTime)
+    if (flight.arrivalTime) setArrivalTimeInput(flight.arrivalTime)
+    if (flight.arrivalDate) setArrivalDateInput(flight.arrivalDate)
+    if (flight.notes) setNotesInput(flight.notes)
+    setPastedText(parsed.rawText)
+    setYearWasInferred(flight.yearInferred)
+    const extra = parsed.flights.length > 1
+      ? `This text has ${parsed.flights.length} flights. This form keeps the first one. Use Import booking to review all of them.`
+      : ''
+    setParseNote([extra, ...flight.warnings].filter(Boolean).join(' '))
   }
 
   function addFlight() {
@@ -78,6 +90,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
     setNotesInput('')
     setPastedText(undefined)
     setYearWasInferred(false)
+    setParseNote('')
     setShowAddForm(false)
   }
 
@@ -193,6 +206,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
             No year in the pasted text — assumed {dateInput.slice(0, 4)}. Double-check the date below.
           </p>
         )}
+        {parseNote && <p className="text-xs text-[var(--color-amber)]">{parseNote}</p>}
 
         <div className="flex flex-wrap gap-2">
           <input

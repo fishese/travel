@@ -1,0 +1,10 @@
+Singapore Airlines
+Flight SQ 638
+Hong Kong (HKG) to Tokyo (NRT)
+25 Aug 2026
+Departs 08:45 Arrives 14:10
+Passenger: Jane Doe
+Passport No: AB1234567
+Card number: 4111 1111 1111 1111
+CVV: 123
+Booking reference: XYZ789

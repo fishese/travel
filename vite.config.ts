@@ -55,7 +55,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        // pdf.js ships a worker a bit over 1 MB. The default 2 MB precache
+        // limit is enough today; the higher cap keeps a future worker bump
+        // from silently dropping offline PDF import.
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,ico,wasm}'],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),
   ],

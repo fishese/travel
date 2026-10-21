@@ -36,6 +36,7 @@ interface ExportedFile {
   category: VaultFile['category']
   tripId?: string
   linkedId?: string
+  linkedIds?: string[]
   savedAt: string
   dataBase64: string
 }
@@ -85,6 +86,7 @@ async function buildSessionExport(): Promise<SessionExport> {
       category: f.category,
       tripId: f.tripId,
       linkedId: f.linkedId,
+      linkedIds: f.linkedIds,
       savedAt: f.savedAt,
       dataBase64: await blobToBase64(f.blob),
     })),
@@ -176,6 +178,7 @@ async function mergeSession(data: SessionExport): Promise<MergeSummary> {
       category: f.category,
       tripId: f.tripId,
       linkedId: f.linkedId,
+      linkedIds: f.linkedIds,
       savedAt: f.savedAt,
     })
     added.files++
@@ -193,6 +196,7 @@ async function replaceSession(data: SessionExport): Promise<ReplaceSummary> {
       category: f.category,
       tripId: f.tripId,
       linkedId: f.linkedId,
+      linkedIds: f.linkedIds,
       savedAt: f.savedAt,
   }))
   await replaceAllFiles(preparedFiles)

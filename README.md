@@ -26,6 +26,7 @@ npm install
 npm run dev
 npm run build
 npm run lint
+npm test
 npm run preview
 ```
 
@@ -37,7 +38,22 @@ and optional live status, hotel records with map lookup and driver view,
 generic bookings, dive certificates, trip grouping, a travel-day dashboard,
 encrypted local document storage, personally-authored itinerary HTML, reminders,
 country cheatsheets, airport transfer guidance, an offline-readiness checklist,
-a grouped-currency expense log, PWA offline caching, and backup/restore.
+a grouped-currency expense log, PWA offline caching, backup/restore, and
+offline import of flight, hotel, and other booking confirmations.
+
+## Importing bookings
+
+In the Planner, **Import booking** accepts a pasted confirmation, a text file,
+or a PDF with a selectable text layer. It shows an editable preview and does
+not save until you confirm. Ordinary confirmations can stay in the public
+documents area. A file that looks like a passport or payment details defaults
+to the protected vault, and those numbers are removed from the booking text
+either way.
+
+The same screen imports a versioned JSON file when a confirmation is too
+awkward for the patterns. The format, schema, and an example are in
+[docs/IMPORT_FORMAT.md](docs/IMPORT_FORMAT.md). Personally authored HTML
+itineraries are separate and are not changed by this import.
 
 The bundled country database contains 26 destinations and 28 airport records.
 Visa, tax, arrival-form and emergency information is reference material: every
