@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { AIRPORTS, findNamedAirports } from './codes'
 import { parseBookingDocument } from './textParse'
 import { parseFlightText, parseBookingText } from '../pasteParse'
 
@@ -202,6 +203,89 @@ describe('confirmation fixtures', () => {
     expect(hotels.map((hotel) => hotel.name)).toEqual(['First Inn', 'Second Inn'])
     expect(hotels[0].checkOut).toBe('2026-08-26')
     expect(hotels[1].checkIn).toBe('2026-08-26')
+  })
+
+  it('reads a Singapore–Garuda connection via Jakarta to Sorong', () => {
+    const flights = flight('garuda-sorong.txt')
+    expect(flights).toHaveLength(2)
+    expect(flights[0]).toMatchObject({
+      flightIata: 'SQ960',
+      date: '2026-09-10',
+      origin: 'SIN',
+      destination: 'CGK',
+      departureTime: '06:00',
+      arrivalTime: '06:50',
+      arrivalDate: '2026-09-10',
+    })
+    expect(flights[1]).toMatchObject({
+      flightIata: 'GA680',
+      date: '2026-09-10',
+      origin: 'CGK',
+      destination: 'SOQ',
+      departureTime: '09:40',
+      arrivalTime: '15:55',
+      arrivalDate: '2026-09-10',
+    })
+    expect(flights[1].notes).toContain('Seat: 12A')
+    expect(flights[0].notes).toContain('Confirmation: RAJA88')
+    expect(flights.every((item) => !/place name/i.test(item.warnings.join(' ')))).toBe(true)
+  })
+
+  it('reads a SilkAir Cebu ticket from place names', () => {
+    const [mi] = flight('silkair-cebu.txt')
+    expect(mi).toMatchObject({
+      flightIata: 'MI126',
+      date: '2026-09-12',
+      origin: 'SIN',
+      destination: 'CEB',
+      departureTime: '09:30',
+      arrivalTime: '13:05',
+    })
+    expect(mi.notes).toContain('Confirmation: CEB441')
+    expect(mi.warnings.join(' ')).toMatch(/place name/i)
+  })
+
+  it('reads a Japanese Phuket flight and keeps the hotel city', () => {
+    const parsed = parseBookingDocument(fixture('jal-phuket.txt'), TODAY)
+    expect(parsed.flights).toHaveLength(1)
+    expect(parsed.flights[0]).toMatchObject({
+      flightIata: 'JL079',
+      date: '2026-09-20',
+      origin: 'NRT',
+      destination: 'HKT',
+      departureTime: '10:05',
+      arrivalTime: '15:40',
+    })
+    expect(parsed.flights[0].notes).toContain('P8HKT2')
+    expect(parsed.hotels).toHaveLength(1)
+    expect(parsed.hotels[0]).toMatchObject({
+      name: 'Katathani Phuket Beach Resort',
+      city: 'Phuket',
+      checkIn: '2026-09-20',
+      checkOut: '2026-09-24',
+    })
+    expect(parsed.hotels[0].notes).toContain('Price: THB 18600')
+  })
+
+  it('knows dive-gateway airports and does not split lookalike names', () => {
+    const codes = [
+      'CEB', 'CGK', 'SOQ', 'HKT', 'MDC', 'LBJ', 'DPS', 'AMQ', 'BKI', 'TWU', 'PPS', 'USU',
+      'TAG', 'DGT', 'MLE', 'ROR', 'GUM', 'SPN', 'TKK', 'YAP', 'HRG', 'RMF', 'SSH', 'CNS',
+      'NAN', 'ISG', 'MMY', 'OKA', 'KBV', 'USM', 'LGK', 'CZM', 'CUN', 'BON', 'GPS', 'SCY',
+      'RTB', 'BZE',
+    ]
+    expect(codes.filter((code) => !AIRPORTS.has(code))).toEqual([])
+    expect(findNamedAirports('バリクパパン').map((hit) => hit.code)).toEqual(['BPN'])
+    expect(findNamedAirports('バリ').map((hit) => hit.code)).toEqual(['DPS'])
+    expect(findNamedAirports('ソロン').map((hit) => hit.code)).toEqual(['SOQ'])
+    expect(findNamedAirports('ラジャアンパット').map((hit) => hit.code)).toEqual(['SOQ'])
+    expect(findNamedAirports('セブ').map((hit) => hit.code)).toEqual(['CEB'])
+    expect(findNamedAirports('プーケット').map((hit) => hit.code)).toEqual(['HKT'])
+    expect(findNamedAirports('石垣').map((hit) => hit.code)).toEqual(['ISG'])
+    expect(findNamedAirports('那覇').map((hit) => hit.code)).toEqual(['OKA'])
+    expect(findNamedAirports('トラックで空港へ').map((hit) => hit.code)).toEqual([])
+    expect(findNamedAirports('チューク').map((hit) => hit.code)).toEqual(['TKK'])
+    expect(findNamedAirports('Labuan Bajo to Manado').map((hit) => hit.code)).toEqual(['LBJ', 'MDC'])
   })
 
   it('still fills the single-record forms', () => {

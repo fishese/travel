@@ -1,0 +1,11 @@
+SilkAir
+Booking confirmation
+
+Booking reference: CEB441
+Passenger: Jane Doe
+
+Flight MI 126
+Singapore to Cebu
+Departure: 12 Sep 2026 09:30
+Arrival: 12 Sep 2026 13:05
+Seat: 8C
