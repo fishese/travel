@@ -1,5 +1,7 @@
 import { localDateStr } from './dateUtils'
 import type { BookingCategory } from './bookings'
+import { findDates, normalizeBookingText } from './bookingImport/dates'
+import { parseBookingDocument } from './bookingImport/textParse'
 
 // ---------------------------------------------------------------------
 // Shared: date extraction
@@ -56,6 +58,9 @@ export interface ParsedDate {
  * formats trusted enough to auto-fill.
  */
 export function findDate(text: string, today: string = localDateStr()): ParsedDate | null {
+  const found = findDates(normalizeBookingText(text), today)[0]
+  if (found) return { date: found.date, yearInferred: found.yearInferred }
+
   const iso = text.match(/\b(\d{4})-(\d{2})-(\d{2})\b/)
   if (iso) {
     const [, y, m, d] = iso
@@ -244,6 +249,18 @@ export interface ParsedFlight {
 }
 
 export function parseFlightText(text: string): ParsedFlight {
+  const imported = parseBookingDocument(text).flights[0]
+  if (imported?.flightIata) {
+    return {
+      flightIata: imported.flightIata,
+      date: imported.date || undefined,
+      yearInferred: imported.yearInferred,
+      origin: imported.origin || undefined,
+      destination: imported.destination || undefined,
+      departureTime: imported.departureTime || undefined,
+      arrivalTime: imported.arrivalTime || undefined,
+    }
+  }
   const d = findDate(text)
   const { origin, destination } = findAirportPair(text)
   const { departureTime, arrivalTime } = findFlightTimes(text)
@@ -281,8 +298,9 @@ export function guessBookingLabel(text: string): string {
 }
 
 const CATEGORY_KEYWORDS: [BookingCategory, RegExp][] = [
+  ['train', /新幹線|\btrain\b|\brail\b|shinkansen|eurostar|のぞみ/i],
+  ['car', /レンタカー|rent[-\s]?a[-\s]?car/i],
   ['flight', /\bflight\b|boarding pass|\bitinerary\b/i],
-  ['train', /\btrain\b|\brail\b|shinkansen|eurostar/i],
   ['show', /\bticket|\bshow\b|theatre|theater|concert|matinee|performance/i],
   ['restaurant', /restaurant|reservation|table for|\bdinner\b|\blunch\b|\bbrunch\b/i],
   ['tour', /\btour\b|excursion|admission|attraction|activity/i],
@@ -304,6 +322,37 @@ export interface ParsedBooking {
 }
 
 export function parseBookingText(text: string): ParsedBooking {
+  const imported = parseBookingDocument(text)
+  const booking = imported.bookings[0]
+  if (booking?.label) {
+    return {
+      date: booking.date || undefined,
+      yearInferred: booking.yearInferred,
+      time: booking.time || undefined,
+      label: booking.label,
+      category: booking.category,
+    }
+  }
+  const hotel = imported.hotels[0]
+  if (hotel?.name) {
+    return {
+      date: hotel.checkIn || undefined,
+      yearInferred: false,
+      time: undefined,
+      label: hotel.name,
+      category: 'other',
+    }
+  }
+  const flight = imported.flights[0]
+  if (flight?.flightIata) {
+    return {
+      date: flight.date || undefined,
+      yearInferred: flight.yearInferred,
+      time: flight.departureTime || undefined,
+      label: flight.flightIata,
+      category: 'flight',
+    }
+  }
   const d = findDate(text)
   return {
     date: d?.date,

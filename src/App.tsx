@@ -3,6 +3,7 @@ import { CurrencyCalculator } from './components/CurrencyCalculator'
 import { CountrySelector } from './components/CountrySelector'
 import { WeatherCard, type WeatherCardHandle } from './components/WeatherCard'
 import { Cheatsheet } from './components/Cheatsheet'
+import { ImportBookingSection } from './components/ImportBookingSection'
 import { FlightsSection } from './components/FlightsSection'
 import { HotelsSection } from './components/HotelsSection'
 import { BookingsSection } from './components/BookingsSection'
@@ -31,6 +32,7 @@ interface SectionProps {
 // lib/sectionOrder.ts's DEFAULT_SECTION_ORDER. Cheatsheet lives in its own
 // tab now, not mixed in with these.
 const SECTION_COMPONENTS: Record<string, ComponentType<SectionProps>> = {
+  'import-booking': ImportBookingSection,
   flights: FlightsSection,
   hotels: HotelsSection,
   bookings: BookingsSection,

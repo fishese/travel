@@ -62,7 +62,7 @@ export function BookingCard({ booking, onDelete, onUpdate, onTripChange }: Props
                     </p>
                   )}
                   {booking.rawText && <RawTextDisclosure text={booking.rawText} />}
-                  <LinkedFiles category="booking" linkedId={booking.id} />
+                  <LinkedFiles linkedId={booking.id} />
                   <button
                     type="button"
                     onClick={() => setEditing(true)}

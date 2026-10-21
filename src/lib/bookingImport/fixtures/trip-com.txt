@@ -1,0 +1,15 @@
+Trip.com booking confirmation
+
+Booking no. 4455667788
+
+Flight SQ638
+25 Aug 2026
+HKG 08:45 → NRT 14:10
+
+Hotel
+Shinjuku Granbell Hotel
+Address: 2-14-5 Kabukicho, Shinjuku, Tokyo
+Check-in: 25 Aug 2026
+Check-out: 28 Aug 2026
+Guests: 2 adults
+Total: JPY 54000

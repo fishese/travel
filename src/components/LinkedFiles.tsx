@@ -2,23 +2,16 @@ import { useVaultFiles, openVaultFile, type VaultCategory } from '../lib/fileVau
 import { useActiveTrip, tripMatches } from '../lib/trips'
 
 interface Props {
-  category: VaultCategory
   linkedId: string
+  /** Limit to one vault category. Omit it so a public booking file still shows on a flight or hotel it was imported with. */
+  category?: VaultCategory
 }
 
-/**
- * Surfaces documents linked to this specific record right where you're
- * already looking at it, instead of needing to open Documents separately
- * and check each file's link. Same "not reactive across components"
- * tradeoff as the rest of the file vault (see fileVault.ts's
- * useVaultFiles comment) — a document linked while this row is already
- * mounted won't appear here until the section is reopened, consistent
- * with how Documents' own list already behaves.
- */
+/** Documents linked to this record, including files that list it in linkedIds. */
 export function LinkedFiles({ category, linkedId }: Props) {
   const { files } = useVaultFiles(category)
   const { activeTripId } = useActiveTrip()
-  const linked = files.filter((f) => f.linkedId === linkedId && tripMatches(f, activeTripId))
+  const linked = files.filter((f) => (f.linkedId === linkedId || f.linkedIds?.includes(linkedId)) && tripMatches(f, activeTripId))
 
   if (linked.length === 0) return null
 

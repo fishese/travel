@@ -1,6 +1,6 @@
 import { useSetting } from './useSetting'
 
-export type BookingCategory = 'flight' | 'train' | 'tour' | 'restaurant' | 'show' | 'other'
+export type BookingCategory = 'flight' | 'train' | 'tour' | 'restaurant' | 'show' | 'car' | 'other'
 
 export const CATEGORY_EMOJI: Record<BookingCategory, string> = {
   flight: '✈️',
@@ -8,6 +8,7 @@ export const CATEGORY_EMOJI: Record<BookingCategory, string> = {
   tour: '🧭',
   restaurant: '🍽️',
   show: '🎟️',
+  car: '🚗',
   other: '📌',
 }
 
@@ -17,6 +18,7 @@ export const CATEGORY_LABELS: Record<BookingCategory, string> = {
   tour: 'Tour',
   restaurant: 'Restaurant',
   show: 'Show',
+  car: 'Car',
   other: 'Other',
 }
 

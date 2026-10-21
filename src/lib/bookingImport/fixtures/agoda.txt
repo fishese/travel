@@ -1,0 +1,12 @@
+Agoda
+Booking ID: 88990011
+
+Hotel: Hilton Osaka
+Address: 1-8-8 Umeda, Kita-ku, Osaka, Japan
+City: Osaka
+
+Check-in date: 25 Aug 2026
+Check-out date: 27 Aug 2026
+Number of guests: 1
+Total: USD 420.00
+Phone: +81 6 6347 7111

@@ -1,0 +1,11 @@
+Expedia itinerary
+
+Itinerary number: 720123456789
+
+The Ritz-Carlton Kyoto
+Kamogawa Nijo-dori, Nakagyo-ku, Kyoto
+
+Check-in: Wed, Sep 2, 2026
+Check-out: Sat, Sep 5, 2026
+Reserved for: 2 adults
+Total: ¥248,000

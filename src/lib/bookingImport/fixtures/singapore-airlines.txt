@@ -1,0 +1,11 @@
+Singapore Airlines
+Booking Confirmation
+
+Booking reference: ABC123
+Passenger: Jane Doe
+
+Flight SQ 638
+Hong Kong (HKG) to Tokyo Narita (NRT)
+Departure: Tue, 25 Aug 2026 08:45
+Arrival: Tue, 25 Aug 2026 14:10
+Seat: 14A

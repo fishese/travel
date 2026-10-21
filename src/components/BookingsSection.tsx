@@ -9,7 +9,7 @@ import {
 } from '../lib/bookings'
 import { localDateStr } from '../lib/dateUtils'
 import { isPastDate } from '../lib/archive'
-import { parseBookingText } from '../lib/pasteParse'
+import { parseBookingDocument } from '../lib/bookingImport/textParse'
 import { Collapsible } from './Collapsible'
 import { AddFormToggle } from './AddFormToggle'
 import { PastEntries } from './PastEntries'
@@ -37,15 +37,40 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   const [showAddForm, setShowAddForm] = useState(() => bookings.length === 0)
   const [pastedText, setPastedText] = useState<string | undefined>(undefined)
   const [yearWasInferred, setYearWasInferred] = useState(false)
+  const [parseNote, setParseNote] = useState('')
 
   function handleParse(text: string) {
-    const parsed = parseBookingText(text)
-    if (parsed.date) setDate(parsed.date)
-    if (parsed.time) setTime(parsed.time)
-    if (parsed.label) setLabel(parsed.label)
-    setCategory(parsed.category)
-    setPastedText(text)
-    setYearWasInferred(parsed.yearInferred)
+    const parsed = parseBookingDocument(text)
+    const booking = parsed.bookings[0]
+    if (booking) {
+      if (booking.date) setDate(booking.date)
+      if (booking.time) setTime(booking.time)
+      if (booking.label) setLabel(booking.label)
+      if (booking.notes) setNotes(booking.notes)
+      setCategory(booking.category)
+      setYearWasInferred(booking.yearInferred)
+      setParseNote(booking.warnings.join(' '))
+    } else if (parsed.flights[0]) {
+      const flight = parsed.flights[0]
+      if (flight.date) setDate(flight.date)
+      if (flight.departureTime) setTime(flight.departureTime)
+      if (flight.flightIata) setLabel(flight.flightIata)
+      if (flight.notes) setNotes(flight.notes)
+      setCategory('flight')
+      setYearWasInferred(flight.yearInferred)
+      setParseNote('')
+    } else if (parsed.hotels[0]) {
+      const hotel = parsed.hotels[0]
+      if (hotel.checkIn) setDate(hotel.checkIn)
+      if (hotel.name) setLabel(hotel.name)
+      if (hotel.notes) setNotes(hotel.notes)
+      setCategory('other')
+      setYearWasInferred(false)
+      setParseNote('This looks like a hotel. Hotels keeps the address and check-out, and Import booking can save both.')
+    } else {
+      setParseNote(parsed.warnings[0] ?? 'Nothing was recognized in that text.')
+    }
+    setPastedText(parsed.rawText)
   }
 
   function addBooking() {
@@ -68,6 +93,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     setTime('')
     setPastedText(undefined)
     setYearWasInferred(false)
+    setParseNote('')
     setShowAddForm(false)
   }
 
@@ -98,7 +124,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   return (
     <Collapsible id="bookings" title="Bookings" onMoveUp={onMoveUp} onMoveDown={onMoveDown}>
       <p className="text-xs text-[var(--color-muted)] mb-2">
-        Anything with a date that isn't a flight or hotel — shows, tours, restaurants, trains. Shows up in the
+        Anything with a date that isn't a flight or hotel — shows, tours, restaurants, trains, car rentals. Shows up in the
         Today/Tomorrow reminders above.
       </p>
 
@@ -112,6 +138,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
             No year in the pasted text — assumed {date.slice(0, 4)}. Double-check the date below.
           </p>
         )}
+        {parseNote && <p className="text-xs text-[var(--color-amber)]">{parseNote}</p>}
         {category === 'flight' && (
           <p className="text-xs text-[var(--color-amber)]">
             This looks like a flight — the Flights section above gives you live status tracking too, if that's what

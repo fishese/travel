@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSavedFlights } from '../lib/flights'
 import { useSavedHotels } from '../lib/hotels'
-import { useSavedBookings } from '../lib/bookings'
+import { CATEGORY_EMOJI, useSavedBookings } from '../lib/bookings'
 import { useActiveTrip, tripMatches, tripDateLabel } from '../lib/trips'
 import { formatFriendlyDate, localDateStr } from '../lib/dateUtils'
 
@@ -82,7 +82,7 @@ export function TravelDayDashboard() {
           {todayFlights.map((flight) => <p key={flight.id} className="text-sm"><span aria-hidden>✈️</span> <span className="tabular">{flight.departureTime || '—'}</span> {flight.flightIata} · {flight.origin || '?'} → {flight.destination || '?'}</p>)}
           {todayCheckIns.map((hotel) => <p key={`in-${hotel.id}`} className="text-sm"><span aria-hidden>🏨</span> Check in · {hotel.name}</p>)}
           {todayCheckOuts.map((hotel) => <p key={`out-${hotel.id}`} className="text-sm"><span aria-hidden>🏨</span> Check out · {hotel.name}</p>)}
-          {todayBookings.map((booking) => <p key={booking.id} className="text-sm"><span aria-hidden>{booking.category === 'restaurant' ? '🍽️' : '📌'}</span> <span className="tabular">{booking.time || '—'}</span> {booking.label}</p>)}
+          {todayBookings.map((booking) => <p key={booking.id} className="text-sm"><span aria-hidden>{CATEGORY_EMOJI[booking.category]}</span> <span className="tabular">{booking.time || '—'}</span> {booking.label}</p>)}
         </div>
       )}
 

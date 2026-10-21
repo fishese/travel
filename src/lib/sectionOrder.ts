@@ -1,6 +1,29 @@
 import { useSetting } from './useSetting'
 
-export const DEFAULT_SECTION_ORDER = ['flights', 'hotels', 'bookings', 'dive-certs', 'documents', 'protected-vault', 'itinerary']
+export const DEFAULT_SECTION_ORDER = ['import-booking', 'flights', 'hotels', 'bookings', 'dive-certs', 'documents', 'protected-vault', 'itinerary']
+
+/**
+ * Inserts section ids added in a later version at their default position.
+ * A person who put hotels above flights keeps that swap; Import booking
+ * still appears first because that is where it sits in the default list.
+ */
+export function mergeSectionOrder(stored: string[], defaults: string[] = DEFAULT_SECTION_ORDER): string[] {
+  const known = new Set(defaults)
+  const result = stored.filter((id) => known.has(id))
+  for (const id of defaults) {
+    if (result.includes(id)) continue
+    const defaultIndex = defaults.indexOf(id)
+    let insertAt = result.length
+    for (let i = 0; i < result.length; i++) {
+      if (defaults.indexOf(result[i]) > defaultIndex) {
+        insertAt = i
+        break
+      }
+    }
+    result.splice(insertAt, 0, id)
+  }
+  return result
+}
 
 /**
  * Persisted section order with up/down moves. Self-healing: if a future
@@ -12,10 +35,7 @@ export const DEFAULT_SECTION_ORDER = ['flights', 'hotels', 'bookings', 'dive-cer
 export function useSectionOrder() {
   const [stored, setStored] = useSetting<string[]>('travel_section_order', DEFAULT_SECTION_ORDER)
 
-  const order = [
-    ...stored.filter((id) => DEFAULT_SECTION_ORDER.includes(id)),
-    ...DEFAULT_SECTION_ORDER.filter((id) => !stored.includes(id)),
-  ]
+  const order = mergeSectionOrder(stored)
 
   function move(id: string, direction: -1 | 1) {
     const idx = order.indexOf(id)

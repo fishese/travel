@@ -1,0 +1,16 @@
+Singapore Airlines / Garuda Indonesia
+E-ticket
+
+Booking reference: RAJA88
+Passenger: Jane Doe
+
+Flight SQ 960
+Singapore (SIN) to Jakarta (CGK)
+Departure: Thu, 10 Sep 2026 06:00
+Arrival: Thu, 10 Sep 2026 06:50
+
+Flight GA 680
+Jakarta (CGK) to Sorong (SOQ)
+Departure: Thu, 10 Sep 2026 09:40
+Arrival: Thu, 10 Sep 2026 15:55
+Seat: 12A
