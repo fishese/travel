@@ -6,6 +6,7 @@ import {
   type BookingFieldInput,
 } from '../lib/bookings'
 import { TrainFields, type TrainDetails } from './TrainFields'
+import { trainDateDefaults } from '../lib/bookingImport/dateDefaults'
 import { bookingReady } from '../lib/bookingImport/storage'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
@@ -22,7 +23,7 @@ export function BookingEditForm({ initial, onSave, onCancel }: Props) {
   const [time, setTime] = useState(initial.time ?? '')
   const [label, setLabel] = useState(initial.label)
   const [notes, setNotes] = useState(initial.notes ?? '')
-  const [journey, setJourney] = useState<TrainDetails>(initial)
+  const [journey, setJourney] = useState<TrainDetails>(() => trainDateDefaults(initial))
 
   return (
     <div className="space-y-2">
@@ -31,7 +32,7 @@ export function BookingEditForm({ initial, onSave, onCancel }: Props) {
           <button
             key={c}
             type="button"
-            onClick={() => setCategory(c)}
+            onClick={() => { setCategory(c); if (c === 'train') setJourney((previous) => trainDateDefaults({ ...previous, category: c, date })) }}
             aria-pressed={category === c}
             className={
               'rounded-full px-3 py-1 text-xs border ' +
@@ -49,7 +50,7 @@ export function BookingEditForm({ initial, onSave, onCancel }: Props) {
           type="date"
           value={date}
           aria-label="Booking date"
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => { const next = e.target.value; setDate(next); setJourney((previous) => trainDateDefaults({ ...previous, category, date: next })) }}
           className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
         <input

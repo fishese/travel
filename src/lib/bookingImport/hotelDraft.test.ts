@@ -9,7 +9,7 @@ const booking: DraftBooking = { category: 'other', label: 'Demo Lodge', date: '2
 describe('correct a booking to a hotel', () => {
   it('preserves its title, date and notes while leaving unknown stay details blank', () => {
     const hotel = hotelDraftFromBooking(booking)
-    expect(hotel).toMatchObject({ name: 'Demo Lodge', checkIn: '2030-04-10', checkOut: '', city: '', address: '', phone: '' })
+    expect(hotel).toMatchObject({ name: 'Demo Lodge', checkIn: '2030-04-10', checkOut: '2030-04-11', city: '', address: '', phone: '' })
     expect(hotel.notes).toContain('Confirmation: DEMOH3')
     expect(hotel.notes).toContain('15:00')
     expect(hotelReady(hotel)).toBe(true)

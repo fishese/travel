@@ -13,6 +13,7 @@ import { PasteParseBox } from './PasteParseBox'
 import { parseBookingDocument } from '../lib/bookingImport/textParse'
 import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { TripAssignment } from './TripAssignment'
+import { hotelDateDefaults } from '../lib/bookingImport/dateDefaults'
 import { hotelReady } from '../lib/bookingImport/storage'
 
 interface Props {
@@ -69,7 +70,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
 
   function handleParse(text: string) {
     const parsed = parseBookingDocument(text)
-    const hotel = parsed.hotels[0]
+    const hotel = parsed.hotels[0] ? hotelDateDefaults(parsed.hotels[0]) : undefined
     if (!hotel) {
       setParseNote(parsed.warnings[0] ?? 'No hotel was found in that text.')
       return
@@ -117,7 +118,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
     setAddress(h.address)
     setPhone(h.phone)
     setCheckIn(h.checkIn ?? '')
-    setCheckOut(h.checkOut ?? '')
+    setCheckOut(hotelDateDefaults(h).checkOut ?? '')
     setNotes(h.notes)
     setLat(h.lat)
     setLon(h.lon)
@@ -267,7 +268,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
             <input
               type="date"
               value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
+              onChange={(e) => { const next = e.target.value; setCheckIn(next); setCheckOut((previous) => hotelDateDefaults({ checkIn: next, checkOut: previous }).checkOut ?? '') }}
               className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
             />
           </label>

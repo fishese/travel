@@ -32,7 +32,7 @@ saved, need correction, or will be skipped as duplicates. Nothing saves until
 If a hotel confirmation appears as an ordinary booking, choose **Hotel** in that
 row's category selector. It becomes a hotel preview with check-in, check-out,
 city, address and phone fields. The previous title, date and notes are kept for
-review; an unknown check-out date is left blank. It is saved in Hotels rather
+review; a missing check-out date defaults to the day after check-in. It is saved in Hotels rather
 than as a generic booking, and its source-file link and trip assignment follow it.
 
 The format name is `travel-toolkit-import`, version **1**. A JSON Schema lives
@@ -162,3 +162,14 @@ values. Exit status is 0 for recognized, ready records and 2 for a read/parse
 failure, no records, or records requiring correction. It does not check browser
 duplicates, attach documents, write device storage, or send data to any API.
 Import the reviewed file in the intended PWA context to save it there.
+
+## Date defaults in forms and previews
+
+A blank train arrival date defaults to its departure date. A blank hotel check-out
+date defaults to the day after check-in. These defaults also apply after filling
+an unresolved departure/check-in date or changing a booking to a train or hotel.
+Existing arrival/check-out dates are preserved, including overnight journeys and
+longer stays. Review the defaults before saving; changing the start date does not
+overwrite an arrival/check-out date that is already filled. Ambiguous start dates
+are left blank rather than guessed. Saved records are not changed until you save
+the form.

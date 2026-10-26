@@ -17,6 +17,7 @@ import { PasteParseBox } from './PasteParseBox'
 import { BookingCard } from './BookingCard'
 import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { TrainFields, type TrainDetails } from './TrainFields'
+import { trainDateDefaults } from '../lib/bookingImport/dateDefaults'
 import { bookingReady } from '../lib/bookingImport/storage'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
@@ -50,7 +51,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
       setTime(booking.time)
       setLabel(booking.label)
       setNotes(booking.notes)
-      setJourney(booking)
+      setJourney(trainDateDefaults(booking))
       setCategory(booking.category)
       setYearWasInferred(booking.yearInferred)
       setParseNote(booking.warnings.join(' '))
@@ -137,7 +138,10 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
         Today/Tomorrow reminders above.
       </p>
 
-      <AddFormToggle label="Add booking" open={showAddForm} onOpenChange={setShowAddForm}>
+      <AddFormToggle label="Add booking" open={showAddForm} onOpenChange={(open) => {
+        setShowAddForm(open)
+        if (open) setJourney((previous) => trainDateDefaults({ ...previous, category, date }))
+      }}>
         <PasteParseBox
           placeholder="Paste a reservation, ticket, or booking confirmation here…"
           onParse={handleParse}
@@ -160,7 +164,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
             <button
               key={c}
               type="button"
-              onClick={() => setCategory(c)}
+              onClick={() => { setCategory(c); if (c === 'train') setJourney((previous) => trainDateDefaults({ ...previous, category: c, date })) }}
               aria-pressed={category === c}
               className={
                 'rounded-full px-3 py-1 text-xs border ' +
@@ -179,7 +183,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
             type="date"
             value={date}
             aria-label="Booking date"
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => { const next = e.target.value; setDate(next); setJourney((previous) => trainDateDefaults({ ...previous, category, date: next })) }}
             className="flex-1 min-w-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
           />
           <input

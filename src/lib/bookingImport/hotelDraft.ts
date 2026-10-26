@@ -1,8 +1,9 @@
 import type { DraftBooking, DraftHotel } from './types'
+import { hotelDateDefaults } from './dateDefaults'
 
 /** Correct a misclassified stay without losing its confirmation or source details. */
 export function hotelDraftFromBooking(booking: DraftBooking): DraftHotel {
-  return {
+  return hotelDateDefaults({
     name: booking.label,
     city: '',
     address: '',
@@ -19,5 +20,5 @@ export function hotelDraftFromBooking(booking: DraftBooking): DraftHotel {
       booking.seat && `Seat: ${booking.seat}`,
     ].filter(Boolean).join('\n'),
     warnings: ['Changed to a hotel stay. Check the hotel name and check-in date, then add check-out and contact details.'],
-  }
+  })
 }

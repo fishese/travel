@@ -14,6 +14,7 @@ import { readImportFiles, MAX_IMPORT_FILES, type ImportDocument, type ImportIssu
 import { bookingIdentity, duplicateFlags, flightIdentity, hotelIdentity } from '../lib/bookingImport/duplicates'
 import { appendImportRecords } from '../lib/bookingImport/commit'
 import { hotelDraftFromBooking } from '../lib/bookingImport/hotelDraft'
+import { hotelDateDefaults, trainDateDefaults } from '../lib/bookingImport/dateDefaults'
 import { VaultLockedError } from '../lib/vaultCrypto'
 import type { DraftBooking, DraftFlight, DraftHotel } from '../lib/bookingImport/types'
 
@@ -100,7 +101,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
       setHotelRows((rows) => [...rows, { ...hotelDraftFromBooking(row), document: row.document, include: row.include }])
       setBookingRows((rows) => rows.filter((_, i) => i !== index))
     } else {
-      setBookingRows((rows) => rows.map((row, i) => i === index ? { ...row, category: type } : row))
+      setBookingRows((rows) => rows.map((row, i) => i === index ? trainDateDefaults({ ...row, category: type }) : row))
     }
   }
 
@@ -125,8 +126,8 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
       }
       setDocuments(nextDocuments.map((doc) => ({ ...doc, storage: defaultDocumentStorage(doc.preview), acknowledgePublic: false })))
       setFlightRows(nextDocuments.flatMap((doc, document) => doc.preview.flights.map((row) => ({ ...row, document, include: true }))))
-      setHotelRows(nextDocuments.flatMap((doc, document) => doc.preview.hotels.map((row) => ({ ...row, document, include: true }))))
-      setBookingRows(nextDocuments.flatMap((doc, document) => doc.preview.bookings.map((row) => ({ ...row, document, include: true }))))
+      setHotelRows(nextDocuments.flatMap((doc, document) => doc.preview.hotels.map((row) => hotelDateDefaults({ ...row, document, include: true }))))
+      setBookingRows(nextDocuments.flatMap((doc, document) => doc.preview.bookings.map((row) => trainDateDefaults({ ...row, document, include: true }))))
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not read these files.')
     } finally {
@@ -287,7 +288,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
               <input aria-label="Address" value={row.address} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, address: event.target.value } : item))} placeholder="Address" className={fieldClass} />
               <input aria-label="Phone" value={row.phone} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, phone: event.target.value } : item))} placeholder="Phone" className={fieldClass} />
               <div className="flex gap-2">
-                <input aria-label="Check-in" type="date" value={row.checkIn} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, checkIn: event.target.value } : item))} className={fieldClass} />
+                <input aria-label="Check-in" type="date" value={row.checkIn} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? hotelDateDefaults({ ...item, checkIn: event.target.value }) : item))} className={fieldClass} />
                 <input aria-label="Check-out" type="date" value={row.checkOut} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, checkOut: event.target.value } : item))} className={fieldClass} />
               </div>
               <textarea aria-label="Hotel notes" value={row.notes} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, notes: event.target.value } : item))} rows={2} className={fieldClass} />
@@ -312,7 +313,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
               </select>
               <input aria-label="Booking label" value={row.label} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} className={fieldClass} />
               <div className="flex gap-2">
-                <input aria-label="Booking date" type="date" value={row.date} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, date: event.target.value } : item))} className={fieldClass} />
+                <input aria-label="Booking date" type="date" value={row.date} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? trainDateDefaults({ ...item, date: event.target.value }) : item))} className={fieldClass} />
                 <input aria-label="Booking time" type="time" value={row.time} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, time: event.target.value } : item))} className={fieldClass} />
               </div>
               {row.category === 'train' && <TrainFields value={row} onChange={(journey) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, ...journey } : item))} />}
