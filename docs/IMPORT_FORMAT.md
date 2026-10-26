@@ -29,6 +29,12 @@ fields or uncheck those rows. The save summary shows how many records will be
 saved, need correction, or will be skipped as duplicates. Nothing saves until
 **Save selected** is pressed.
 
+If a hotel confirmation appears as an ordinary booking, choose **Hotel** in that
+row's category selector. It becomes a hotel preview with check-in, check-out,
+city, address and phone fields. The previous title, date and notes are kept for
+review; an unknown check-out date is left blank. It is saved in Hotels rather
+than as a generic booking, and its source-file link and trip assignment follow it.
+
 The format name is `travel-toolkit-import`, version **1**. A JSON Schema lives
 at [`import-format.schema.json`](import-format.schema.json). A full example is
 [`examples/japan-trip.json`](examples/japan-trip.json).

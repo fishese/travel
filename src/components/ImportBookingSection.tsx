@@ -13,6 +13,7 @@ import { bookingReady, defaultDocumentStorage, flightReady, hotelReady, importFi
 import { readImportFiles, MAX_IMPORT_FILES, type ImportDocument, type ImportIssue } from '../lib/bookingImport/batch'
 import { bookingIdentity, duplicateFlags, flightIdentity, hotelIdentity } from '../lib/bookingImport/duplicates'
 import { appendImportRecords } from '../lib/bookingImport/commit'
+import { hotelDraftFromBooking } from '../lib/bookingImport/hotelDraft'
 import { VaultLockedError } from '../lib/vaultCrypto'
 import type { DraftBooking, DraftFlight, DraftHotel } from '../lib/bookingImport/types'
 
@@ -91,6 +92,16 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
       return
     }
     setFiles(next)
+  }
+
+  function changeBookingType(index: number, type: BookingCategory | 'hotel') {
+    if (type === 'hotel') {
+      const row = bookings[index]
+      setHotelRows((rows) => [...rows, { ...hotelDraftFromBooking(row), document: row.document, include: row.include }])
+      setBookingRows((rows) => rows.filter((_, i) => i !== index))
+    } else {
+      setBookingRows((rows) => rows.map((row, i) => i === index ? { ...row, category: type } : row))
+    }
   }
 
   async function buildPreview() {
@@ -293,7 +304,8 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
                 <input type="checkbox" checked={row.include} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, include: event.target.checked } : item))} />
                 Booking
               </label>
-              <select aria-label="Booking category" value={row.category} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, category: event.target.value as BookingCategory } : item))} className={fieldClass}>
+              <select aria-label="Booking category" value={row.category} onChange={(event) => changeBookingType(index, event.target.value as BookingCategory | 'hotel')} className={fieldClass}>
+                <option value="hotel">Hotel</option>
                 {(Object.keys(CATEGORY_LABELS) as BookingCategory[]).map((category) => (
                   <option key={category} value={category}>{CATEGORY_LABELS[category]}</option>
                 ))}
