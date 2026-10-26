@@ -28,18 +28,41 @@ export function importFileCategory(preview: ParsedImport, storage: DocumentStora
   return 'other'
 }
 
-export function flightReady(flight: Pick<DraftFlight, 'flightIata' | 'date'> & Partial<DraftFlight>): boolean {
-  return /^(?:[A-Z]{2}|[A-Z]\d|\d[A-Z])\d{1,4}$/.test(flight.flightIata.toUpperCase().replace(/\s+/g, '')) && validDate(flight.date)
-    && optionalDateValid(flight.arrivalDate) && optionalTimeValid(flight.departureTime) && optionalTimeValid(flight.arrivalTime)
-    && (!flight.origin || /^[A-Z]{3}$/i.test(flight.origin.trim())) && (!flight.destination || /^[A-Z]{3}$/i.test(flight.destination.trim()))
+type FlightInput = Pick<DraftFlight, 'flightIata' | 'date'> & Partial<DraftFlight>
+type HotelInput = Pick<DraftHotel, 'name'> & Partial<DraftHotel>
+type BookingInput = Pick<DraftBooking, 'label' | 'date'> & Partial<DraftBooking>
+
+export function flightIssues(flight: FlightInput): string[] {
+  const issues: string[] = []
+  if (!/^(?:[A-Z]{2}|[A-Z]\d|\d[A-Z])\d{1,4}$/.test(flight.flightIata.toUpperCase().replace(/\s+/g, ''))) issues.push('Flight number: enter an airline code and number.')
+  if (!validDate(flight.date)) issues.push('Departure date: enter a valid date.')
+  if (!optionalDateValid(flight.arrivalDate)) issues.push('Arrival date: enter a valid date or leave blank.')
+  if (!optionalTimeValid(flight.departureTime)) issues.push('Departure time: use HH:mm or leave blank.')
+  if (!optionalTimeValid(flight.arrivalTime)) issues.push('Arrival time: use HH:mm or leave blank.')
+  if (flight.origin && !/^[A-Z]{3}$/i.test(flight.origin.trim())) issues.push('Origin: use a three-letter airport code or leave blank.')
+  if (flight.destination && !/^[A-Z]{3}$/i.test(flight.destination.trim())) issues.push('Destination: use a three-letter airport code or leave blank.')
+  return issues
 }
 
-export function hotelReady(hotel: Pick<DraftHotel, 'name'> & Partial<DraftHotel>): boolean {
-  return hotel.name.trim() !== '' && optionalDateValid(hotel.checkIn) && optionalDateValid(hotel.checkOut)
-    && !(hotel.checkIn && hotel.checkOut && hotel.checkOut < hotel.checkIn)
+export function hotelIssues(hotel: HotelInput): string[] {
+  const issues: string[] = []
+  if (!hotel.name.trim()) issues.push('Hotel name: enter a name.')
+  if (!optionalDateValid(hotel.checkIn)) issues.push('Check-in: enter a valid date or leave blank.')
+  if (!optionalDateValid(hotel.checkOut)) issues.push('Check-out: enter a valid date or leave blank.')
+  if (hotel.checkIn && hotel.checkOut && validDate(hotel.checkIn) && validDate(hotel.checkOut) && hotel.checkOut < hotel.checkIn) issues.push('Check-out: must be on or after check-in.')
+  return issues
 }
 
-export function bookingReady(booking: Pick<DraftBooking, 'label' | 'date'> & Partial<DraftBooking>): boolean {
-  return booking.label.trim() !== '' && validDate(booking.date) && optionalTimeValid(booking.time)
-    && optionalDateValid(booking.arrivalDate) && optionalTimeValid(booking.arrivalTime)
+export function bookingIssues(booking: BookingInput): string[] {
+  const issues: string[] = []
+  if (!booking.label.trim()) issues.push('Booking label: enter a title.')
+  if (!validDate(booking.date)) issues.push('Booking date: enter a valid date.')
+  if (!optionalTimeValid(booking.time)) issues.push('Booking time: use HH:mm or leave blank.')
+  if (!optionalDateValid(booking.arrivalDate)) issues.push('Arrival date: enter a valid date or leave blank.')
+  if (!optionalTimeValid(booking.arrivalTime)) issues.push('Arrival time: use HH:mm or leave blank.')
+  return issues
 }
+
+export const flightReady = (flight: FlightInput): boolean => flightIssues(flight).length === 0
+export const hotelReady = (hotel: HotelInput): boolean => hotelIssues(hotel).length === 0
+export const bookingReady = (booking: BookingInput): boolean => bookingIssues(booking).length === 0

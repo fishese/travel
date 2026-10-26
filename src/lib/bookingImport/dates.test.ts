@@ -31,3 +31,13 @@ describe('findTimes', () => {
     expect(findTimes('2026.08.25')).toEqual([])
   })
 })
+
+
+describe('PDF spacing', () => {
+  it('keeps year-first dates intact across extracted whitespace', () => {
+    expect(findDates('2031 / 2 / 18')[0]?.date).toBe('2031-02-18')
+    expect(findDates('2032 - 2 - 29')[0]?.date).toBe('2032-02-29')
+    expect(findDates('2031 /\n02 / 18')[0]?.date).toBe('2031-02-18')
+    expect(findDates('2031 / 2 / 29')).toEqual([])
+  })
+})

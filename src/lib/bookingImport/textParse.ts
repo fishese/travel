@@ -64,7 +64,9 @@ function dateAfterKeyword(text: string, keyword: RegExp, today: string): FoundDa
   const flags = keyword.flags.includes('g') ? keyword.flags : `${keyword.flags}g`
   const match = new RegExp(keyword.source, flags).exec(text)
   if (!match) return undefined
-  const slice = text.slice(match.index, match.index + 80)
+  const tail = text.slice(match.index + match[0].length, match.index + 80)
+  const boundary = tail.search(/check[\s-]*(?:in|out)|チェックイン|チェックアウト|depart(?:s|ure)?|arriv(?:es|al)?|出発|到着/i)
+  const slice = text.slice(match.index, match.index + match[0].length) + (boundary < 0 ? tail : tail.slice(0, boundary))
   const found = findDates(slice, today)[0]
   if (!found) return undefined
   return { ...found, index: match.index + found.index, end: match.index + found.end }
@@ -172,7 +174,9 @@ function parseFlights(text: string, today: string): DraftFlight[] {
     const warnings: string[] = []
     if (mention.loose) warnings.push(`Airline code ${mention.iata.slice(0, 2)} is not in the built-in list. Check the flight number.`)
 
-    const departure = dateAfterKeyword(body, /depart(?:s|ure)?|\bdep\b|出発/i, today) ?? findDates(body, today)[0]
+    const departure = dateAfterKeyword(body, /depart(?:s|ure)?|\bdep\b|出発/i, today)
+      ?? dateAfterKeyword(head.replace(/(?:flight|便名|航班|搭乗便)\s*[:：]?\s*$/i, '').trimEnd().split('\n').at(-1) ?? '', /depart(?:s|ure)?|\bdep\b|出発/i, today)
+      ?? findDates(body, today)[0]
     let date = departure?.date ?? ''
     let yearInferred = departure?.yearInferred ?? false
     if (!date) {
@@ -230,7 +234,7 @@ function parseFlights(text: string, today: string): DraftFlight[] {
 
 interface StayHit {
   index: number
-  date: FoundDate
+  date?: FoundDate
 }
 
 function findStays(text: string, today: string): StayHit[] {
@@ -238,8 +242,13 @@ function findStays(text: string, today: string): StayHit[] {
   for (const match of text.matchAll(/check[\s-]*in|チェックイン/gi)) {
     if (precededBy(text, match.index, /online\s*$|web\s*$|mobile\s*$/i)) continue
     const slice = text.slice(match.index, match.index + 90)
-    const found = findDates(slice, today)[0]
-    if (!found) continue
+    const found = dateAfterKeyword(slice, /check[\s-]*in|チェックイン/i, today)
+    if (!found) {
+      if (/check[\s-]*out|チェックアウト/i.test(slice) && isHotelish(text.slice(Math.max(0, match.index - 500), match.index))) {
+        hits.push({ index: match.index })
+      }
+      continue
+    }
     hits.push({ index: match.index, date: { ...found, index: match.index + found.index, end: match.index + found.end } })
   }
   return hits
@@ -302,7 +311,8 @@ function parseHotels(text: string, today: string): DraftHotel[] {
     const checkOut = dateAfterKeyword(after, /check[\s-]*out|チェックアウト/i, today)
     if (!checkOut && !isHotelish(slice)) return
     const warnings: string[] = []
-    if (stay.date.yearInferred) warnings.push(`No year was written, so ${stay.date.date.slice(0, 4)} was assumed.`)
+    if (!stay.date) warnings.push('Check-in could not be resolved. Add the stay dates before saving if you want them on your itinerary.')
+    if (stay.date?.yearInferred) warnings.push(`No year was written, so ${stay.date.date.slice(0, 4)} was assumed.`)
     if (!checkOut && findAmbiguousDates(after).length > 0) {
       warnings.push('A check-out date looked ambiguous, so it was left blank.')
     }
@@ -317,7 +327,7 @@ function parseHotels(text: string, today: string): DraftHotel[] {
       city: hotelCity(slice, address, name),
       address,
       phone: findPhone(slice) || findPhone(region),
-      checkIn: stay.date.date,
+      checkIn: stay.date?.date ?? '',
       checkOut: checkOut?.date ?? '',
       notes: noteLines(
         confirmation && `Confirmation: ${confirmation}`,
@@ -334,7 +344,7 @@ function parseHotels(text: string, today: string): DraftHotel[] {
 
 function parseTrain(text: string, today: string): DraftBooking | null {
   if (!/新幹線|shinkansen|eurostar|\bTGV\b|\bICE\b|\bIntercity\b|\bRailjet\b|のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら/i.test(text)) return null
-  const found = findDates(text, today)[0]
+  const found = dateAfterKeyword(text, /depart(?:ure|s)?|出発/i, today) ?? findDates(text, today)[0]
   const service = text.match(/(のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら|eurostar|shinkansen|TGV(?:\s+INOUI)?|ICE|Intercity|Railjet)\s*(\d{1,4})\s*(号)?/i)
   const route = text.match(/^([^\n]+?)\s+(\d{1,2}:\d{2})\s*発?\s*(?:→|->|⇒|—|–)\s*([^\n]+?)\s+(\d{1,2}:\d{2})/m)
   const label = service ? `${service[1]} ${service[2]}${service[3] ? '号' : ''}`.trim() : 'Train'

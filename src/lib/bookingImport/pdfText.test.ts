@@ -2,28 +2,25 @@ import { describe, expect, it } from 'vitest'
 import { extractPdfText } from './pdfText'
 import { parseBookingDocument } from './textParse'
 
-function simplePdf(lines: string[]): Uint8Array {
-  const stream = lines.map((line, index) => {
-    const escaped = line.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)')
-    return `BT /F1 12 Tf 72 ${720 - index * 18} Td (${escaped}) Tj ET`
-  }).join('\n')
+function simplePdf(lines: string[]): Uint8Array { return multiPagePdf([lines]) }
+
+function multiPagePdf(pages: string[][]): Uint8Array {
   const objects = [
-    '1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n',
-    '2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n',
-    '3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj\n',
-    `4 0 obj << /Length ${stream.length} >> stream\n${stream}\nendstream\nendobj\n`,
-    '5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n',
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    `<< /Type /Pages /Kids [${pages.map((_, i) => `${4 + i * 2} 0 R`).join(' ')}] /Count ${pages.length} >>`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
   ]
+  pages.forEach((lines, i) => {
+    const stream = lines.map((line, j) => `BT /F1 12 Tf 72 ${720 - j * 18} Td (${line}) Tj ET`).join('\n')
+    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents ${5 + i * 2} 0 R /Resources << /Font << /F1 3 0 R >> >> >>`)
+    objects.push(`<< /Length ${stream.length} >> stream\n${stream}\nendstream`)
+  })
   let body = '%PDF-1.4\n'
   const offsets = [0]
-  for (const obj of objects) {
-    offsets.push(body.length)
-    body += obj
-  }
+  objects.forEach((obj, i) => { offsets.push(body.length); body += `${i + 1} 0 obj ${obj} endobj\n` })
   const xrefPos = body.length
-  let xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
-  for (let i = 1; i <= objects.length; i++) xref += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`
-  body += xref
+  body += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  for (const offset of offsets.slice(1)) body += `${String(offset).padStart(10, '0')} 00000 n \n`
   body += `trailer << /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`
   return new TextEncoder().encode(body)
 }
@@ -52,5 +49,22 @@ describe('extractPdfText', () => {
     const parsed = parseBookingDocument(text, '2026-01-15')
     expect(parsed.flights[0]).toMatchObject({ flightIata: 'SQ638', origin: 'HKG', destination: 'NRT', date: '2026-08-25', departureTime: '08:45', arrivalTime: '14:10' })
     expect(parsed.flights[0].notes).toContain('ABC123')
+  })
+})
+
+
+describe('PDF page selection', () => {
+  const worker = new URL('../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs', import.meta.url).href
+  it('excludes the first page and retains all remaining pages', async () => {
+    const text = await extractPdfText(multiPagePdf([['COVER ONLY'], ['Flight BA321'], ['Departure 2031-02-18']]), worker, { skipFirstPage: true })
+    expect(text).not.toContain('COVER ONLY')
+    expect(text).toContain('BA321')
+    expect(text).toContain('2031-02-18')
+  })
+  it('explains how to recover when skipping a single-page PDF', async () => {
+    await expect(extractPdfText(simplePdf(['Flight BA321']), worker, { skipFirstPage: true })).rejects.toThrow('only one page')
+  })
+  it('does not mistake cover text for a selectable-text booking', async () => {
+    await expect(extractPdfText(multiPagePdf([['COVER ONLY'], []]), worker, { skipFirstPage: true })).rejects.toThrow('No selectable text')
   })
 })

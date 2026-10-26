@@ -12,6 +12,11 @@ files onto Import booking. A batch supports up to 50 files, each up to 20 MB.
 An unreadable file gets its own error; it does not discard other previews.
 HTML plans are uploaded separately in **Itinerary**. No file is sent to a server.
 
+Use **Skip first PDF page** for batches with cover pages. Extraction starts at
+page two of each PDF; single-page PDFs show an actionable error. This does not
+remove pages from attached originals. Choose **Do not keep the original file**
+when you only want the booking records.
+
 Choose **Import into** explicitly when viewing All trips or Unassigned records.
 You can select a trip or deliberately leave the records unassigned. After saving,
 the app selects that destination so the new records are visible. Active trip is
@@ -28,6 +33,12 @@ All preview rows start selected, including incomplete drafts. Correct missing
 fields or uncheck those rows. The save summary shows how many records will be
 saved, need correction, or will be skipped as duplicates. Nothing saves until
 **Save selected** is pressed.
+
+Each selected row lists the exact fields blocking saving. **Go to first
+correction** jumps to the first affected row. Unchecked rows and skipped duplicates
+do not block saving. Collapsed **Parser notes** describe the original extraction;
+they are advisory and your edits take precedence. Field labels stay visible while
+editing dates, times and other values.
 
 If a hotel confirmation appears as an ordinary booking, choose **Hotel** in that
 row's category selector. It becomes a hotel preview with check-in, check-out,

@@ -22,14 +22,17 @@ interface PdfjsModule {
  * layer; the caller should say so instead of inventing a booking.
  * `workerSrc` is the pdf.js worker URL (Vite `?url` in the app, a file URL in tests).
  */
-export async function extractPdfText(data: Uint8Array, workerSrc: string): Promise<string> {
+export async function extractPdfText(data: Uint8Array, workerSrc: string, options: { skipFirstPage?: boolean } = {}): Promise<string> {
   const pdfjs = (await import('pdfjs-dist/legacy/build/pdf.mjs')) as unknown as PdfjsModule
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
   const task = pdfjs.getDocument({ data, useSystemFonts: true })
   try {
     const doc = await task.promise
+    if (options.skipFirstPage && doc.numPages < 2) {
+      throw new Error('This PDF has only one page. Turn off Skip first PDF page to read it.')
+    }
     const pages: string[] = []
-    for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
+    for (let pageNumber = options.skipFirstPage ? 2 : 1; pageNumber <= doc.numPages; pageNumber++) {
       const page = await doc.getPage(pageNumber)
       const content = await page.getTextContent()
       pages.push(itemsToLines(content.items))

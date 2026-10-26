@@ -293,3 +293,25 @@ describe('confirmation fixtures', () => {
     expect(parseBookingText(fixture('jr-shinkansen.txt')).category).toBe('train')
   })
 })
+
+
+describe('date association', () => {
+  it('does not borrow check-out as check-in', () => {
+    const parsed = parseBookingDocument('Hotel: Fictional Oak Inn\nCheck-in: to be confirmed\nCheck-out: 2031-02-18')
+    expect(parsed.hotels).toHaveLength(1)
+    expect(parsed.hotels[0]).toMatchObject({ checkIn: '', checkOut: '2031-02-18' })
+  })
+  it('does not borrow the next stay date for a missing checkout', () => {
+    const parsed = parseBookingDocument('Hotel: Fictional Oak Inn\nCheck-in: 2031-02-18\nCheck-out: pending\nHotel: Fictional Elm Inn\nCheck-in: 2031-02-20\nCheck-out: 2031-02-22')
+    expect(parsed.hotels).toHaveLength(2)
+    expect(parsed.hotels[0].checkOut).toBe('')
+  })
+  it('uses a labeled departure before a flight number', () => {
+    const parsed = parseBookingDocument('Departure: 2031-02-18\nFlight BA321\nLHR to CDG\nArrival: 2031-02-19 01:00')
+    expect(parsed.flights[0]).toMatchObject({ date: '2031-02-18', arrivalDate: '2031-02-19' })
+  })
+  it('prefers train departure over the reservation issue date', () => {
+    const parsed = parseBookingDocument('Issued: 2031-01-01\nTrain ICE 234\nDeparture: 2031-02-18 10:00\nArrival: 2031-02-18 12:00')
+    expect(parsed.bookings[0]).toMatchObject({ date: '2031-02-18', arrivalDate: '2031-02-18' })
+  })
+})

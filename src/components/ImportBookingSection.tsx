@@ -9,7 +9,7 @@ import { useActiveTrip, useSavedTrips } from '../lib/trips'
 import { parseImportInput } from '../lib/bookingImport/jsonFormat'
 import { extractPdfText } from '../lib/bookingImport/pdfText'
 import { redactSensitive } from '../lib/bookingImport/sensitive'
-import { bookingReady, defaultDocumentStorage, flightReady, hotelReady, importFileCategory, type DocumentStorage } from '../lib/bookingImport/storage'
+import { bookingReady, bookingIssues, defaultDocumentStorage, flightReady, flightIssues, hotelReady, hotelIssues, importFileCategory, type DocumentStorage } from '../lib/bookingImport/storage'
 import { readImportFiles, MAX_IMPORT_FILES, type ImportDocument, type ImportIssue } from '../lib/bookingImport/batch'
 import { bookingIdentity, duplicateFlags, flightIdentity, hotelIdentity } from '../lib/bookingImport/duplicates'
 import { appendImportRecords } from '../lib/bookingImport/commit'
@@ -30,6 +30,25 @@ const folderAttributes = { webkitdirectory: '', directory: '' } as InputHTMLAttr
 const UNASSIGNED = '__unassigned__'
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`
 
+function PreviewInput(props: InputHTMLAttributes<HTMLInputElement>) {
+  return <label className="block min-w-0 flex-1 text-xs text-[var(--color-muted)]">
+    {props['aria-label']}
+    <input {...props} />
+  </label>
+}
+
+function RowFeedback({ included, skipped, issues, warnings }: { included: boolean; skipped: boolean; issues: string[]; warnings: string[] }) {
+  if (!included || skipped) return <p className="text-xs text-[var(--color-muted)]">{skipped ? 'Duplicate skipped' : 'Not selected'} · does not block saving.</p>
+  return <div className="text-xs space-y-1" aria-live="polite">
+    {issues.length ? <div className="text-[var(--color-amber)]"><p className="font-semibold">Needs correction</p><ul className="list-disc pl-4">{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>
+      : <p className="text-[var(--color-pine)]">Ready to save</p>}
+    {warnings.length > 0 && <details className="text-[var(--color-muted)]"><summary className="cursor-pointer">Parser notes ({warnings.length}) · do not block saving</summary>
+      <p>These describe the original extraction. Your edits take precedence.</p>
+      {warnings.map((warning) => <p key={warning}>{warning}</p>)}
+    </details>}
+  </div>
+}
+
 export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
   const [savedFlights] = useSavedFlights()
   const [savedHotels] = useSavedHotels()
@@ -49,6 +68,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
   const [bookings, setBookingRows] = useState<BookingRow[]>([])
   const [keepDuplicates, setKeepDuplicates] = useState(false)
   const [keepSourceText, setKeepSourceText] = useState(false)
+  const [skipFirstPage, setSkipFirstPage] = useState(false)
   const [busy, setBusy] = useState(false)
   const [operation, setOperation] = useState<'read' | 'save'>('read')
   const [error, setError] = useState('')
@@ -114,7 +134,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
       if (files.length) {
         const result = await readImportFiles(files, async (bytes) => {
           const worker = (await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')).default as string
-          return extractPdfText(bytes, worker)
+          return extractPdfText(bytes, worker, { skipFirstPage })
         })
         nextDocuments = result.documents
         setIssues(result.issues)
@@ -214,6 +234,8 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
         <label className="block text-xs">Or choose a folder
           <input {...folderAttributes} key={`folder-${fileKey}`} type="file" multiple aria-label="Choose a folder" onChange={(event) => chooseFiles(Array.from(event.target.files ?? []))} className="block w-full text-sm" />
         </label>
+        <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={skipFirstPage} onChange={(event) => { setSkipFirstPage(event.target.checked); resetPreview() }} />Skip first PDF page</label>
+        <p className="text-xs text-[var(--color-muted)]">Applies to every PDF in this batch; text and JSON files are unchanged. Attached originals still contain every page.</p>
         {files.length > 0 && <div className="text-xs">
           <p>{files.length} files selected. Pasted text will not be used.</p>
           <button type="button" onClick={() => { chooseFiles([]); setFileKey((key) => key + 1) }} className="underline">Use pasted text instead</button>
@@ -249,7 +271,7 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
             <label className="flex gap-2"><input type="checkbox" checked={keepDuplicates} onChange={(event) => setKeepDuplicates(event.target.checked)} />Keep duplicates as additional records</label>
           </div>}
           {flights.map((row, index) => (
-            <article key={`flight-${index}`} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1">
+            <article key={`flight-${index}`} data-blocked={row.include && (keepDuplicates || !duplicateFlights.has(row)) && !flightReady(row) || undefined} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1 data-[blocked=true]:border-[var(--color-amber)]">
               <p className="text-xs text-[var(--color-muted)] break-words">{documents[row.document].name}</p>
               {duplicateFlights.has(row) && <p className="text-xs text-[var(--color-amber)]">Likely duplicate — {keepDuplicates ? 'will save another copy' : 'will skip'}.</p>}
               <label className="flex items-center gap-2 text-xs font-semibold">
@@ -257,48 +279,46 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
                 Flight
               </label>
               <div className="flex gap-2">
-                <input aria-label="Flight number" value={row.flightIata} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, flightIata: event.target.value } : item))} className={fieldClass} />
-                <input aria-label="Departure date" type="date" value={row.date} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, date: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Flight number" value={row.flightIata} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, flightIata: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Departure date" type="date" value={row.date} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, date: event.target.value } : item))} className={fieldClass} />
               </div>
               <div className="flex gap-2">
-                <input aria-label="Origin" value={row.origin} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, origin: event.target.value } : item))} placeholder="From" className={fieldClass} />
-                <input aria-label="Destination" value={row.destination} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, destination: event.target.value } : item))} placeholder="To" className={fieldClass} />
+                <PreviewInput aria-label="Origin" value={row.origin} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, origin: event.target.value } : item))} placeholder="From" className={fieldClass} />
+                <PreviewInput aria-label="Destination" value={row.destination} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, destination: event.target.value } : item))} placeholder="To" className={fieldClass} />
               </div>
               <div className="flex gap-2">
-                <input aria-label="Departure time" type="time" value={row.departureTime} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, departureTime: event.target.value } : item))} className={fieldClass} />
-                <input aria-label="Arrival time" type="time" value={row.arrivalTime} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, arrivalTime: event.target.value } : item))} className={fieldClass} />
-                <input aria-label="Arrival date" type="date" value={row.arrivalDate} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, arrivalDate: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Departure time" type="time" value={row.departureTime} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, departureTime: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Arrival time" type="time" value={row.arrivalTime} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, arrivalTime: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Arrival date" type="date" value={row.arrivalDate} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, arrivalDate: event.target.value } : item))} className={fieldClass} />
               </div>
               <textarea aria-label="Flight notes" value={row.notes} onChange={(event) => setFlightRows((rows) => rows.map((item, i) => i === index ? { ...item, notes: event.target.value } : item))} rows={2} className={fieldClass} />
-              {row.warnings.filter((warning) => !row.date || !/ambiguous|unambiguous/i.test(warning)).map((warning) => <p key={warning} className="text-xs text-[var(--color-amber)]">{warning}</p>)}
-              {row.include && !flightReady(row) && <p className="text-xs text-[var(--color-amber)]">Check the flight number, airport codes, departure date and times, or uncheck this row.</p>}
+              <RowFeedback included={row.include} skipped={!keepDuplicates && duplicateFlights.has(row)} issues={flightIssues(row)} warnings={row.warnings} />
             </article>
           ))}
 
           {hotels.map((row, index) => (
-            <article key={`hotel-${index}`} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1">
+            <article key={`hotel-${index}`} data-blocked={row.include && (keepDuplicates || !duplicateHotels.has(row)) && !hotelReady(row) || undefined} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1 data-[blocked=true]:border-[var(--color-amber)]">
               <p className="text-xs text-[var(--color-muted)] break-words">{documents[row.document].name}</p>
               {duplicateHotels.has(row) && <p className="text-xs text-[var(--color-amber)]">Likely duplicate — {keepDuplicates ? 'will save another copy' : 'will skip'}.</p>}
               <label className="flex items-center gap-2 text-xs font-semibold">
                 <input type="checkbox" checked={row.include} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, include: event.target.checked } : item))} />
                 Hotel
               </label>
-              <input aria-label="Hotel name" value={row.name} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, name: event.target.value } : item))} className={fieldClass} />
-              <input aria-label="City" value={row.city} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, city: event.target.value } : item))} placeholder="City" className={fieldClass} />
-              <input aria-label="Address" value={row.address} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, address: event.target.value } : item))} placeholder="Address" className={fieldClass} />
-              <input aria-label="Phone" value={row.phone} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, phone: event.target.value } : item))} placeholder="Phone" className={fieldClass} />
+              <PreviewInput aria-label="Hotel name" value={row.name} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, name: event.target.value } : item))} className={fieldClass} />
+              <PreviewInput aria-label="City" value={row.city} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, city: event.target.value } : item))} placeholder="City" className={fieldClass} />
+              <PreviewInput aria-label="Address" value={row.address} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, address: event.target.value } : item))} placeholder="Address" className={fieldClass} />
+              <PreviewInput aria-label="Phone" value={row.phone} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, phone: event.target.value } : item))} placeholder="Phone" className={fieldClass} />
               <div className="flex gap-2">
-                <input aria-label="Check-in" type="date" value={row.checkIn} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? hotelDateDefaults({ ...item, checkIn: event.target.value }) : item))} className={fieldClass} />
-                <input aria-label="Check-out" type="date" value={row.checkOut} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, checkOut: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Check-in" type="date" value={row.checkIn} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? hotelDateDefaults({ ...item, checkIn: event.target.value }) : item))} className={fieldClass} />
+                <PreviewInput aria-label="Check-out" type="date" value={row.checkOut} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, checkOut: event.target.value } : item))} className={fieldClass} />
               </div>
               <textarea aria-label="Hotel notes" value={row.notes} onChange={(event) => setHotelRows((rows) => rows.map((item, i) => i === index ? { ...item, notes: event.target.value } : item))} rows={2} className={fieldClass} />
-              {row.warnings.filter((warning) => !row.checkOut || !/ambiguous|unambiguous/i.test(warning)).map((warning) => <p key={warning} className="text-xs text-[var(--color-amber)]">{warning}</p>)}
-              {row.include && !hotelReady(row) && <p className="text-xs text-[var(--color-amber)]">Check the hotel name and stay dates, or uncheck this row.</p>}
+              <RowFeedback included={row.include} skipped={!keepDuplicates && duplicateHotels.has(row)} issues={hotelIssues(row)} warnings={row.warnings} />
             </article>
           ))}
 
           {bookings.map((row, index) => (
-            <article key={`booking-${index}`} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1">
+            <article key={`booking-${index}`} data-blocked={row.include && (keepDuplicates || !duplicateBookings.has(row)) && !bookingReady(row) || undefined} className="rounded-lg border border-[var(--color-border)] p-2 space-y-1 data-[blocked=true]:border-[var(--color-amber)]">
               <p className="text-xs text-[var(--color-muted)] break-words">{documents[row.document].name}</p>
               {duplicateBookings.has(row) && <p className="text-xs text-[var(--color-amber)]">Likely duplicate — {keepDuplicates ? 'will save another copy' : 'will skip'}.</p>}
               <label className="flex items-center gap-2 text-xs font-semibold">
@@ -311,21 +331,25 @@ export function ImportBookingSection({ onMoveUp, onMoveDown }: Props) {
                   <option key={category} value={category}>{CATEGORY_LABELS[category]}</option>
                 ))}
               </select>
-              <input aria-label="Booking label" value={row.label} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} className={fieldClass} />
+              <PreviewInput aria-label="Booking label" value={row.label} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} className={fieldClass} />
               <div className="flex gap-2">
-                <input aria-label="Booking date" type="date" value={row.date} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? trainDateDefaults({ ...item, date: event.target.value }) : item))} className={fieldClass} />
-                <input aria-label="Booking time" type="time" value={row.time} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, time: event.target.value } : item))} className={fieldClass} />
+                <PreviewInput aria-label="Booking date" type="date" value={row.date} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? trainDateDefaults({ ...item, date: event.target.value }) : item))} className={fieldClass} />
+                <PreviewInput aria-label="Booking time" type="time" value={row.time} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, time: event.target.value } : item))} className={fieldClass} />
               </div>
               {row.category === 'train' && <TrainFields value={row} onChange={(journey) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, ...journey } : item))} />}
               <textarea aria-label="Booking notes" value={row.notes} onChange={(event) => setBookingRows((rows) => rows.map((item, i) => i === index ? { ...item, notes: event.target.value } : item))} rows={2} className={fieldClass} />
-              {row.warnings.filter((warning) => !row.date || !/ambiguous|unambiguous/i.test(warning)).map((warning) => <p key={warning} className="text-xs text-[var(--color-amber)]">{warning}</p>)}
-              {row.include && !bookingReady(row) && <p className="text-xs text-[var(--color-amber)]">Check the label, date and times, or uncheck this row.</p>}
+              <RowFeedback included={row.include} skipped={!keepDuplicates && duplicateBookings.has(row)} issues={bookingIssues(row)} warnings={row.warnings} />
             </article>
           ))}
 
           <div className="sticky bottom-16 z-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 space-y-1 shadow-lg">
             <p className="text-xs" aria-live="polite">{includedCount} selected to save · {invalidCount} need correction · {!keepDuplicates ? duplicateCount : 0} duplicates skipped</p>
-            {invalid && <p className="text-xs text-[var(--color-amber)]">Correct the highlighted fields or uncheck those records.</p>}
+            {invalid && <p className="text-xs text-[var(--color-amber)]">Correct the fields listed under “Needs correction”, or uncheck those records.</p>}
+            {invalid && <button type="button" className="text-xs underline" onClick={(event) => {
+              const row = event.currentTarget.closest('fieldset')?.querySelector<HTMLElement>('article[data-blocked="true"]')
+              row?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              row?.querySelector<HTMLInputElement>('input:not([type="checkbox"]), select')?.focus({ preventScroll: true })
+            }}>Go to first correction</button>}
             {!tripChosen && <p className="text-xs text-[var(--color-amber)]">Choose an import trip above.</p>}
             {needsPublicAck && <p className="text-xs text-[var(--color-amber)]">Review storage for sensitive original files above.</p>}
             <button type="button" onClick={() => void save()} disabled={busy || !includedCount || invalid || needsPublicAck || !tripChosen} className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50">{busy ? 'Saving…' : 'Save selected'}</button>

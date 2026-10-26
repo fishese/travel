@@ -102,11 +102,11 @@ export function findDates(text: string, today: string = localDateStr()): FoundDa
     pushDate(found, match.index, match.index + match[0].length, undefined, +match[1], +match[2], today)
   }
 
-  for (const match of text.matchAll(/\b(\d{4})-(\d{2})-(\d{2})\b/g)) {
+  for (const match of text.matchAll(/\b(\d{4})\s*-\s*(\d{1,2})\s*-\s*(\d{1,2})\b/g)) {
     pushDate(found, match.index, match.index + match[0].length, +match[1], +match[2], +match[3], today)
   }
 
-  for (const match of text.matchAll(/(?<!\d)(\d{4})[./](\d{1,2})[./](\d{1,2})(?!\d)/g)) {
+  for (const match of text.matchAll(/(?<!\d)(\d{4})\s*[./]\s*(\d{1,2})\s*[./]\s*(\d{1,2})(?!\d)/g)) {
     pushDate(found, match.index, match.index + match[0].length, +match[1], +match[2], +match[3], today)
   }
 
