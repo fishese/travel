@@ -29,6 +29,13 @@ function simplePdf(lines: string[]): Uint8Array {
 }
 
 describe('extractPdfText', () => {
+  it('releases each loading task without breaking the next PDF in a batch', async () => {
+    const workerSrc = new URL('../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs', import.meta.url).href
+    for (const number of ['321', '322']) {
+      const text = await extractPdfText(simplePdf([`Flight BA${number}`, 'Departure 2030-04-10 09:00']), workerSrc)
+      expect(text).toContain(`BA${number}`)
+    }
+  })
   it('reads a text-layer e-ticket offline', async () => {
     const workerSrc = new URL('../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs', import.meta.url).href
     const text = await extractPdfText(

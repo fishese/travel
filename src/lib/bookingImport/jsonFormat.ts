@@ -143,9 +143,19 @@ function readBooking(value: unknown, index: number): DraftBooking | { error: str
     return fail(`Booking ${index + 1} category "${category}" is not supported.`)
   }
   const time = optionalTime(value.time, `Booking ${index + 1} time`)
+  const journey = {
+    operator: optionalString(value.operator, 'Train operator'),
+    serviceNumber: optionalString(value.serviceNumber, 'Train service number'),
+    origin: optionalString(value.origin, 'From station'),
+    destination: optionalString(value.destination, 'To station'),
+    arrivalDate: optionalDate(value.arrivalDate, 'Train arrival date'),
+    arrivalTime: optionalTime(value.arrivalTime, 'Train arrival time'),
+    coach: optionalString(value.coach, 'Coach'),
+    seat: optionalString(value.seat, 'Seat'),
+  }
   const confirmation = optionalString(value.confirmation, `Booking ${index + 1} confirmation`)
   const notes = optionalString(value.notes, `Booking ${index + 1} notes`)
-  const fields = [time, confirmation, notes]
+  const fields = [time, confirmation, notes, ...Object.values(journey)]
   const problem = fields.find(isError)
   if (problem) return problem
   return {
@@ -153,6 +163,7 @@ function readBooking(value: unknown, index: number): DraftBooking | { error: str
     label,
     date,
     time: time as string,
+    ...journey as Record<keyof typeof journey, string>,
     notes: notesFrom(
       typeof confirmation === 'string' && confirmation && `Confirmation: ${confirmation}`,
       typeof notes === 'string' && notes,

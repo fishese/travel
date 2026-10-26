@@ -13,7 +13,7 @@ interface PdfDocument {
 }
 
 interface PdfjsModule {
-  getDocument: (src: { data: Uint8Array; useSystemFonts?: boolean }) => { promise: Promise<PdfDocument> }
+  getDocument: (src: { data: Uint8Array; useSystemFonts?: boolean }) => { promise: Promise<PdfDocument>; destroy: () => Promise<void> }
   GlobalWorkerOptions: { workerSrc: string }
 }
 
@@ -25,18 +25,23 @@ interface PdfjsModule {
 export async function extractPdfText(data: Uint8Array, workerSrc: string): Promise<string> {
   const pdfjs = (await import('pdfjs-dist/legacy/build/pdf.mjs')) as unknown as PdfjsModule
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
-  const doc = await pdfjs.getDocument({ data, useSystemFonts: true }).promise
-  const pages: string[] = []
-  for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
-    const page = await doc.getPage(pageNumber)
-    const content = await page.getTextContent()
-    pages.push(itemsToLines(content.items))
+  const task = pdfjs.getDocument({ data, useSystemFonts: true })
+  try {
+    const doc = await task.promise
+    const pages: string[] = []
+    for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber++) {
+      const page = await doc.getPage(pageNumber)
+      const content = await page.getTextContent()
+      pages.push(itemsToLines(content.items))
+    }
+    const text = pages.map((page) => page.trim()).filter(Boolean).join('\n\n').trim()
+    if (!text) {
+      throw new Error('No selectable text in this PDF. If it is a scan or a photo, paste the confirmation text instead, or import a JSON file. OCR is not available; other files in this batch can still be saved.')
+    }
+    return text
+  } finally {
+    await task.destroy()
   }
-  const text = pages.map((page) => page.trim()).filter(Boolean).join('\n\n').trim()
-  if (!text) {
-    throw new Error('No selectable text in this PDF. If it is a scan or a photo, paste the confirmation text instead, or import a JSON file.')
-  }
-  return text
 }
 
 function itemsToLines(items: PdfTextItem[]): string {

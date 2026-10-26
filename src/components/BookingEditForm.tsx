@@ -5,6 +5,8 @@ import {
   type BookingCategory,
   type BookingFieldInput,
 } from '../lib/bookings'
+import { TrainFields, type TrainDetails } from './TrainFields'
+import { bookingReady } from '../lib/bookingImport/storage'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -20,6 +22,7 @@ export function BookingEditForm({ initial, onSave, onCancel }: Props) {
   const [time, setTime] = useState(initial.time ?? '')
   const [label, setLabel] = useState(initial.label)
   const [notes, setNotes] = useState(initial.notes ?? '')
+  const [journey, setJourney] = useState<TrainDetails>(initial)
 
   return (
     <div className="space-y-2">
@@ -71,11 +74,12 @@ export function BookingEditForm({ initial, onSave, onCancel }: Props) {
         rows={3}
         className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
       />
+      {category === 'train' && <TrainFields value={journey} onChange={setJourney} />}
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={() => onSave({ date, time, category, label, notes })}
-          disabled={!label.trim()}
+          onClick={() => onSave({ ...journey, date, time, category, label, notes })}
+          disabled={!bookingReady({ ...journey, date, time, label })}
           className="flex-1 rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Save

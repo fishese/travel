@@ -16,6 +16,8 @@ import { PastEntries } from './PastEntries'
 import { PasteParseBox } from './PasteParseBox'
 import { BookingCard } from './BookingCard'
 import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
+import { TrainFields, type TrainDetails } from './TrainFields'
+import { bookingReady } from '../lib/bookingImport/storage'
 
 const CATEGORIES = Object.keys(CATEGORY_EMOJI) as BookingCategory[]
 
@@ -34,6 +36,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   const [time, setTime] = useState('')
   const [label, setLabel] = useState('')
   const [notes, setNotes] = useState('')
+  const [journey, setJourney] = useState<TrainDetails>({})
   const [showAddForm, setShowAddForm] = useState(() => bookings.length === 0)
   const [pastedText, setPastedText] = useState<string | undefined>(undefined)
   const [yearWasInferred, setYearWasInferred] = useState(false)
@@ -43,27 +46,31 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     const parsed = parseBookingDocument(text)
     const booking = parsed.bookings[0]
     if (booking) {
-      if (booking.date) setDate(booking.date)
-      if (booking.time) setTime(booking.time)
-      if (booking.label) setLabel(booking.label)
-      if (booking.notes) setNotes(booking.notes)
+      setDate(booking.date)
+      setTime(booking.time)
+      setLabel(booking.label)
+      setNotes(booking.notes)
+      setJourney(booking)
       setCategory(booking.category)
       setYearWasInferred(booking.yearInferred)
       setParseNote(booking.warnings.join(' '))
     } else if (parsed.flights[0]) {
       const flight = parsed.flights[0]
-      if (flight.date) setDate(flight.date)
-      if (flight.departureTime) setTime(flight.departureTime)
-      if (flight.flightIata) setLabel(flight.flightIata)
-      if (flight.notes) setNotes(flight.notes)
+      setDate(flight.date)
+      setTime(flight.departureTime)
+      setLabel(flight.flightIata)
+      setNotes(flight.notes)
+      setJourney({})
       setCategory('flight')
       setYearWasInferred(flight.yearInferred)
       setParseNote('')
     } else if (parsed.hotels[0]) {
       const hotel = parsed.hotels[0]
-      if (hotel.checkIn) setDate(hotel.checkIn)
-      if (hotel.name) setLabel(hotel.name)
-      if (hotel.notes) setNotes(hotel.notes)
+      setDate(hotel.checkIn)
+      setLabel(hotel.name)
+      setNotes(hotel.notes)
+      setTime('')
+      setJourney({})
       setCategory('other')
       setYearWasInferred(false)
       setParseNote('This looks like a hotel. Hotels keeps the address and check-out, and Import booking can save both.')
@@ -74,10 +81,11 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
   }
 
   function addBooking() {
-    if (!label.trim()) return
+    if (!bookingReady({ ...journey, label, date, time })) return
     setBookings((prev) => [
       ...prev,
       newBooking({
+        ...journey,
         tripId: tripIdForNewRecord(activeTripId),
         date,
         time,
@@ -91,6 +99,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
     setLabel('')
     setNotes('')
     setTime('')
+    setJourney({})
     setPastedText(undefined)
     setYearWasInferred(false)
     setParseNote('')
@@ -195,10 +204,12 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
           placeholder="Notes (optional) — confirmation #, address, etc."
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
+        {category === 'train' && <TrainFields value={journey} onChange={setJourney} />}
+        {!date && <p className="text-xs text-[var(--color-amber)]">Choose a booking date before saving.</p>}
         <button
           type="button"
           onClick={addBooking}
-          disabled={!label.trim()}
+          disabled={!bookingReady({ ...journey, label, date, time })}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Add booking
@@ -206,7 +217,7 @@ export function BookingsSection({ onMoveUp, onMoveDown }: Props) {
       </AddFormToggle>
 
       {sorted.length === 0 ? (
-        <p className="text-sm text-[var(--color-muted)]">No bookings saved yet.</p>
+        <p className="text-sm text-[var(--color-muted)]">{bookings.length ? 'No bookings match this trip filter. Change Active trip above to see other records.' : 'No bookings saved yet.'}</p>
       ) : (
         <>
           {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming bookings.</p>}

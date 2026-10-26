@@ -35,6 +35,14 @@ export interface DraftBooking {
   notes: string
   warnings: string[]
   yearInferred: boolean
+  operator?: string
+  serviceNumber?: string
+  origin?: string
+  destination?: string
+  arrivalDate?: string
+  arrivalTime?: string
+  coach?: string
+  seat?: string
 }
 
 export interface ParsedImport {

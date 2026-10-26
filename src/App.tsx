@@ -92,6 +92,7 @@ function App() {
           </>
         )}
 
+        {activeTab === 'planner' && <TripManager />}
         {activeTab === 'planner' &&
           order.map((id, idx) => {
             const Section = SECTION_COMPONENTS_WITH_VAULT[id]

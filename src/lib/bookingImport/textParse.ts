@@ -188,14 +188,14 @@ function parseFlights(text: string, today: string): DraftFlight[] {
     let arrivalDate = ''
     const arrivalExplicit = dateAfterKeyword(body, /arriv(?:es|al)?|\barr\b|到着/i, today)
     const overnight = /(?:\+1|翌\s*日|next\s+day)/i.test(body)
-    if (overnight && date) {
+    if (arrivalExplicit) {
+      arrivalDate = arrivalExplicit.date
+    } else if (overnight && date) {
       arrivalDate = addDays(date, 1)
       warnings.push('The text marks arrival on the next day. Check the arrival date.')
     } else if (depTime && arrTime && arrTime < depTime && date) {
       arrivalDate = addDays(date, 1)
       warnings.push('Arrival time is earlier than departure, so the arrival date was set to the next day.')
-    } else if (arrivalExplicit) {
-      arrivalDate = arrivalExplicit.date
     }
 
     let route = routeFromCodes(body)
@@ -333,19 +333,41 @@ function parseHotels(text: string, today: string): DraftHotel[] {
 }
 
 function parseTrain(text: string, today: string): DraftBooking | null {
-  if (!/新幹線|shinkansen|eurostar|のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら/i.test(text)) return null
+  if (!/新幹線|shinkansen|eurostar|\bTGV\b|\bICE\b|\bIntercity\b|\bRailjet\b|のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら/i.test(text)) return null
   const found = findDates(text, today)[0]
-  if (!found) return null
-  const service = text.match(/(のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら|eurostar|shinkansen)\s*(\d{1,4})\s*(号)?/i)
-  const route = text.match(/([^\s\d:：]{1,8})\s*(\d{1,2}:\d{2})\s*発?\s*(?:→|->|⇒|—|–)\s*([^\s\d:：]{1,8})\s*(\d{1,2}:\d{2})/)
+  const service = text.match(/(のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら|eurostar|shinkansen|TGV(?:\s+INOUI)?|ICE|Intercity|Railjet)\s*(\d{1,4})\s*(号)?/i)
+  const route = text.match(/^([^\n]+?)\s+(\d{1,2}:\d{2})\s*発?\s*(?:→|->|⇒|—|–)\s*([^\n]+?)\s+(\d{1,2}:\d{2})/m)
   const label = service ? `${service[1]} ${service[2]}${service[3] ? '号' : ''}`.trim() : 'Train'
   const warnings: string[] = []
-  if (found.yearInferred) warnings.push(`No year was written, so ${found.date.slice(0, 4)} was assumed.`)
+  if (!found) warnings.push('Add the departure date; no unambiguous date was found.')
+  if (found?.yearInferred) warnings.push(`No year was written, so ${found.date.slice(0, 4)} was assumed.`)
+  const seatText = findSeat(text)
+  const coach = text.match(/(?:coach|car(?:riage)?|号車)\s*[:：]?\s*([\w-]+)/i)?.[1]
+    ?? seatText?.match(/(\d+)号車/)?.[1]
+  const seat = seatText?.replace(/(?:coach|car(?:riage)?)\s*\w+\s*/i, '').replace(/\d+号車\s*/, '').replace(/^seat\s*/i, '').trim()
+  const origin = route?.[1].trim() ?? text.match(/(?:^|\n)\s*(?:from|origin)\s*[:：]\s*([^\n]+)/i)?.[1].trim()
+  const destination = route?.[3].trim() ?? text.match(/(?:^|\n)\s*(?:to|destination)\s*[:：]\s*([^\n]+)/i)?.[1].trim()
+  const departureTime = route?.[2] ?? timeAfter(text, /depart(?:ure|s)?/i) ?? findTimes(text)[0]?.time ?? ''
+  const arrivalTime = route?.[4] ?? timeAfter(text, /arriv(?:al|es)?/i)
+  const explicitArrival = dateAfterKeyword(text, /arriv(?:al|es)?/i, today)
+  let arrivalDate = explicitArrival?.date
+  if (!arrivalDate && found && /\+1|next day|翌日/i.test(text)) arrivalDate = addDays(found.date, 1)
+  if (!arrivalDate && found && arrivalTime && departureTime && arrivalTime < departureTime) {
+    warnings.push('Arrival is earlier than departure. Check the arrival date.')
+  }
   return {
     category: 'train',
     label,
-    date: found.date,
-    time: route?.[2] ?? findTimes(text)[0]?.time ?? '',
+    date: found?.date ?? '',
+    time: departureTime,
+    operator: service?.[1],
+    serviceNumber: service?.[2],
+    origin,
+    destination,
+    arrivalTime,
+    arrivalDate,
+    coach,
+    seat,
     notes: noteLines(
       findConfirmation(text) && `Confirmation: ${findConfirmation(text)}`,
       route ? `${route[1]} → ${route[3]}` : undefined,
@@ -353,8 +375,28 @@ function parseTrain(text: string, today: string): DraftBooking | null {
       findSeat(text) && `Seat: ${findSeat(text)}`,
     ),
     warnings,
-    yearInferred: found.yearInferred,
+    yearInferred: found?.yearInferred ?? false,
   }
+}
+
+function parseTrains(text: string, today: string): DraftBooking[] {
+  const serviceLine = /^(?:\s*(?:train|service)\s*[:：]?\s*)?(?:のぞみ|ひかり|こだま|はやぶさ|みずほ|さくら|eurostar|shinkansen|TGV(?:\s+INOUI)?|ICE|Intercity|Railjet)\s*\d{1,4}(?:号)?\s*$/gim
+  const lines = [...text.matchAll(serviceLine)]
+  if (lines.length < 2) {
+    const train = parseTrain(text, today)
+    return train ? [train] : []
+  }
+  const starts = lines.map((line, index) => {
+    if (index === 0) return 0
+    const before = text.slice(0, line.index).trimEnd()
+    const previousLine = before.slice(before.lastIndexOf('\n') + 1)
+    return findDates(previousLine, today).length || findAmbiguousDates(previousLine).length
+      ? before.lastIndexOf('\n') + 1 : line.index
+  })
+  return starts.flatMap((start, index) => {
+    const train = parseTrain(text.slice(start, starts[index + 1] ?? text.length), today)
+    return train ? [train] : []
+  })
 }
 
 function parseCar(text: string, today: string): DraftBooking | null {
@@ -428,9 +470,9 @@ export function parseBookingDocument(input: string, today?: string): ParsedImpor
   const flights = parseFlights(text, todayStr)
   const hotels = parseHotels(text, todayStr)
   const bookings: DraftBooking[] = []
-  const train = parseTrain(text, todayStr)
+  const trains = parseTrains(text, todayStr)
   const car = parseCar(text, todayStr)
-  if (train) bookings.push(train)
+  bookings.push(...trains)
   if (car) bookings.push(car)
   if (flights.length === 0 && hotels.length === 0 && bookings.length === 0) {
     const tour = parseTour(text, todayStr)

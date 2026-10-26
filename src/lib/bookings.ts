@@ -30,6 +30,14 @@ export interface Booking {
   category: BookingCategory
   label: string // freeform: "Hadestown 18:45 showing"
   notes?: string
+  operator?: string
+  serviceNumber?: string
+  origin?: string
+  destination?: string
+  arrivalDate?: string
+  arrivalTime?: string
+  coach?: string
+  seat?: string
   savedAt: string
 
   // Forward-looking, not used by anything yet: once paste/upload parsing
@@ -60,6 +68,14 @@ export interface BookingFieldInput {
   category: BookingCategory
   label: string
   notes?: string
+  operator?: string
+  serviceNumber?: string
+  origin?: string
+  destination?: string
+  arrivalDate?: string
+  arrivalTime?: string
+  coach?: string
+  seat?: string
 }
 
 function normalizeBookingFields(fields: BookingFieldInput) {
@@ -70,6 +86,14 @@ function normalizeBookingFields(fields: BookingFieldInput) {
     category: fields.category,
     label: fields.label.trim(),
     notes: fields.notes?.trim() || undefined,
+    operator: fields.operator?.trim() || undefined,
+    serviceNumber: fields.serviceNumber?.trim() || undefined,
+    origin: fields.origin?.trim() || undefined,
+    destination: fields.destination?.trim() || undefined,
+    arrivalDate: fields.arrivalDate || undefined,
+    arrivalTime: fields.arrivalTime || undefined,
+    coach: fields.coach?.trim() || undefined,
+    seat: fields.seat?.trim() || undefined,
   }
 }
 

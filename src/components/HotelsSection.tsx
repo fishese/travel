@@ -13,6 +13,7 @@ import { PasteParseBox } from './PasteParseBox'
 import { parseBookingDocument } from '../lib/bookingImport/textParse'
 import { useActiveTrip, tripMatches, tripIdForNewRecord } from '../lib/trips'
 import { TripAssignment } from './TripAssignment'
+import { hotelReady } from '../lib/bookingImport/storage'
 
 interface Props {
   onMoveUp?: () => void
@@ -73,20 +74,20 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
       setParseNote(parsed.warnings[0] ?? 'No hotel was found in that text.')
       return
     }
-    if (hotel.name) setName(hotel.name)
-    if (hotel.city) setCity(hotel.city)
-    if (hotel.address) setAddress(hotel.address)
-    if (hotel.phone) setPhone(hotel.phone)
-    if (hotel.checkIn) setCheckIn(hotel.checkIn)
-    if (hotel.checkOut) setCheckOut(hotel.checkOut)
-    if (hotel.notes) setNotes(hotel.notes)
+    setName(hotel.name)
+    setCity(hotel.city)
+    setAddress(hotel.address)
+    setPhone(hotel.phone)
+    setCheckIn(hotel.checkIn)
+    setCheckOut(hotel.checkOut)
+    setNotes(hotel.notes)
     if (!editingId) setPastedText(parsed.rawText)
     const extra = parsed.hotels.length > 1 ? 'This text has more than one hotel. This form keeps the first. Use Import booking for all of them.' : ''
     setParseNote([extra, ...hotel.warnings, ...parsed.warnings].filter(Boolean).join(' '))
   }
 
   function addHotel() {
-    if (!name.trim()) return
+    if (!hotelReady({ name, checkIn, checkOut })) return
     setHotels((prev) =>
       editingId
         ? prev.map((h) => (h.id === editingId ? applyHotelEdit(h, { name, city, address, phone, checkIn, checkOut, notes, lat, lon, osmPlaceId }) : h))
@@ -291,7 +292,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
         <button
           type="button"
           onClick={addHotel}
-          disabled={!name.trim()}
+          disabled={!hotelReady({ name, checkIn, checkOut })}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           {editingId ? 'Save changes' : 'Save hotel'}
@@ -299,7 +300,7 @@ export function HotelsSection({ onMoveUp, onMoveDown }: Props) {
       </AddFormToggle>
 
       {sorted.length === 0 ? (
-        <p className="text-sm text-[var(--color-muted)]">No hotels saved yet.</p>
+        <p className="text-sm text-[var(--color-muted)]">{hotels.length ? 'No hotels match this trip filter. Change Active trip above to see other records.' : 'No hotels saved yet.'}</p>
       ) : (
         <>
           {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming hotels.</p>}

@@ -47,6 +47,26 @@ export function writeSettingExternally<T>(key: string, value: T) {
   notify(key)
 }
 
+/** Commit a multi-list import before publishing any React store updates. */
+export function writeSettingsExternally(values: Record<string, unknown>) {
+  const entries = Object.entries(values).map(([key, value]) => ({ key, value, json: JSON.stringify(value), before: localStorage.getItem(key) }))
+  const written: typeof entries = []
+  try {
+    for (const entry of entries) {
+      localStorage.setItem(entry.key, entry.json)
+      written.push(entry)
+    }
+  } catch (error) {
+    for (const entry of written.reverse()) {
+      if (entry.before === null) localStorage.removeItem(entry.key)
+      else localStorage.setItem(entry.key, entry.before)
+    }
+    throw error
+  }
+  for (const { key, value } of entries) store.set(key, value)
+  for (const { key } of entries) notify(key)
+}
+
 export function useSetting<T>(key: string, defaultValue: T) {
   const subscribe = useCallback(
     (callback: Listener) => {

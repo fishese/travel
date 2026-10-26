@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSavedFlights, useAviationstackKey, useFlightApiQuota, newFlight, type SavedFlight } from '../lib/flights'
+import { flightReady } from '../lib/bookingImport/storage'
 import { localDateStr } from '../lib/dateUtils'
 import { isPastDate } from '../lib/archive'
 import { hapticTick, hapticConfirm } from '../lib/haptics'
@@ -47,14 +48,14 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
       setParseNote(parsed.warnings[0] ?? 'No flight was found in that text.')
       return
     }
-    if (flight.flightIata) setFlightIataInput(flight.flightIata)
-    if (flight.date) setDateInput(flight.date)
-    if (flight.origin) setOriginInput(flight.origin)
-    if (flight.destination) setDestinationInput(flight.destination)
-    if (flight.departureTime) setDepartureTimeInput(flight.departureTime)
-    if (flight.arrivalTime) setArrivalTimeInput(flight.arrivalTime)
-    if (flight.arrivalDate) setArrivalDateInput(flight.arrivalDate)
-    if (flight.notes) setNotesInput(flight.notes)
+    setFlightIataInput(flight.flightIata)
+    setDateInput(flight.date)
+    setOriginInput(flight.origin)
+    setDestinationInput(flight.destination)
+    setDepartureTimeInput(flight.departureTime)
+    setArrivalTimeInput(flight.arrivalTime)
+    setArrivalDateInput(flight.arrivalDate)
+    setNotesInput(flight.notes)
     setPastedText(parsed.rawText)
     setYearWasInferred(flight.yearInferred)
     const extra = parsed.flights.length > 1
@@ -64,7 +65,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
   }
 
   function addFlight() {
-    if (!flightIataInput.trim()) return
+    if (!flightReady({ flightIata: flightIataInput, date: dateInput, departureTime: departureTimeInput, arrivalTime: arrivalTimeInput, arrivalDate: arrivalDateInput })) return
     setFlights((prev) => [
       ...prev,
       newFlight({
@@ -272,10 +273,11 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
           placeholder="Notes (optional)"
           className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
         />
+        {!dateInput && <p className="text-xs text-[var(--color-amber)]">Choose a departure date before saving.</p>}
         <button
           type="button"
           onClick={addFlight}
-          disabled={!flightIataInput.trim()}
+          disabled={!flightReady({ flightIata: flightIataInput, date: dateInput, departureTime: departureTimeInput, arrivalTime: arrivalTimeInput, arrivalDate: arrivalDateInput })}
           className="w-full rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Add flight
@@ -283,7 +285,7 @@ export function FlightsSection({ onMoveUp, onMoveDown }: Props) {
       </AddFormToggle>
 
       {sorted.length === 0 ? (
-        <p className="text-sm text-[var(--color-muted)]">No flights saved yet.</p>
+        <p className="text-sm text-[var(--color-muted)]">{flights.length ? 'No flights match this trip filter. Change Active trip above to see other records.' : 'No flights saved yet.'}</p>
       ) : (
         <>
           {upcoming.length === 0 && <p className="text-sm text-[var(--color-muted)]">No upcoming flights.</p>}

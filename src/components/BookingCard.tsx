@@ -41,6 +41,7 @@ export function BookingCard({ booking, onDelete, onUpdate, onTripChange }: Props
               {editing ? (
                 <BookingEditForm
                   initial={{
+                    ...booking,
                     date: booking.date,
                     time: booking.time,
                     category: booking.category,
@@ -56,6 +57,12 @@ export function BookingCard({ booking, onDelete, onUpdate, onTripChange }: Props
               ) : (
                 <>
                   <p className="text-sm break-words">{booking.label}</p>
+                  {booking.category === 'train' && <dl className="text-xs mt-1 space-y-1">
+                    {(booking.origin || booking.destination) && <div><dt className="inline">Route: </dt><dd className="inline">{booking.origin || '?'} → {booking.destination || '?'}</dd></div>}
+                    {(booking.arrivalTime || booking.arrivalDate) && <div><dt className="inline">Arrival: </dt><dd className="inline">{[booking.arrivalDate, booking.arrivalTime].filter(Boolean).join(' ')}</dd></div>}
+                    {(booking.operator || booking.serviceNumber) && <div><dt className="inline">Service: </dt><dd className="inline">{[booking.operator, booking.serviceNumber].filter(Boolean).join(' ')}</dd></div>}
+                    {(booking.coach || booking.seat) && <div><dt className="inline">Seat: </dt><dd className="inline">{[booking.coach && `Coach ${booking.coach}`, booking.seat].filter(Boolean).join(' · ')}</dd></div>}
+                  </dl>}
                   {booking.notes && (
                     <p className="text-xs text-[var(--color-muted)] mt-1 whitespace-pre-wrap break-words">
                       {booking.notes}

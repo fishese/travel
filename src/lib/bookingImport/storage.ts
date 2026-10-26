@@ -1,5 +1,6 @@
 import type { VaultCategory } from '../fileVault'
 import type { DraftBooking, DraftFlight, DraftHotel, ParsedImport } from './types'
+import { validDate, optionalDateValid, optionalTimeValid } from './validation'
 
 export type DocumentStorage = 'public' | 'vault'
 
@@ -27,14 +28,18 @@ export function importFileCategory(preview: ParsedImport, storage: DocumentStora
   return 'other'
 }
 
-export function flightReady(flight: DraftFlight): boolean {
-  return flight.flightIata.trim() !== '' && flight.date.trim() !== ''
+export function flightReady(flight: Pick<DraftFlight, 'flightIata' | 'date'> & Partial<DraftFlight>): boolean {
+  return /^(?:[A-Z]{2}|[A-Z]\d|\d[A-Z])\d{1,4}$/.test(flight.flightIata.toUpperCase().replace(/\s+/g, '')) && validDate(flight.date)
+    && optionalDateValid(flight.arrivalDate) && optionalTimeValid(flight.departureTime) && optionalTimeValid(flight.arrivalTime)
+    && (!flight.origin || /^[A-Z]{3}$/i.test(flight.origin.trim())) && (!flight.destination || /^[A-Z]{3}$/i.test(flight.destination.trim()))
 }
 
-export function hotelReady(hotel: DraftHotel): boolean {
-  return hotel.name.trim() !== ''
+export function hotelReady(hotel: Pick<DraftHotel, 'name'> & Partial<DraftHotel>): boolean {
+  return hotel.name.trim() !== '' && optionalDateValid(hotel.checkIn) && optionalDateValid(hotel.checkOut)
+    && !(hotel.checkIn && hotel.checkOut && hotel.checkOut < hotel.checkIn)
 }
 
-export function bookingReady(booking: DraftBooking): boolean {
-  return booking.label.trim() !== '' && booking.date.trim() !== ''
+export function bookingReady(booking: Pick<DraftBooking, 'label' | 'date'> & Partial<DraftBooking>): boolean {
+  return booking.label.trim() !== '' && validDate(booking.date) && optionalTimeValid(booking.time)
+    && optionalDateValid(booking.arrivalDate) && optionalTimeValid(booking.arrivalTime)
 }

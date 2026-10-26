@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FlightFieldInput } from '../lib/flights'
+import { flightReady } from '../lib/bookingImport/storage'
 
 interface Props {
   initial: FlightFieldInput
@@ -81,7 +82,7 @@ export function FlightEditForm({ initial, onSave, onCancel }: Props) {
         <button
           type="button"
           onClick={() => onSave({ flightIata, date, origin, destination, departureTime, arrivalTime, arrivalDate, notes })}
-          disabled={!flightIata.trim()}
+          disabled={!flightReady({ flightIata, date, departureTime, arrivalTime, arrivalDate })}
           className="flex-1 rounded-lg bg-[var(--color-pine)] text-white px-3 py-2 text-sm disabled:opacity-50"
         >
           Save
